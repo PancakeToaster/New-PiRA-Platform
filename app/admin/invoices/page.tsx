@@ -1,36 +1,137 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { mockInvoices } from '@/lib/mockData';
+import { Search, Receipt, Loader2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+
+interface InvoiceWithParent {
+  id: string;
+  invoiceNumber: string;
+  status: string;
+  dueDate: string;
+  paidDate: string | null;
+  subtotal: number;
+  tax: number;
+  total: number;
+  notes: string | null;
+  createdAt: string;
+  parent: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
+  items: {
+    id: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }[];
+}
+
+interface InvoiceStats {
+  total: number;
+  totalRevenue: number;
+  unpaidAmount: number;
+  pending: number;
+}
 
 export default function AdminInvoicesPage() {
-  const [invoices] = useState(mockInvoices);
+  const [invoices, setInvoices] = useState<InvoiceWithParent[]>([]);
+  const [stats, setStats] = useState<InvoiceStats>({ total: 0, totalRevenue: 0, unpaidAmount: 0, pending: 0 });
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const totalRevenue = invoices
-    .filter(inv => inv.status === 'Paid')
-    .reduce((sum, inv) => sum + inv.total, 0);
+  useEffect(() => {
+    async function fetchInvoices() {
+      try {
+        const response = await fetch('/api/admin/invoices');
+        if (response.ok) {
+          const data = await response.json();
+          setInvoices(data.invoices);
+          setStats(data.stats);
+        }
+      } catch (error) {
+        console.error('Failed to fetch invoices:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchInvoices();
+  }, []);
 
-  const unpaidAmount = invoices
-    .filter(inv => inv.status !== 'Paid')
-    .reduce((sum, inv) => sum + inv.total, 0);
+  const filteredInvoices = invoices.filter(invoice => {
+    const parentName = `${invoice.parent.user.firstName} ${invoice.parent.user.lastName}`.toLowerCase();
+    const matchesSearch =
+      parentName.includes(searchQuery.toLowerCase()) ||
+      invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (statusFilter === 'all') return matchesSearch;
+    return matchesSearch && invoice.status === statusFilter;
+  });
+
+  const handleMarkPaid = async (invoiceId: string) => {
+    try {
+      const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'paid', paidDate: new Date().toISOString() }),
+      });
+
+      if (response.ok) {
+        const { invoice: updatedInvoice } = await response.json();
+        setInvoices(invoices.map(inv => inv.id === invoiceId ? updatedInvoice : inv));
+        // Refresh stats
+        const totalRevenue = invoices.filter(inv =>
+          inv.id === invoiceId || inv.status === 'paid'
+        ).reduce((sum, inv) => sum + inv.total, 0);
+        setStats(prev => ({
+          ...prev,
+          totalRevenue,
+          unpaidAmount: prev.unpaidAmount - updatedInvoice.total,
+          pending: prev.pending - 1,
+        }));
+      } else {
+        alert('Failed to update invoice');
+      }
+    } catch (error) {
+      console.error('Failed to update invoice:', error);
+      alert('Failed to update invoice');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-        <Button>
-          Create New Invoice
-        </Button>
+        <Link href="/admin/invoices/new">
+          <Button>
+            <Receipt className="w-4 h-4 mr-2" />
+            Create New Invoice
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{invoices.length}</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
               <p className="text-sm text-gray-500">Total Invoices</p>
             </div>
           </CardContent>
@@ -38,7 +139,7 @@ export default function AdminInvoicesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">${totalRevenue.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-green-600">{formatCurrency(stats.totalRevenue)}</p>
               <p className="text-sm text-gray-500">Total Revenue</p>
             </div>
           </CardContent>
@@ -46,7 +147,7 @@ export default function AdminInvoicesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-red-600">${unpaidAmount.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-red-600">{formatCurrency(stats.unpaidAmount)}</p>
               <p className="text-sm text-gray-500">Unpaid Amount</p>
             </div>
           </CardContent>
@@ -54,18 +155,45 @@ export default function AdminInvoicesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-600">
-                {invoices.filter(inv => inv.status === 'Pending').length}
-              </p>
+              <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
               <p className="text-sm text-gray-500">Pending</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Search and Filter */}
+      <Card>
+        <CardContent className="py-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by invoice number or parent name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="paid">Paid</option>
+              <option value="overdue">Overdue</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
-          <CardTitle>All Invoices</CardTitle>
+          <CardTitle>All Invoices ({filteredInvoices.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -96,51 +224,78 @@ export default function AdminInvoicesPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {invoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">INV-{invoice.invoiceNumber}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{invoice.parentName}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{invoice.description}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${invoice.total.toFixed(2)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          invoice.status === 'Paid'
-                            ? 'bg-green-100 text-green-800'
-                            : invoice.status === 'Pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {invoice.dueDate.toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <Button variant="outline" size="sm">
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                      {invoice.status !== 'Paid' && (
-                        <Button variant="primary" size="sm">
-                          Mark Paid
-                        </Button>
-                      )}
+                {filteredInvoices.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      No invoices found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredInvoices.map((invoice) => (
+                    <tr key={invoice.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{invoice.invoiceNumber}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {invoice.parent.user.firstName} {invoice.parent.user.lastName}
+                        </div>
+                        <div className="text-sm text-gray-500">{invoice.parent.user.email}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">
+                          {invoice.items.length > 0
+                            ? invoice.items[0].description
+                            : 'No items'}
+                          {invoice.items.length > 1 && (
+                            <span className="text-gray-500"> (+{invoice.items.length - 1} more)</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{formatCurrency(invoice.total)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            invoice.status === 'paid'
+                              ? 'bg-green-100 text-green-800'
+                              : invoice.status === 'unpaid'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : invoice.status === 'overdue'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(invoice.dueDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <Link href={`/admin/invoices/${invoice.id}`}>
+                          <Button variant="outline" size="sm">
+                            View
+                          </Button>
+                        </Link>
+                        <Link href={`/admin/invoices/${invoice.id}/edit`}>
+                          <Button variant="outline" size="sm">
+                            Edit
+                          </Button>
+                        </Link>
+                        {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleMarkPaid(invoice.id)}
+                          >
+                            Mark Paid
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

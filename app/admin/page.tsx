@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Users, FileText, DollarSign, BookOpen, TrendingUp, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
+import TestUserSelector from '@/components/admin/TestUserSelector';
 
 export const revalidate = 0; // Disable caching for admin dashboard
 
@@ -66,22 +67,22 @@ export default async function AdminDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-2 text-gray-900">Admin Dashboard</h1>
         <p className="text-gray-600">Overview of your platform's key metrics</p>
       </div>
 
       {/* User Stats */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">User Statistics</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">User Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Users</p>
-                  <p className="text-3xl font-bold">{totalUsers}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalUsers}</p>
                 </div>
-                <Users className="w-12 h-12 text-primary-600 opacity-20" />
+                <Users className="w-12 h-12 text-sky-500 opacity-20" />
               </div>
             </CardContent>
           </Card>
@@ -91,7 +92,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Students</p>
-                  <p className="text-3xl font-bold">{totalStudents}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalStudents}</p>
                 </div>
                 <Users className="w-12 h-12 text-blue-600 opacity-20" />
               </div>
@@ -103,7 +104,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Parents</p>
-                  <p className="text-3xl font-bold">{totalParents}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalParents}</p>
                 </div>
                 <Users className="w-12 h-12 text-green-600 opacity-20" />
               </div>
@@ -115,7 +116,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Teachers</p>
-                  <p className="text-3xl font-bold">{totalTeachers}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalTeachers}</p>
                 </div>
                 <Users className="w-12 h-12 text-purple-600 opacity-20" />
               </div>
@@ -126,14 +127,14 @@ export default async function AdminDashboard() {
 
       {/* Financial Stats */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Financial Overview</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">Financial Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Revenue</p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-3xl font-bold text-gray-900">
                     {formatCurrency(totalRevenue._sum.total || 0)}
                   </p>
                 </div>
@@ -147,7 +148,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Unpaid Amount</p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-3xl font-bold text-gray-900">
                     {formatCurrency(unpaidRevenue._sum.total || 0)}
                   </p>
                 </div>
@@ -161,7 +162,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Invoices</p>
-                  <p className="text-3xl font-bold">{totalInvoices}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalInvoices}</p>
                 </div>
                 <FileText className="w-12 h-12 text-blue-600 opacity-20" />
               </div>
@@ -173,7 +174,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Unpaid Invoices</p>
-                  <p className="text-3xl font-bold">{unpaidInvoices}</p>
+                  <p className="text-3xl font-bold text-gray-900">{unpaidInvoices}</p>
                 </div>
                 <FileText className="w-12 h-12 text-red-600 opacity-20" />
               </div>
@@ -184,17 +185,17 @@ export default async function AdminDashboard() {
 
       {/* Content & Activity Stats */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Content & Activity</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">Content & Activity</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Knowledge Nodes</p>
-                  <p className="text-3xl font-bold">{totalKnowledgeNodes}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalKnowledgeNodes}</p>
                   <p className="text-xs text-gray-500">{publishedNodes} published</p>
                 </div>
-                <BookOpen className="w-12 h-12 text-primary-600 opacity-20" />
+                <BookOpen className="w-12 h-12 text-sky-500 opacity-20" />
               </div>
             </CardContent>
           </Card>
@@ -204,7 +205,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Assignments</p>
-                  <p className="text-3xl font-bold">{totalAssignments}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalAssignments}</p>
                 </div>
                 <FileText className="w-12 h-12 text-blue-600 opacity-20" />
               </div>
@@ -216,7 +217,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Page Views (24h)</p>
-                  <p className="text-3xl font-bold">{recentPageViews}</p>
+                  <p className="text-3xl font-bold text-gray-900">{recentPageViews}</p>
                 </div>
                 <TrendingUp className="w-12 h-12 text-green-600 opacity-20" />
               </div>
@@ -228,7 +229,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">New Contacts</p>
-                  <p className="text-3xl font-bold">{contactSubmissions}</p>
+                  <p className="text-3xl font-bold text-gray-900">{contactSubmissions}</p>
                 </div>
                 <Activity className="w-12 h-12 text-purple-600 opacity-20" />
               </div>
@@ -238,14 +239,14 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Recent Users</CardTitle>
               <Link
                 href="/admin/users"
-                className="text-sm text-primary-600 hover:text-primary-700"
+                className="text-sm text-sky-500 hover:text-sky-600"
               >
                 View All
               </Link>
@@ -255,7 +256,7 @@ export default async function AdminDashboard() {
             {recentUsers.length === 0 ? (
               <p className="text-gray-600">No users yet.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 text-gray-600">
                 {recentUsers.map((user) => (
                   <div
                     key={user.id}
@@ -272,7 +273,7 @@ export default async function AdminDashboard() {
                         {user.roles.map((ur) => (
                           <span
                             key={ur.roleId}
-                            className="text-xs px-2 py-1 bg-primary-100 text-primary-800 rounded-full"
+                            className="text-xs px-2 py-1 bg-sky-100 text-sky-700 rounded-full"
                           >
                             {ur.role.name}
                           </span>
@@ -294,10 +295,10 @@ export default async function AdminDashboard() {
             <div className="space-y-3">
               <Link
                 href="/admin/users/new"
-                className="block p-4 bg-primary-50 border-2 border-primary-200 rounded-lg hover:bg-primary-100 transition-colors"
+                className="block p-4 bg-sky-50 border-2 border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
               >
-                <h3 className="font-semibold text-primary-900">Create New User</h3>
-                <p className="text-sm text-primary-700">Add a student, parent, or teacher</p>
+                <h3 className="font-semibold text-sky-800">Create New User</h3>
+                <p className="text-sm text-sky-600">Add a student, parent, or teacher</p>
               </Link>
               <Link
                 href="/admin/invoices/new"
@@ -316,6 +317,8 @@ export default async function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        <TestUserSelector />
       </div>
     </div>
   );

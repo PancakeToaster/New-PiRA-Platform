@@ -112,7 +112,7 @@ export default async function ParentInvoicesPage() {
                 <div className="mt-4 flex justify-end">
                   <Link
                     href={`/parent/invoices/${invoice.id}`}
-                    className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                    className="text-sky-500 hover:text-sky-600 text-sm font-medium"
                   >
                     View Details →
                   </Link>

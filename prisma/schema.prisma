@@ -230,16 +230,20 @@ model BlogComment {
 model Course {
   id          String   @id @default(cuid())
   name        String
+  slug        String   @unique
   description String   @db.Text
+  level       String?  // e.g., "Beginner", "Intermediate", "Advanced"
   duration    String?
   ageRange    String?
   price       Float?
+  topics      String[] // Array of topic strings
   image       String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([isActive])
+  @@index([slug])
 }
 
 model Activity {

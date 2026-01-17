@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import Link from 'next/link';
+import { LogIn } from 'lucide-react';
 
 interface LoginForm {
   email: string;
@@ -61,29 +63,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-900 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-500 to-sky-700 px-4">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-[600px] h-[600px] rounded-full bg-white/10 -top-40 -right-40 blur-3xl" />
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-white/10 bottom-0 -left-40 blur-3xl" />
+      </div>
+
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Robotics Academy</h1>
+          <Link href="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-gray-900">Robotics Academy</h1>
+          </Link>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email
             </label>
             <input
               type="email"
               id="email"
               {...register('email', { required: 'Email is required' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-gray-900 bg-white"
               placeholder="your@email.com"
             />
             {errors.email && (
@@ -92,14 +102,14 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
               type="password"
               id="password"
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-gray-900 bg-white"
               placeholder="••••••••"
             />
             {errors.password && (
@@ -110,16 +120,29 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="w-full bg-sky-500 text-white py-3 px-4 rounded-lg hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center"
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? (
+              'Signing in...'
+            ) : (
+              <>
+                Sign In
+                <LogIn className="ml-2 w-5 h-5" />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <a href="/" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+        <div className="mt-6 text-center space-y-3">
+          <p className="text-gray-600 text-sm">
+            Don't have an account?{' '}
+            <Link href="/join" className="text-sky-500 hover:text-sky-600 font-medium">
+              Join now
+            </Link>
+          </p>
+          <Link href="/" className="text-gray-500 hover:text-sky-500 text-sm font-medium block">
             Back to homepage
-          </a>
+          </Link>
         </div>
       </div>
     </div>

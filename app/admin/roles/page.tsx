@@ -75,7 +75,7 @@ export default function AdminRolesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary-600">
+              <p className="text-3xl font-bold text-sky-500">
                 {roles.reduce((sum, role) => sum + role.userCount, 0)}
               </p>
               <p className="text-sm text-gray-500">Users with Roles</p>
@@ -85,7 +85,7 @@ export default function AdminRolesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-secondary-600">36</p>
+              <p className="text-3xl font-bold text-purple-600">36</p>
               <p className="text-sm text-gray-500">Total Permissions</p>
             </div>
           </CardContent>

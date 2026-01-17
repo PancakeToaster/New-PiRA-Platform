@@ -100,7 +100,7 @@ export default async function LMSDashboard() {
                 </p>
                 <p className="text-3xl font-bold">{stats.knowledgeNodes}</p>
               </div>
-              <BookOpen className="w-12 h-12 text-primary-600 opacity-20" />
+              <BookOpen className="w-12 h-12 text-sky-500 opacity-20" />
             </div>
           </CardContent>
         </Card>
@@ -155,7 +155,7 @@ export default async function LMSDashboard() {
               <CardTitle>Recent Knowledge Nodes</CardTitle>
               <Link
                 href="/lms/knowledge"
-                className="text-sm text-primary-600 hover:text-primary-700"
+                className="text-sm text-sky-500 hover:text-sky-600"
               >
                 View All
               </Link>
@@ -198,10 +198,10 @@ export default async function LMSDashboard() {
                 <>
                   <Link
                     href="/lms/knowledge/new"
-                    className="block p-4 bg-primary-50 border-2 border-primary-200 rounded-lg hover:bg-primary-100 transition-colors"
+                    className="block p-4 bg-sky-50 border-2 border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
                   >
-                    <h3 className="font-semibold text-primary-900">Create Knowledge Node</h3>
-                    <p className="text-sm text-primary-700">Add new content to the knowledge base</p>
+                    <h3 className="font-semibold text-sky-800">Create Knowledge Node</h3>
+                    <p className="text-sm text-sky-600">Add new content to the knowledge base</p>
                   </Link>
                   <Link
                     href="/lms/assignments/new"

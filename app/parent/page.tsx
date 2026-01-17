@@ -60,7 +60,7 @@ export default async function ParentDashboard() {
                 <p className="text-sm text-gray-600">My Students</p>
                 <p className="text-3xl font-bold">{parentProfile.students.length}</p>
               </div>
-              <Users className="w-12 h-12 text-primary-600 opacity-20" />
+              <Users className="w-12 h-12 text-sky-500 opacity-20" />
             </div>
           </CardContent>
         </Card>
@@ -142,7 +142,7 @@ export default async function ParentDashboard() {
               <CardTitle>Recent Invoices</CardTitle>
               <Link
                 href="/parent/invoices"
-                className="text-sm text-primary-600 hover:text-primary-700"
+                className="text-sm text-sky-500 hover:text-sky-600"
               >
                 View All
               </Link>
