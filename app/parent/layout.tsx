@@ -53,7 +53,7 @@ export default async function ParentLayout({
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+              <p className="text-sm font-medium text-gray-900">{(user as any).firstName} {(user as any).lastName}</p>
               <p className="text-xs text-gray-500">{user.email}</p>
             </div>
             <Link href="/api/auth/signout" className="text-gray-400 hover:text-gray-600">

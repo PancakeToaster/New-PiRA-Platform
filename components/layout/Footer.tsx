@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
-import { companyInfo, contactInfo } from '@/lib/realData';
+import { getCompanyInfo } from '@/lib/siteSettings';
 
-export default function Footer() {
+export default async function Footer() {
   const currentYear = new Date().getFullYear();
+  const companyInfo = await getCompanyInfo();
+  const contactInfo = companyInfo.contact;
 
   return (
     <footer className="bg-gray-900 text-white">

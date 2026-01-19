@@ -1,296 +1,340 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Loader2, Save } from 'lucide-react';
 
-export default function AdminSettingsPage() {
-  const [siteName, setSiteName] = useState('Robotics Academy');
-  const [siteDescription, setSiteDescription] = useState('Learn robotics and programming through hands-on courses');
-  const [contactEmail, setContactEmail] = useState('info@roboticsacademy.com');
-  const [enableAnalytics, setEnableAnalytics] = useState(true);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    alert('Settings saved successfully!');
+interface CompanyInfo {
+  name: string;
+  altName: string;
+  tagline: string;
+  mission: string;
+  vision: string;
+  description: string;
+  yearsFounded: string;
+  contact: {
+    phone: string;
+    email: string;
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+      country: string;
+    };
   };
+}
+
+export default function SettingsPage() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
+    name: '',
+    altName: '',
+    tagline: '',
+    mission: '',
+    vision: '',
+    description: '',
+    yearsFounded: '',
+    contact: {
+      phone: '',
+      email: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: 'United States',
+      },
+    },
+  });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch('/api/admin/settings/company_info');
+      if (res.ok) {
+        const data = await res.json();
+        setCompanyInfo(data.value);
+      }
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/settings/company_info', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: companyInfo }),
+      });
+
+      if (res.ok) {
+        alert('Settings saved successfully!');
+      } else {
+        alert('Failed to save settings');
+      }
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      alert('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <Button onClick={handleSave}>
-          Save Changes
+        <h1 className="text-3xl font-bold text-gray-900">Site Settings</h1>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Save All Changes
+            </>
+          )}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>General Settings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="siteName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Site Name
-                </label>
-                <input
-                  type="text"
-                  id="siteName"
-                  value={siteName}
-                  onChange={(e) => setSiteName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="siteDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                  Site Description
-                </label>
-                <textarea
-                  id="siteDescription"
-                  value={siteDescription}
-                  onChange={(e) => setSiteDescription(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Email
-                </label>
-                <input
-                  type="email"
-                  id="contactEmail"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>System Settings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Enable Analytics</p>
-                  <p className="text-xs text-gray-500">Track page views and user activity</p>
-                </div>
-                <button
-                  onClick={() => setEnableAnalytics(!enableAnalytics)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    enableAnalytics ? 'bg-sky-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      enableAnalytics ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Maintenance Mode</p>
-                  <p className="text-xs text-gray-500">Temporarily disable public access</p>
-                </div>
-                <button
-                  onClick={() => setMaintenanceMode(!maintenanceMode)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    maintenanceMode ? 'bg-red-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      maintenanceMode ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div className="pt-3 border-t">
-                <p className="text-sm font-medium text-gray-900 mb-2">Database</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Status</span>
-                    <span className="text-green-600 font-medium">Connected</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Type</span>
-                    <span className="text-gray-900 font-medium">PostgreSQL</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Company Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Configuration</CardTitle>
+          <CardTitle>Company Information</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="smtpHost" className="block text-sm font-medium text-gray-700 mb-1">
-                SMTP Host
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Company Name
               </label>
               <input
                 type="text"
-                id="smtpHost"
-                placeholder="smtp.example.com"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
+                value={companyInfo.name}
+                onChange={(e) => setCompanyInfo({ ...companyInfo, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
-
             <div>
-              <label htmlFor="smtpPort" className="block text-sm font-medium text-gray-700 mb-1">
-                SMTP Port
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Alternative Name
               </label>
               <input
                 type="text"
-                id="smtpPort"
-                placeholder="587"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="smtpUser" className="block text-sm font-medium text-gray-700 mb-1">
-                SMTP Username
-              </label>
-              <input
-                type="text"
-                id="smtpUser"
-                placeholder="user@example.com"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="smtpPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                SMTP Password
-              </label>
-              <input
-                type="password"
-                id="smtpPassword"
-                placeholder="••••••••"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
+                value={companyInfo.altName}
+                onChange={(e) => setCompanyInfo({ ...companyInfo, altName: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
-          <div className="mt-4">
-            <Button variant="outline">
-              Test Email Configuration
-            </Button>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tagline
+            </label>
+            <input
+              type="text"
+              value={companyInfo.tagline}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, tagline: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Mission Statement
+            </label>
+            <textarea
+              rows={3}
+              value={companyInfo.mission}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, mission: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Vision Statement
+            </label>
+            <textarea
+              rows={2}
+              value={companyInfo.vision}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, vision: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              rows={4}
+              value={companyInfo.description}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, description: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Years Founded
+            </label>
+            <input
+              type="text"
+              value={companyInfo.yearsFounded}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, yearsFounded: e.target.value })}
+              placeholder="e.g., 10+ Years of Excellence"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
           </div>
         </CardContent>
       </Card>
 
+      {/* Contact Information */}
       <Card>
         <CardHeader>
-          <CardTitle>File Upload Settings</CardTitle>
+          <CardTitle>Contact Information</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="maxFileSize" className="block text-sm font-medium text-gray-700 mb-1">
-                Max File Size (MB)
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
               </label>
               <input
-                type="number"
-                id="maxFileSize"
-                defaultValue="10"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
+                type="tel"
+                value={companyInfo.contact.phone}
+                onChange={(e) => setCompanyInfo({
+                  ...companyInfo,
+                  contact: { ...companyInfo.contact, phone: e.target.value }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
-
             <div>
-              <label htmlFor="allowedTypes" className="block text-sm font-medium text-gray-700 mb-1">
-                Allowed File Types
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
               </label>
               <input
-                type="text"
-                id="allowedTypes"
-                defaultValue=".pdf,.doc,.docx,.jpg,.png"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
+                type="email"
+                value={companyInfo.contact.email}
+                onChange={(e) => setCompanyInfo({
+                  ...companyInfo,
+                  contact: { ...companyInfo.contact, email: e.target.value }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Security Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">Require Email Verification</p>
-                <p className="text-xs text-gray-500">Users must verify email before access</p>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-sky-500">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
-              </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Street Address
+            </label>
+            <input
+              type="text"
+              value={companyInfo.contact.address.street}
+              onChange={(e) => setCompanyInfo({
+                ...companyInfo,
+                contact: {
+                  ...companyInfo.contact,
+                  address: { ...companyInfo.contact.address, street: e.target.value }
+                }
+              })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                City
+              </label>
+              <input
+                type="text"
+                value={companyInfo.contact.address.city}
+                onChange={(e) => setCompanyInfo({
+                  ...companyInfo,
+                  contact: {
+                    ...companyInfo.contact,
+                    address: { ...companyInfo.contact.address, city: e.target.value }
+                  }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
             </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
-                <p className="text-xs text-gray-500">Enable 2FA for admin accounts</p>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-1" />
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                State
+              </label>
+              <input
+                type="text"
+                value={companyInfo.contact.address.state}
+                onChange={(e) => setCompanyInfo({
+                  ...companyInfo,
+                  contact: {
+                    ...companyInfo.contact,
+                    address: { ...companyInfo.contact.address, state: e.target.value }
+                  }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
             </div>
-
-            <div className="pt-3 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="sessionTimeout" className="block text-sm font-medium text-gray-700 mb-1">
-                    Session Timeout (minutes)
-                  </label>
-                  <input
-                    type="number"
-                    id="sessionTimeout"
-                    defaultValue="60"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="passwordMinLength" className="block text-sm font-medium text-gray-700 mb-1">
-                    Min Password Length
-                  </label>
-                  <input
-                    type="number"
-                    id="passwordMinLength"
-                    defaultValue="8"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ZIP Code
+              </label>
+              <input
+                type="text"
+                value={companyInfo.contact.address.zip}
+                onChange={(e) => setCompanyInfo({
+                  ...companyInfo,
+                  contact: {
+                    ...companyInfo.contact,
+                    address: { ...companyInfo.contact.address, zip: e.target.value }
+                  }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              />
             </div>
           </div>
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg">
-          Save All Settings
+        <Button onClick={handleSave} disabled={saving} size="lg">
+          {saving ? (
+            <>
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5 mr-2" />
+              Save All Changes
+            </>
+          )}
         </Button>
       </div>
     </div>

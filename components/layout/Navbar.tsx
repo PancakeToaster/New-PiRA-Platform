@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import { clientHasRole } from '@/lib/permissions';
+import Image from 'next/image';
+import { clientHasRole } from '@/lib/permissions-client';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -132,23 +133,29 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isCollapsed
-          ? 'bg-transparent'
-          : isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isCollapsed
+        ? 'bg-transparent'
+        : isScrolled
           ? 'bg-white/90 backdrop-blur-md shadow-sm'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       {/* Full navbar - shown when not scrolled */}
       {!isCollapsed && (
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
+
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className="font-bold text-lg sm:text-xl text-gray-900">
-                Robotics Academy
-              </span>
+              <div className="relative h-16 w-60">
+                <Image
+                  src="/images/logo.png"
+                  alt="Robotics Academy Logo"
+                  fill
+                  className="object-contain object-left"
+                  priority
+                />
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
@@ -221,11 +228,10 @@ export default function Navbar() {
                   </Link>
                   {isJoinDropdownOpen && (
                     <div
-                      className={`absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${
-                        isJoinDropdownVisible
-                          ? 'opacity-100 translate-y-0'
-                          : 'opacity-0 -translate-y-2'
-                      }`}
+                      className={`absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${isJoinDropdownVisible
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 -translate-y-2'
+                        }`}
                     >
                       <Link
                         href="/join"
@@ -282,11 +288,10 @@ export default function Navbar() {
             {/* Dropdown menu */}
             {isDropdownOpen && (
               <div
-                className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${
-                  isDropdownVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 -translate-y-2'
-                }`}
+                className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${isDropdownVisible
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 -translate-y-2'
+                  }`}
               >
                 {user && (
                   <>

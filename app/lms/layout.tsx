@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser, hasAnyPermission } from '@/lib/permissions';
 import Navbar from '@/components/layout/Navbar';
 import Link from 'next/link';
-import { BookOpen, FolderTree, ClipboardList, BarChart } from 'lucide-react';
+import { BookOpen, FolderTree, ClipboardList, BarChart, GraduationCap, FileText } from 'lucide-react';
 
 export default async function LMSLayout({
   children,
@@ -50,6 +50,20 @@ export default async function LMSLayout({
               >
                 <ClipboardList className="w-5 h-5" />
                 <span>Assignments</span>
+              </Link>
+              <Link
+                href="/lms/courses"
+                className="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+              >
+                <GraduationCap className="w-5 h-5" />
+                <span>My Courses</span>
+              </Link>
+              <Link
+                href="/lms/grades"
+                className="flex items-center space-x-3 px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+              >
+                <FileText className="w-5 h-5" />
+                <span>Grades</span>
               </Link>
               {isTeacher && (
                 <Link

@@ -1,24 +1,29 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { companyInfo, teamMembers, learningProcess, services } from '@/lib/realData';
+import PageBanner from '@/components/layout/PageBanner';
+import { getCompanyInfo, getServices, getLearningProcess } from '@/lib/siteSettings';
+import { prisma } from '@/lib/prisma';
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const companyInfo = await getCompanyInfo();
+  const services = await getServices();
+  const learningProcess = await getLearningProcess();
+  const teamMembers = await prisma.publicStaff.findMany({
+    where: { isActive: true },
+    orderBy: { displayOrder: 'asc' },
+  });
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
 
       <main className="flex-1 pt-20">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-sky-500 to-sky-600 text-white py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">About {companyInfo.name}</h1>
-            <p className="text-xl text-sky-100 max-w-2xl">
-              {companyInfo.tagline}
-            </p>
-          </div>
-        </div>
+        <PageBanner
+          title={`About ${companyInfo.name}`}
+          description={companyInfo.tagline}
+        />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Mission Section */}
           <section className="mb-16">
             <h2 className="text-3xl font-bold mb-6 text-gray-900">Our Mission</h2>
@@ -114,11 +119,15 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {teamMembers.map((member) => (
                 <div key={member.id} className="bg-white border border-gray-200 rounded-2xl p-6 text-center hover:shadow-xl transition-shadow">
-                  <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl font-bold text-white">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover" />
+                  ) : (
+                    <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl font-bold text-white">
+                        {member.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                  )}
                   <h3 className="text-xl font-bold mb-1 text-gray-900">{member.name}</h3>
                   <p className="text-sky-600 font-semibold mb-3">{member.role}</p>
                   <p className="text-gray-600 text-sm">{member.bio}</p>

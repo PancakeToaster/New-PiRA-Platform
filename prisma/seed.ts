@@ -223,6 +223,274 @@ async function main() {
     });
   }
 
+  // Seed Site Settings (Company Info, Services, Learning Process)
+  console.log('⚙️  Creating site settings...');
+
+  const companyInfoData = {
+    name: 'PLAYIDEAs',
+    altName: 'PiRA',
+    tagline: 'No Limits, Just Imagination',
+    mission: 'Creating transformative learning experiences that inspire creativity and innovation',
+    vision: 'Play is the key to Infinite Potential',
+    description: 'Leader in digital business, helping companies of all sizes to thrive in an ever-changing landscape. Engaging students through hands-on learning with expertise in robotics and STEM education spanning over a decade.',
+    yearsFounded: '10+ Years of Competitive Robotics Education',
+    contact: {
+      phone: '+1 917-285-5226',
+      email: 'info@playideasny.com',
+      address: {
+        street: '99 Jericho Turnpike, Suite 305',
+        city: 'Jericho',
+        state: 'NY',
+        zip: '11753',
+        country: 'United States',
+      },
+    },
+  };
+
+  await prisma.siteSetting.upsert({
+    where: { key: 'company_info' },
+    update: { value: JSON.stringify(companyInfoData) },
+    create: {
+      key: 'company_info',
+      value: JSON.stringify(companyInfoData),
+      type: 'json',
+      category: 'general',
+    },
+  });
+
+  const servicesData = [
+    {
+      id: '1',
+      title: 'Educational Excellence',
+      description: 'Digital business leadership for organizational growth and transformation.',
+      icon: '🎓',
+    },
+    {
+      id: '2',
+      title: 'Robotics Education',
+      description: 'Interactive programs and workshops with documented student success globally.',
+      icon: '🤖',
+    },
+    {
+      id: '3',
+      title: 'Competitive Robotics',
+      description: '10+ years of competitive robotics education preparing students for challenges.',
+      icon: '⚡',
+    },
+    {
+      id: '4',
+      title: 'Hands-On Learning',
+      description: 'Engaging students through hands-on learning experiences in robotics and STEM.',
+      icon: '✋',
+    },
+  ];
+
+  await prisma.siteSetting.upsert({
+    where: { key: 'services_list' },
+    update: { value: JSON.stringify(servicesData) },
+    create: {
+      key: 'services_list',
+      value: JSON.stringify(servicesData),
+      type: 'json',
+      category: 'general',
+    },
+  });
+
+  const learningProcessData = [
+    {
+      id: '1',
+      step: 1,
+      title: 'Design',
+      description: 'Students learn to conceptualize and design robotic solutions to real-world problems.',
+      icon: '🎨',
+    },
+    {
+      id: '2',
+      step: 2,
+      title: 'Build',
+      description: 'Hands-on construction of robots using industry-standard components and tools.',
+      icon: '🔧',
+    },
+    {
+      id: '3',
+      step: 3,
+      title: 'Code',
+      description: 'Programming robots using languages like Python, C++, and block-based coding.',
+      icon: '💻',
+    },
+    {
+      id: '4',
+      step: 4,
+      title: 'Compete',
+      description: 'Apply learned skills in competitive robotics tournaments and challenges.',
+      icon: '🏆',
+    },
+  ];
+
+  await prisma.siteSetting.upsert({
+    where: { key: 'learning_process' },
+    update: { value: JSON.stringify(learningProcessData) },
+    create: {
+      key: 'learning_process',
+      value: JSON.stringify(learningProcessData),
+      type: 'json',
+      category: 'general',
+    },
+  });
+
+  // Seed Public Staff
+  console.log('👥 Creating public staff members...');
+  const staffMembers = [
+    {
+      name: 'Barry Chuang',
+      role: 'CEO',
+      bio: 'Expert in robotics and STEM education, combined decades of experience leading transformative learning programs.',
+      email: 'barry@playideasny.com',
+      displayOrder: 1,
+    },
+    {
+      name: 'Raymond Zhang',
+      role: 'Director',
+      bio: 'Veteran in robotics competitions ensuring student resource access and educational excellence.',
+      email: 'raymond@playideasny.com',
+      displayOrder: 2,
+    },
+    {
+      name: 'William Zhang',
+      role: 'Teacher',
+      bio: 'Dedicated coach helping students develop robotics and programming skills through hands-on instruction.',
+      email: 'william@playideasny.com',
+      displayOrder: 3,
+    },
+  ];
+
+  for (const staff of staffMembers) {
+    const existing = await prisma.publicStaff.findFirst({
+      where: { email: staff.email },
+    });
+
+    if (!existing) {
+      await prisma.publicStaff.create({ data: staff });
+    }
+  }
+
+  // Seed Testimonials
+  console.log('💬 Creating testimonials...');
+  const testimonials = [
+    {
+      name: 'Sarah Chen',
+      role: 'Parent',
+      content: 'My daughter has grown so much in confidence and technical skills since joining PLAYIDEAs. The instructors are patient and knowledgeable.',
+      rating: 5,
+      order: 1,
+    },
+    {
+      name: 'Michael Rodriguez',
+      role: 'Student',
+      content: 'The competition training helped our team win the regional championship. Best robotics program I\'ve been part of!',
+      rating: 5,
+      order: 2,
+    },
+    {
+      name: 'Jennifer Park',
+      role: 'Parent',
+      content: 'Excellent curriculum and facilities. My son looks forward to every class and has learned so much about engineering.',
+      rating: 5,
+      order: 3,
+    },
+  ];
+
+  for (const testimonial of testimonials) {
+    // Use name + role as unique identifier
+    const existing = await prisma.testimonial.findFirst({
+      where: { name: testimonial.name, role: testimonial.role },
+    });
+
+    if (!existing) {
+      await prisma.testimonial.create({ data: testimonial });
+    }
+  }
+
+  // Seed Courses
+  console.log('📚 Creating courses...');
+  const courses = [
+    {
+      name: 'Introduction to Robotics',
+      slug: 'intro-to-robotics',
+      description: 'Perfect for beginners! Learn the fundamentals of robotics through hands-on projects and interactive lessons. Students will design, build, and program their first robot.',
+      level: 'Beginner',
+      ageRange: '8-12 years',
+      duration: '12 weeks',
+      price: 450,
+      topics: ['Basic Mechanics', 'Simple Programming', 'Robot Design', 'Team Collaboration'],
+      isActive: true,
+    },
+    {
+      name: 'Python Programming for Robotics',
+      slug: 'python-robotics',
+      description: 'Dive into Python programming with a focus on robotics applications. Learn to control sensors, motors, and make intelligent decisions in code.',
+      level: 'Intermediate',
+      ageRange: '12-16 years',
+      duration: '16 weeks',
+      price: 550,
+      topics: ['Python Basics', 'Sensor Integration', 'Motor Control', 'Autonomous Navigation'],
+      isActive: true,
+    },
+    {
+      name: 'Advanced Robotics & Competition Prep',
+      slug: 'advanced-robotics',
+      description: 'Advanced course preparing students for competitive robotics tournaments. Focus on complex mechanisms, advanced programming, and strategic thinking.',
+      level: 'Advanced',
+      ageRange: '14-18 years',
+      duration: '20 weeks',
+      price: 650,
+      topics: ['Complex Mechanisms', 'Advanced Algorithms', 'Competition Strategy', 'Team Leadership'],
+      isActive: true,
+    },
+  ];
+
+  for (const course of courses) {
+    await prisma.course.upsert({
+      where: { slug: course.slug },
+      update: {},
+      create: course,
+    });
+  }
+
+  // Seed Activities
+  console.log('🎯 Creating activities...');
+  const activities = [
+    {
+      title: 'Weekly Robotics Workshop',
+      description: 'Join our hands-on robotics workshops every Saturday. Open to all skill levels!',
+      date: new Date('2025-02-01'),
+      category: 'workshop',
+    },
+    {
+      title: 'VEX Competition Regional Qualifier',
+      description: 'Regional VEX Robotics Competition. Come watch our teams compete!',
+      date: new Date('2025-02-15'),
+      category: 'tournament',
+    },
+    {
+      title: 'STEM Open House',
+      description: 'Free open house! Tour our facility, meet instructors, and try robotics activities.',
+      date: new Date('2025-03-01'),
+      category: 'event',
+    },
+  ];
+
+  for (const activity of activities) {
+    // Use title + date as unique identifier
+    const existing = await prisma.activity.findFirst({
+      where: { title: activity.title, date: activity.date },
+    });
+
+    if (!existing) {
+      await prisma.activity.create({ data: activity });
+    }
+  }
+
   console.log('✅ Seed completed successfully!');
   console.log('\n📧 Default admin credentials:');
   console.log('   Email: admin@roboticsacademy.com');

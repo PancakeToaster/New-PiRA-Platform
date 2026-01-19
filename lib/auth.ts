@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
-          image: user.avatar,
+          image: user.avatar || undefined,
           roles: user.roles.map((ur) => ur.role.name),
           permissions,
           profiles: {

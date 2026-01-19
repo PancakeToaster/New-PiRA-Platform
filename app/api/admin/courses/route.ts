@@ -13,15 +13,28 @@ export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { interests: true },
+        },
+      },
     });
+
+    // Transform to include interest count at top level
+    const coursesWithInterest = courses.map(course => ({
+      ...course,
+      interestCount: course._count.interests,
+      _count: undefined,
+    }));
 
     const stats = {
       total: courses.length,
-      active: courses.filter(c => c.isActive).length,
+      active: courses.filter(c => c.isActive && !c.isDevelopment).length,
       inactive: courses.filter(c => !c.isActive).length,
+      inDevelopment: courses.filter(c => c.isDevelopment).length,
     };
 
-    return NextResponse.json({ courses, stats });
+    return NextResponse.json({ courses: coursesWithInterest, stats });
   } catch (error) {
     console.error('Failed to fetch courses:', error);
     return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 });
@@ -38,7 +51,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive } = body;
+    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isDevelopment } = body;
 
     if (!name || !slug || !description) {
       return NextResponse.json(
@@ -71,6 +84,7 @@ export async function POST(request: NextRequest) {
         topics: topics || [],
         image,
         isActive: isActive ?? true,
+        isDevelopment: isDevelopment ?? false,
       },
     });
 

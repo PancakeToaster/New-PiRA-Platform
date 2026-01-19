@@ -1,58 +1,22 @@
-'use client';
-
-import { useState } from 'react';
+import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 
-interface Role {
-  id: string;
-  name: string;
-  description: string;
-  userCount: number;
-  permissions: string[];
-}
+export default async function AdminRolesPage() {
+  const roles = await prisma.role.findMany({
+    include: {
+      _count: {
+        select: { users: true, permissions: true },
+      },
+      permissions: {
+        include: {
+          permission: true,
+        },
+      },
+    },
+  });
 
-// Mock data for roles
-const mockRoles: Role[] = [
-  {
-    id: '1',
-    name: 'Admin',
-    description: 'Full system access and control',
-    userCount: 2,
-    permissions: ['all'],
-  },
-  {
-    id: '2',
-    name: 'Teacher',
-    description: 'Can manage courses, assignments, and student progress',
-    userCount: 5,
-    permissions: ['course.read', 'course.write', 'assignment.read', 'assignment.write', 'student.read'],
-  },
-  {
-    id: '3',
-    name: 'Student',
-    description: 'Can access courses and submit assignments',
-    userCount: 45,
-    permissions: ['course.read', 'assignment.read', 'assignment.submit', 'progress.read'],
-  },
-  {
-    id: '4',
-    name: 'Parent',
-    description: 'Can view student progress and manage billing',
-    userCount: 32,
-    permissions: ['student.read', 'invoice.read', 'invoice.pay'],
-  },
-  {
-    id: '5',
-    name: 'Public',
-    description: 'Basic public access to informational pages',
-    userCount: 0,
-    permissions: ['page.read', 'blog.read', 'course.browse'],
-  },
-];
-
-export default function AdminRolesPage() {
-  const [roles] = useState<Role[]>(mockRoles);
+  const totalUsers = await prisma.user.count();
 
   return (
     <div className="space-y-6">
@@ -76,7 +40,7 @@ export default function AdminRolesPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-sky-500">
-                {roles.reduce((sum, role) => sum + role.userCount, 0)}
+                {totalUsers}
               </p>
               <p className="text-sm text-gray-500">Users with Roles</p>
             </div>
@@ -85,7 +49,9 @@ export default function AdminRolesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-purple-600">36</p>
+              <p className="text-3xl font-bold text-purple-600">
+                {roles.reduce((sum, role) => sum + role._count.permissions, 0)}
+              </p>
               <p className="text-sm text-gray-500">Total Permissions</p>
             </div>
           </CardContent>
@@ -101,8 +67,8 @@ export default function AdminRolesPage() {
                   <CardTitle>{role.name}</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">{role.description}</p>
                 </div>
-                <span className="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
-                  {role.userCount} users
+                <span className="px-3xl font-medium rounded-full bg-blue-100 text-blue-800">
+                  {role._count.users} users
                 </span>
               </div>
             </CardHeader>
@@ -111,25 +77,27 @@ export default function AdminRolesPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">Permissions:</p>
                   <div className="flex flex-wrap gap-2">
-                    {role.permissions[0] === 'all' ? (
-                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                        All Permissions
+                    {role._count.permissions === 0 ? (
+                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
+                        No permissions assigned
                       </span>
-                    ) : (
-                      role.permissions.slice(0, 5).map((permission, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700"
-                        >
-                          {permission}
-                        </span>
-                      ))
-                    )}
-                    {role.permissions.length > 5 && role.permissions[0] !== 'all' && (
-                      <span className="px-2 py-1 text-xs font-medium text-gray-500">
-                        +{role.permissions.length - 5} more
-                      </span>
-                    )}
+                    ) : role.permissions.length > 0 ? (
+                      <>
+                        {role.permissions.slice(0, 5).map((rp) => (
+                          <span
+                            key={rp.id}
+                            className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700"
+                          >
+                            {rp.permission.resource}:{rp.permission.action}
+                          </span>
+                        ))}
+                        {role.permissions.length > 5 && (
+                          <span className="px-2 py-1 text-xs font-medium text-gray-500">
+                            +{role.permissions.length - 5} more
+                          </span>
+                        )}
+                      </>
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex space-x-2 pt-3">
@@ -139,7 +107,7 @@ export default function AdminRolesPage() {
                   <Button variant="outline" size="sm" className="flex-1">
                     View Users
                   </Button>
-                  {role.name !== 'Admin' && role.name !== 'Public' && (
+                  {!role.isSystem && (
                     <Button variant="danger" size="sm">
                       Delete
                     </Button>
@@ -160,49 +128,39 @@ export default function AdminRolesPage() {
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Content Management</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• page.read, page.write, page.delete</li>
-                <li>• blog.read, blog.write, blog.delete</li>
-                <li>• course.read, course.write, course.delete</li>
+                <li>• page.view, page.edit</li>
+                <li>• blog.view, blog.create, blog.edit</li>
+                <li>• course.view, course.manage</li>
               </ul>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">User Management</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• user.read, user.write, user.delete</li>
-                <li>• role.read, role.write, role.delete</li>
-                <li>• permission.read, permission.write</li>
+                <li>• user.view_all, user.create</li>
+                <li>• user.edit, user.delete</li>
+                <li>• role.manage</li>
               </ul>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Learning Management</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• assignment.read, assignment.write</li>
-                <li>• knowledge.read, knowledge.write</li>
-                <li>• progress.read, progress.write</li>
+                <li>• knowledge.view, knowledge.create</li>
+                <li>• assignment.view_all, assignment.create</li>
+                <li>• assignment.grade, progress.view_all</li>
               </ul>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Financial</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• invoice.read, invoice.write</li>
-                <li>• invoice.pay, invoice.delete</li>
-                <li>• payment.read, payment.process</li>
+                <li>• invoice.view_all, invoice.create</li>
+                <li>• invoice.edit, invoice.delete</li>
               </ul>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Analytics</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• analytics.read, analytics.export</li>
-                <li>• metrics.read, metrics.write</li>
-                <li>• report.read, report.generate</li>
-              </ul>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">System</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• settings.read, settings.write</li>
-                <li>• system.read, system.write</li>
-                <li>• log.read, log.export</li>
+                <li>• analytics.view</li>
+                <li>• system.monitor, system.manage</li>
               </ul>
             </div>
           </div>

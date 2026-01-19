@@ -44,7 +44,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive } = body;
+    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isDevelopment } = body;
 
     // Check if slug is taken by another course
     if (slug) {
@@ -84,6 +84,7 @@ export async function PUT(
         topics: topics || [],
         image,
         isActive,
+        isDevelopment: isDevelopment ?? false,
       },
     });
 
