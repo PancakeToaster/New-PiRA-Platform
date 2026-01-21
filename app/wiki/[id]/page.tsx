@@ -116,6 +116,7 @@ export default async function WikiNodePage({ params }: Props) {
                     node={node}
                     isAdmin={isAdminUser}
                     isTeacherOrMentor={isTeacherOrMentor}
+                    currentUserId={user.id}
                 />
             </div>
 

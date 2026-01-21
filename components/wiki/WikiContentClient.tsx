@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import MarkdownEditor from '@/components/wiki/editors/MarkdownEditor';
 import MarkdownRenderer from '@/components/wiki/editors/MarkdownRenderer';
+import WikiComments from '@/components/wiki/WikiComments';
+import WikiSuggestionModal from '@/components/wiki/WikiSuggestionModal';
+import WikiSuggestionReview from '@/components/wiki/WikiSuggestionReview';
+import { Lightbulb, MessageSquare } from 'lucide-react';
 
 interface WikiContentClientProps {
     nodeId: string;
@@ -13,6 +17,7 @@ interface WikiContentClientProps {
     graphData: string | null;
     mindmapData: string | null;
     canvasData: string | null;
+    currentUserId: string;
 }
 
 export default function WikiContentClient({
@@ -24,8 +29,10 @@ export default function WikiContentClient({
     graphData,
     mindmapData,
     canvasData,
+    currentUserId,
 }: WikiContentClientProps) {
     const [saveError, setSaveError] = useState<string | null>(null);
+    const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
 
     // Determine if content is Tiptap JSON or plain Markdown
     const isTiptapJSON = (str: string) => {
@@ -34,15 +41,8 @@ export default function WikiContentClient({
         try {
             const parsed = JSON.parse(str);
             const isValid = parsed && typeof parsed === 'object' && parsed.type === 'doc';
-            console.log('[WikiContentClient] Content type check:', {
-                isValid,
-                parsedType: typeof parsed,
-                hasDocType: parsed?.type === 'doc',
-                contentPreview: str.substring(0, 100)
-            });
             return isValid;
         } catch (e) {
-            console.log('[WikiContentClient] Not JSON, treating as markdown:', str.substring(0, 100));
             return false;
         }
     };
@@ -77,19 +77,10 @@ export default function WikiContentClient({
         try {
             const parsed = JSON.parse(content);
             markdownContent = extractTextFromTiptap(parsed);
-            console.log('[WikiContentClient] Extracted markdown text:', markdownContent.substring(0, 200));
         } catch (e) {
             console.error('[WikiContentClient] Failed to extract text:', e);
         }
     }
-
-    console.log('[WikiContentClient] Rendering decision:', {
-        nodeId,
-        isAdmin,
-        isJson,
-        contentLength: content?.length,
-        markdownLength: markdownContent?.length
-    });
 
     const handleSave = async (newContent: string) => {
         try {
@@ -103,11 +94,6 @@ export default function WikiContentClient({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                console.error('[WikiContentClient] Save failed:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorData
-                });
                 throw new Error(`Failed to save: ${response.status} ${errorData.error || response.statusText}`);
             }
 
@@ -129,6 +115,14 @@ export default function WikiContentClient({
                     </div>
                 )}
 
+                {/* Admin Suggestion Review Panel */}
+                {isAdmin && (
+                    <WikiSuggestionReview
+                        nodeId={nodeId}
+                        currentContent={markdownContent}
+                    />
+                )}
+
                 {isAdmin ? (
                     <MarkdownEditor
                         content={markdownContent}
@@ -139,16 +133,33 @@ export default function WikiContentClient({
                     <MarkdownRenderer content={markdownContent} />
                 )}
 
-                {isTeacherOrMentor && !isAdmin && (
-                    <div className="mt-6 flex gap-3">
-                        <button className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors text-sm font-medium">
-                            💡 Suggest Edit
-                        </button>
-                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                            💬 Add Comment
+                {/* Teacher/Mentor Buttons */}
+                {(isTeacherOrMentor) && (
+                    <div className="mt-8 flex gap-3 border-t border-gray-100 pt-6">
+                        <button
+                            onClick={() => setIsSuggestionModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                        >
+                            <Lightbulb className="w-4 h-4" />
+                            Suggest Edit
                         </button>
                     </div>
                 )}
+
+                {/* Comments Section */}
+                <WikiComments
+                    nodeId={nodeId}
+                    currentUserId={currentUserId}
+                    isAdmin={isAdmin}
+                />
+
+                {/* Suggestion Modal */}
+                <WikiSuggestionModal
+                    nodeId={nodeId}
+                    initialContent={markdownContent}
+                    isOpen={isSuggestionModalOpen}
+                    onClose={() => setIsSuggestionModalOpen(false)}
+                />
             </div>
         );
     }
@@ -162,6 +173,15 @@ export default function WikiContentClient({
             {graphData && <p className="text-xs text-gray-400 mt-2">Graph data available</p>}
             {mindmapData && <p className="text-xs text-gray-400 mt-2">Mindmap data available</p>}
             {canvasData && <p className="text-xs text-gray-400 mt-2">Canvas data available</p>}
+
+            {/* Comments for non-markdown types too */}
+            <div className="text-left">
+                <WikiComments
+                    nodeId={nodeId}
+                    currentUserId={currentUserId}
+                    isAdmin={isAdmin}
+                />
+            </div>
         </div>
     );
 }

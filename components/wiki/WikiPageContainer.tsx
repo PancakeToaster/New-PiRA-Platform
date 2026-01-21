@@ -1,36 +1,42 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit2, Eye } from 'lucide-react';
+import { Edit2, Eye, LayoutTemplate, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import WikiTitleEditor from '@/components/wiki/WikiTitleEditor';
 import WikiContentClient from '@/components/wiki/WikiContentClient';
 import WikiPageControls from '@/components/wiki/WikiPageControls';
+import MindmapView from '@/components/wiki/visualizations/MindmapView';
 import { Calendar, Tag, User as UserIcon, Eye as EyeIcon } from 'lucide-react';
-import { cn } from '@/lib/utils'; // Assuming cn exists
+import { cn } from '@/lib/utils';
 
 interface WikiPageContainerProps {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     node: any; // Using any for simplicity with complex Prisma types + stale client
     isAdmin: boolean;
     isTeacherOrMentor: boolean;
+    currentUserId: string;
 }
 
-export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor }: WikiPageContainerProps) {
+export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, currentUserId }: WikiPageContainerProps) {
     const [isEditing, setIsEditing] = useState(false);
+    const [activeTab, setActiveTab] = useState<'content' | 'mindmap'>('content');
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col min-h-[calc(100vh-100px)]">
             {/* Header */}
             <div className="border-b border-gray-100 bg-gray-50 px-8 py-6">
 
-                {/* Title Section */}
-                <WikiTitleEditor
-                    nodeId={node.id}
-                    initialTitle={node.title}
-                    isEditing={isEditing}
-                    className="mb-4"
-                />
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1 mr-4">
+                        {/* Title Section */}
+                        <WikiTitleEditor
+                            nodeId={node.id}
+                            initialTitle={node.title}
+                            isEditing={isEditing}
+                        />
+                    </div>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                     <div className="flex items-center">
@@ -47,6 +53,30 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor }: 
                     </div>
 
                     <div className="ml-auto flex gap-2 items-center">
+                        {/* View Toggles */}
+                        <div className="flex bg-gray-200/50 rounded-lg p-1 mr-2">
+                            <button
+                                onClick={() => setActiveTab('content')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'content'
+                                    ? 'bg-white text-gray-900 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <LayoutTemplate className="w-4 h-4" />
+                                Content
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('mindmap')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'mindmap'
+                                    ? 'bg-white text-gray-900 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <Workflow className="w-4 h-4" />
+                                Mindmap
+                            </button>
+                        </div>
+
                         {!node.isPublished && (
                             <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
                                 📝 Draft
@@ -99,17 +129,23 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor }: 
             </div>
 
             {/* Content */}
-            <div className="px-8 py-8">
-                <WikiContentClient
-                    nodeId={node.id}
-                    content={node.content}
-                    nodeType={node.nodeType}
-                    isAdmin={isEditing} // Only allow editing if in Edit Mode
-                    isTeacherOrMentor={isTeacherOrMentor}
-                    graphData={node.graphData}
-                    mindmapData={node.mindmapData}
-                    canvasData={node.canvasData}
-                />
+            <div className="px-8 py-8 flex-1 relative">
+                {activeTab === 'content' && (
+                    <WikiContentClient
+                        nodeId={node.id}
+                        content={node.content}
+                        nodeType={node.nodeType}
+                        isAdmin={isEditing} // Only allow editing if in Edit Mode
+                        isTeacherOrMentor={isTeacherOrMentor}
+                        graphData={node.graphData}
+                        mindmapData={node.mindmapData}
+                        canvasData={node.canvasData}
+                        currentUserId={currentUserId}
+                    />
+                )}
+                {activeTab === 'mindmap' && (
+                    <MindmapView currentId={node.id} />
+                )}
             </div>
         </div>
     );
