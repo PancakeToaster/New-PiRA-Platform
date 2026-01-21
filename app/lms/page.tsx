@@ -243,7 +243,7 @@ export default async function LMSDashboard() {
             <div className="flex justify-between items-center">
               <CardTitle>Recent Knowledge Nodes</CardTitle>
               <Link
-                href="/lms/knowledge"
+                href="/wiki"
                 className="text-sm text-sky-500 hover:text-sky-600"
               >
                 View All
@@ -258,7 +258,7 @@ export default async function LMSDashboard() {
                 {recentNodes.map((node) => (
                   <Link
                     key={node.id}
-                    href={`/lms/knowledge/${node.id}`}
+                    href={`/wiki/${node.id}`}
                     className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <h3 className="font-semibold">{node.title}</h3>
@@ -302,7 +302,7 @@ export default async function LMSDashboard() {
               </>
             )}
             <Link
-              href="/lms/knowledge"
+              href="/wiki"
               className="block p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors"
             >
               <h3 className="font-semibold text-green-900">Browse Knowledge Base</h3>

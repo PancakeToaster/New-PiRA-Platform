@@ -5,11 +5,64 @@ import { getCurrentUser } from '@/lib/permissions';
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
 
+  // If no user, only allow fetching public events (Public Calendar View)
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const searchParams = request.nextUrl.searchParams;
+    const startDate = searchParams.get('start');
+    const endDate = searchParams.get('end');
+
+    const where: Record<string, unknown> = {
+      isPublic: true
+    };
+
+    if (startDate && endDate) {
+      where.startTime = {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
+      };
+    }
+
+    try {
+      const events = await prisma.calendarEvent.findMany({
+        where,
+        include: {
+          team: { select: { name: true, slug: true } },
+        },
+        orderBy: { startTime: 'asc' }
+      });
+      return NextResponse.json({ events });
+    } catch (error) {
+      return NextResponse.json({ error: 'Failed to fetch public events' }, { status: 500 });
+    }
+  }
+
+  if (!user) {
+    // ... (existing public block)
   }
 
   const searchParams = request.nextUrl.searchParams;
+  const publicOnly = searchParams.get('publicOnly') === 'true';
+
+  // If publicOnly requested, fetch only public events regardless of user
+  if (publicOnly) {
+    const startDate = searchParams.get('start');
+    const endDate = searchParams.get('end');
+    const where: Record<string, unknown> = { isPublic: true };
+    if (startDate && endDate) {
+      where.startTime = { gte: new Date(startDate), lte: new Date(endDate) };
+    }
+    try {
+      const events = await prisma.calendarEvent.findMany({
+        where,
+        include: { team: { select: { name: true, slug: true } } },
+        orderBy: { startTime: 'asc' }
+      });
+      return NextResponse.json({ events });
+    } catch (error) {
+      return NextResponse.json({ error: 'Failed to fetch public events' }, { status: 500 });
+    }
+  }
+
   const teamSlug = searchParams.get('team');
   const startDate = searchParams.get('start');
   const endDate = searchParams.get('end');
@@ -20,14 +73,50 @@ export async function GET(request: NextRequest) {
       where: { userId: user.id },
       select: { teamId: true },
     });
-    const teamIds = userTeams.map((t) => t.teamId);
+    let teamIds = userTeams.map((t) => t.teamId);
+    let studentUserIds: string[] = [];
+
+    // If Parent, get linked students and their teams
+    if (user.roles.includes('Parent') && user.profiles?.parent) {
+      const parentProfile = await prisma.parentProfile.findUnique({
+        where: { id: user.profiles.parent },
+        include: {
+          students: {
+            include: {
+              student: {
+                include: { user: true }
+              }
+            }
+          }
+        }
+      });
+
+      if (parentProfile) {
+        const linkedStudentIds = parentProfile.students.map(s => s.student.userId);
+        studentUserIds.push(...linkedStudentIds);
+
+        // Get teams for these students
+        const studentTeams = await prisma.teamMember.findMany({
+          where: { userId: { in: linkedStudentIds } },
+          select: { teamId: true }
+        });
+
+        const studentTeamIds = studentTeams.map(t => t.teamId);
+        // Add unique student team IDs to the list
+        studentTeamIds.forEach(id => {
+          if (!teamIds.includes(id)) teamIds.push(id);
+        });
+      }
+    }
 
     // Build where clause
     const where: Record<string, unknown> = {
       OR: [
         { createdById: user.id }, // User's own events
-        { teamId: { in: teamIds } }, // Team events
+        { teamId: { in: teamIds } }, // Team events (including students' teams if parent)
         { isPublic: true }, // Public events
+        // If parent, include events where students are attendees
+        ...(studentUserIds.length > 0 ? [{ attendees: { some: { userId: { in: studentUserIds } } } }] : [])
       ],
     };
 
@@ -64,6 +153,7 @@ export async function GET(request: NextRequest) {
             lastName: true,
           },
         },
+        attendees: true, // Useful for frontend to show who is attending
       },
       orderBy: {
         startTime: 'asc',

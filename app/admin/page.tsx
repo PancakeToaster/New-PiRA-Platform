@@ -22,6 +22,7 @@ export default async function AdminDashboard() {
     totalAssignments,
     recentPageViews,
     contactSubmissions,
+    pendingUserCount,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.studentProfile.count(),
@@ -50,6 +51,7 @@ export default async function AdminDashboard() {
     prisma.contactSubmission.count({
       where: { status: 'new' },
     }),
+    prisma.user.count({ where: { isApproved: false } }),
   ]);
 
   const recentUsers = await prisma.user.findMany({
@@ -299,6 +301,20 @@ export default async function AdminDashboard() {
               >
                 <h3 className="font-semibold text-sky-800">Create New User</h3>
                 <p className="text-sm text-sky-600">Add a student, parent, or teacher</p>
+              </Link>
+              <Link
+                href="/admin/users/approvals"
+                className="block p-4 bg-orange-50 border-2 border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
+              >
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-orange-900">Pending Approvals</h3>
+                  {pendingUserCount > 0 && (
+                    <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded-full">
+                      {pendingUserCount}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-orange-700">Review new account requests</p>
               </Link>
               <Link
                 href="/admin/invoices/new"

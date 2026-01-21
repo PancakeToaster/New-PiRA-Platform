@@ -24,7 +24,8 @@ interface CalendarViewProps {
   events: CalendarEvent[];
   onEventClick: (event: CalendarEvent) => void;
   onDateClick: (date: Date) => void;
-  onAddEvent: () => void;
+  onAddEvent?: () => void;
+  isPublicView?: boolean;
 }
 
 type ViewMode = 'month' | 'week' | 'day';
@@ -34,6 +35,7 @@ export default function CalendarView({
   onEventClick,
   onDateClick,
   onAddEvent,
+  isPublicView = false,
 }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -51,6 +53,10 @@ export default function CalendarView({
         return '#0ea5e9'; // sky
       case 'practice':
         return '#22c55e'; // green
+      case 'center_closed':
+        return '#dc2626'; // red-600
+      case 'public_event':
+        return '#2563eb'; // blue-600
       default:
         return '#6b7280'; // gray
     }
@@ -160,15 +166,15 @@ export default function CalendarView({
           <h2 className="text-xl font-semibold text-gray-900">
             {viewMode === 'day'
               ? currentDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })
               : currentDate.toLocaleDateString('en-US', {
-                  month: 'long',
-                  year: 'numeric',
-                })}
+                month: 'long',
+                year: 'numeric',
+              })}
           </h2>
           <div className="flex items-center space-x-1">
             <Button variant="outline" size="sm" onClick={() => navigate('prev')}>
@@ -187,39 +193,38 @@ export default function CalendarView({
           <div className="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1.5 text-sm ${
-                viewMode === 'month'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1.5 text-sm ${viewMode === 'month'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Month
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-3 py-1.5 text-sm border-x border-gray-300 ${
-                viewMode === 'week'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1.5 text-sm border-x border-gray-300 ${viewMode === 'week'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Week
             </button>
             <button
               onClick={() => setViewMode('day')}
-              className={`px-3 py-1.5 text-sm ${
-                viewMode === 'day'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1.5 text-sm ${viewMode === 'day'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Day
             </button>
           </div>
-          <Button onClick={onAddEvent}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Event
-          </Button>
+          {onAddEvent && !isPublicView && (
+            <Button onClick={onAddEvent}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Event
+            </Button>
+          )}
         </div>
       </div>
 
@@ -251,18 +256,16 @@ export default function CalendarView({
                 <div
                   key={index}
                   onClick={() => date && onDateClick(date)}
-                  className={`min-h-[120px] border-b border-r border-gray-100 p-2 cursor-pointer hover:bg-gray-50 ${
-                    isWeekend ? 'bg-gray-50/50' : ''
-                  }`}
+                  className={`min-h-[120px] border-b border-r border-gray-100 p-2 cursor-pointer hover:bg-gray-50 ${isWeekend ? 'bg-gray-50/50' : ''
+                    }`}
                 >
                   {date && (
                     <>
                       <div
-                        className={`text-sm font-medium mb-1 ${
-                          isToday
-                            ? 'w-7 h-7 flex items-center justify-center bg-sky-500 text-white rounded-full'
-                            : 'text-gray-700'
-                        }`}
+                        className={`text-sm font-medium mb-1 ${isToday
+                          ? 'w-7 h-7 flex items-center justify-center bg-sky-500 text-white rounded-full'
+                          : 'text-gray-700'
+                          }`}
                       >
                         {date.getDate()}
                       </div>
@@ -312,15 +315,13 @@ export default function CalendarView({
               return (
                 <div
                   key={i}
-                  className={`px-2 py-3 text-center border-r border-gray-200 ${
-                    isToday ? 'bg-sky-50' : ''
-                  }`}
+                  className={`px-2 py-3 text-center border-r border-gray-200 ${isToday ? 'bg-sky-50' : ''
+                    }`}
                 >
                   <div className="text-xs text-gray-500">{weekDays[i]}</div>
                   <div
-                    className={`text-lg font-medium ${
-                      isToday ? 'text-sky-600' : 'text-gray-700'
-                    }`}
+                    className={`text-lg font-medium ${isToday ? 'text-sky-600' : 'text-gray-700'
+                      }`}
                   >
                     {date.getDate()}
                   </div>
@@ -419,26 +420,49 @@ export default function CalendarView({
 
       {/* Legend */}
       <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 flex flex-wrap items-center gap-4 text-xs">
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} />
-          <span className="text-gray-600">Competition</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: '#f97316' }} />
-          <span className="text-gray-600">Deadline</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8b5cf6' }} />
-          <span className="text-gray-600">Meeting</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: '#0ea5e9' }} />
-          <span className="text-gray-600">Class</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: '#22c55e' }} />
-          <span className="text-gray-600">Practice</span>
-        </div>
+        {isPublicView ? (
+          <>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#dc2626' }} />
+              <span className="text-gray-600">Center Closed</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#2563eb' }} />
+              <span className="text-gray-600">Events</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} />
+              <span className="text-gray-600">Competition</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#f97316' }} />
+              <span className="text-gray-600">Deadline</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8b5cf6' }} />
+              <span className="text-gray-600">Meeting</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#0ea5e9' }} />
+              <span className="text-gray-600">Class</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#22c55e' }} />
+              <span className="text-gray-600">Practice</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#dc2626' }} />
+              <span className="text-gray-600">Center Closed</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#2563eb' }} />
+              <span className="text-gray-600">Public Event</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

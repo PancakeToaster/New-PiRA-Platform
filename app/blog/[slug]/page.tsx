@@ -5,6 +5,9 @@ import Footer from '@/components/layout/Footer';
 import PageBanner from '@/components/layout/PageBanner';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import AdminContentEditor from '@/components/admin/AdminContentEditor';
+import PageViewer from '@/components/admin/PageViewer';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -34,24 +37,57 @@ export default async function BlogPostPage({ params }: Props) {
   });
 
   if (!post || post.isDraft) {
-    notFound();
+    // Admins can see drafts
+    const currentUser = await getCurrentUser();
+    const userIsAdmin = await isAdmin();
+    if (!post || (!userIsAdmin && post.isDraft)) {
+      notFound();
+    }
   }
 
+  // Check if user is admin
+  const user = await getCurrentUser();
+  const userIsAdmin = await isAdmin();
+
+  // Handle Page Builder Content
+  if (post?.editorType === 'builder' && post.builderData) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Navbar />
+        <main className="flex-1 pt-20">
+          {/* If admin, we can link back to edit page or show a small edit bar if desired */}
+          {userIsAdmin && (
+            <div className="fixed bottom-4 right-4 z-50">
+              <Link href={`/admin/blog/${post.id}`}>
+                <div className="bg-sky-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-sky-700 transition cursor-pointer">
+                  Edit Page
+                </div>
+              </Link>
+            </div>
+          )}
+          <PageViewer data={post.builderData} />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle Standard Content
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
 
       <main className="flex-1 pt-20">
         <PageBanner
-          title={post.title}
+          title={post?.title || ''}
           description={
-            post.publishedAt
+            post?.publishedAt
               ? `Published on ${new Date(post.publishedAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}`
-              : undefined
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}`
+              : 'Draft Post'
           }
         />
 
@@ -64,7 +100,7 @@ export default async function BlogPostPage({ params }: Props) {
             Back to Blog
           </Link>
 
-          {post.coverImage && (
+          {post?.coverImage && (
             <img
               src={post.coverImage}
               alt={post.title}
@@ -72,10 +108,18 @@ export default async function BlogPostPage({ params }: Props) {
             />
           )}
 
-          <article
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          {userIsAdmin && post ? (
+            <AdminContentEditor
+              initialContent={post.content}
+              id={post.id}
+              apiEndpoint="/api/admin/blog"
+            />
+          ) : (
+            <article
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: post?.content || '' }}
+            />
+          )}
         </div>
       </main>
 

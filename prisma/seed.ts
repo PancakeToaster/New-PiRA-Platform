@@ -115,6 +115,36 @@ async function main() {
     },
   });
 
+  const mentorRole = await prisma.role.upsert({
+    where: { name: 'Mentor' },
+    update: {},
+    create: {
+      name: 'Mentor',
+      description: 'Mentors who guide project teams',
+      isSystem: true,
+    },
+  });
+
+  const teamCaptainRole = await prisma.role.upsert({
+    where: { name: 'Team Captain' },
+    update: {},
+    create: {
+      name: 'Team Captain',
+      description: 'Student leaders of project teams',
+      isSystem: true,
+    },
+  });
+
+  const teamMemberRole = await prisma.role.upsert({
+    where: { name: 'Team Member' },
+    update: {},
+    create: {
+      name: 'Team Member',
+      description: 'Members of project teams',
+      isSystem: true,
+    },
+  });
+
   console.log('🔐 Assigning permissions to roles...');
 
   // Public role permissions
@@ -202,7 +232,18 @@ async function main() {
     {
       slug: 'about',
       title: 'About Us',
-      content: '<h1>About Us</h1><p>Learn about our mission, vision, and the team behind Robotics Academy.</p>',
+      content: `<h2>Welcome to PLAYIDEAs Robotics Academy</h2>
+<p>At PLAYIDEAs, we believe that <strong>play is the key to infinite potential</strong>. Our mission is to create transformative learning experiences that inspire creativity and innovation in young minds.</p>
+<h3>Our Story</h3>
+<p>With over 10 years of competitive robotics education experience, we have helped countless students develop their skills in robotics, programming, and STEM education through hands-on learning experiences and competitive opportunities.</p>
+<p>We are leaders in digital business, helping companies of all sizes to thrive in an ever-changing landscape while engaging students through hands-on learning with expertise in robotics and STEM education.</p>
+<h3>What Makes Us Different</h3>
+<ul>
+<li><strong>Hands-On Learning:</strong> Students learn by doing, building real robots and solving real problems</li>
+<li><strong>Competition Ready:</strong> We prepare teams for VEX, FLL, and other major robotics competitions</li>
+<li><strong>Expert Instructors:</strong> Our team brings decades of combined experience in robotics and education</li>
+<li><strong>Proven Results:</strong> Our students have won regional and national championships</li>
+</ul>`,
       isDraft: false,
       publishedAt: new Date(),
     },
@@ -222,6 +263,56 @@ async function main() {
       create: page,
     });
   }
+
+  // Create sample blog posts
+  console.log('📝 Creating sample blog posts...');
+  const blogPosts = [
+    {
+      slug: 'welcome-to-our-new-platform',
+      title: 'Welcome to Our New Platform!',
+      excerpt: 'We are excited to announce the launch of our new robotics academy platform with enhanced features for students, parents, and teachers.',
+      content: `<h2>A New Era of Robotics Education</h2>
+<p>We are thrilled to announce the launch of our brand new platform designed to enhance the learning experience for all our students, streamline communication with parents, and provide powerful tools for our instructors.</p>
+<h3>What's New?</h3>
+<ul>
+<li><strong>Interactive Learning Management System:</strong> Access course materials, submit assignments, and track your progress all in one place</li>
+<li><strong>Parent Portal:</strong> Parents can now easily view invoices, track their child's progress, and stay connected with our academy</li>
+<li><strong>Real-Time Updates:</strong> Get instant notifications about upcoming competitions, events, and important announcements</li>
+<li><strong>Project Management Tools:</strong> Competition teams can collaborate more effectively with our new project management features</li>
+</ul>
+<p>This platform represents our commitment to providing the best possible educational experience. We look forward to seeing how it helps our students achieve even greater success!</p>`,
+      isDraft: false,
+      publishedAt: new Date(),
+    },
+    {
+      slug: 'preparing-for-vex-competition',
+      title: 'Preparing for the VEX Competition Season',
+      excerpt: 'Tips and strategies for teams getting ready for this year\'s VEX Robotics Competition.',
+      content: `<h2>Competition Season is Here!</h2>
+<p>The VEX Robotics Competition season is upon us, and our teams are working hard to prepare. Here are some key strategies we're focusing on this year.</p>
+<h3>Build Phase Essentials</h3>
+<ol>
+<li><strong>Understand the Game:</strong> Study the game manual thoroughly and watch reveal videos</li>
+<li><strong>Prototype Early:</strong> Test different mechanisms before committing to a final design</li>
+<li><strong>Document Everything:</strong> Keep an engineering notebook with detailed notes and sketches</li>
+<li><strong>Practice, Practice, Practice:</strong> Driver practice is just as important as building</li>
+</ol>
+<h3>Team Collaboration</h3>
+<p>Success in VEX requires strong teamwork. Our teams are using the new project management tools on this platform to coordinate tasks, track progress, and communicate effectively.</p>
+<p>Good luck to all our teams this season! We can't wait to see what you accomplish.</p>`,
+      isDraft: false,
+      publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+    },
+  ];
+
+  for (const post of blogPosts) {
+    await prisma.blog.upsert({
+      where: { slug: post.slug },
+      update: {},
+      create: post,
+    });
+  }
+
 
   // Seed Site Settings (Company Info, Services, Learning Process)
   console.log('⚙️  Creating site settings...');

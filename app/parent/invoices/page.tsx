@@ -8,7 +8,11 @@ export default async function ParentInvoicesPage() {
   const user = await getCurrentUser();
 
   if (!user?.profiles?.parent) {
-    return <div>Parent profile not found</div>;
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-600">Parent profile not found</p>
+      </div>
+    );
   }
 
   const invoices = await prisma.invoice.findMany({
@@ -60,9 +64,8 @@ export default async function ParentInvoicesPage() {
                   </div>
                   <div className="text-right">
                     <span
-                      className={`inline-block px-3 py-1 text-sm font-medium rounded-full mb-2 ${
-                        statusColors[invoice.status as keyof typeof statusColors]
-                      }`}
+                      className={`inline-block px-3 py-1 text-sm font-medium rounded-full mb-2 ${statusColors[invoice.status as keyof typeof statusColors]
+                        }`}
                     >
                       {invoice.status.toUpperCase()}
                     </span>

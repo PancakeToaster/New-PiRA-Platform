@@ -44,7 +44,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, slug, content, isDraft, metaTitle, metaDescription } = body;
+    const { title, slug, content, isDraft, metaTitle, metaDescription, builderData, editorType } = body;
 
     // Check if slug is taken by another page
     if (slug) {
@@ -77,17 +77,21 @@ export async function PUT(
       publishedAt = new Date();
     }
 
+    // Build update data object, only including defined fields
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (slug !== undefined) updateData.slug = slug;
+    if (content !== undefined) updateData.content = content;
+    if (isDraft !== undefined) updateData.isDraft = isDraft;
+    if (metaTitle !== undefined) updateData.metaTitle = metaTitle;
+    if (metaDescription !== undefined) updateData.metaDescription = metaDescription;
+    if (builderData !== undefined) updateData.builderData = builderData;
+    if (editorType !== undefined) updateData.editorType = editorType;
+    if (publishedAt !== currentPage.publishedAt) updateData.publishedAt = publishedAt;
+
     const page = await prisma.page.update({
       where: { id },
-      data: {
-        title,
-        slug,
-        content,
-        isDraft,
-        metaTitle,
-        metaDescription,
-        publishedAt,
-      },
+      data: updateData,
     });
 
     return NextResponse.json({ page });

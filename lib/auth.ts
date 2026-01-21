@@ -48,6 +48,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (!user.isApproved) {
+          throw new Error('Account pending approval');
+        }
+
         // Update last login
         await prisma.user.update({
           where: { id: user.id },

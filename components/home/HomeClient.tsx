@@ -359,6 +359,7 @@ export default function HomeClient({
                             muted
                             loop
                             playsInline
+                            suppressHydrationWarning
                             className="absolute inset-0 w-full h-full object-cover"
                             poster="/images/cta-poster.jpg"
                         >

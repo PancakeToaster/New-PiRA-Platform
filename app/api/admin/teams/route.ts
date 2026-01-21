@@ -90,6 +90,27 @@ export async function POST(request: NextRequest) {
         color,
         isActive: isActive ?? true,
       },
+      include: {
+        _count: {
+          select: {
+            members: true,
+            projects: true,
+          },
+        },
+        members: {
+          take: 5,
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json({ team }, { status: 201 });

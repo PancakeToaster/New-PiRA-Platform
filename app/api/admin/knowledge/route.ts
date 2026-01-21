@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { slugify } from '@/lib/utils';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
     const node = await prisma.knowledgeNode.create({
       data: {
         title,
+        slug: slugify(title) + '-' + Date.now().toString().slice(-6), // Ensure uniqueness
         content,
         nodeType: nodeType || 'markdown',
         authorId: currentUser.id,

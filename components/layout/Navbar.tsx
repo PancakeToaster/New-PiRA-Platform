@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import Image from 'next/image';
@@ -19,6 +20,8 @@ export default function Navbar() {
   const joinCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const user = session?.user;
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,30 +44,26 @@ export default function Navbar() {
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    const observer = new MutationObserver(() => {
+    // Check for scroll containers on mount and AFTER navigation (pathname change)
+    // We utilize a small timeout to ensure the new page DOM is mounted
+    const timeoutId = setTimeout(() => {
       const scrollContainers = document.querySelectorAll('[class*="overflow-y-auto"]');
       scrollContainers.forEach(container => {
         container.removeEventListener('scroll', handleScroll);
         container.addEventListener('scroll', handleScroll, { passive: true });
       });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    const scrollContainers = document.querySelectorAll('[class*="overflow-y-auto"]');
-    scrollContainers.forEach(container => {
-      container.addEventListener('scroll', handleScroll, { passive: true });
-    });
+      handleScroll(); // Initial check on new page
+    }, 100);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
+      clearTimeout(timeoutId);
       const scrollContainers = document.querySelectorAll('[class*="overflow-y-auto"]');
       scrollContainers.forEach(container => {
         container.removeEventListener('scroll', handleScroll);
       });
     };
-  }, []);
+  }, [pathname]);
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
@@ -171,6 +170,12 @@ export default function Navbar() {
                 className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
               >
                 Courses
+              </Link>
+              <Link
+                href="/events"
+                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+              >
+                Events
               </Link>
               <Link
                 href="/blog"
@@ -320,6 +325,13 @@ export default function Navbar() {
                   Courses
                 </Link>
                 <Link
+                  href="/events"
+                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Events
+                </Link>
+                <Link
                   href="/blog"
                   className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
                   onClick={() => setIsDropdownOpen(false)}
@@ -386,6 +398,13 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Courses
+            </Link>
+            <Link
+              href="/events"
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Events
             </Link>
             <Link
               href="/blog"

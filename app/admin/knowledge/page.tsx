@@ -225,13 +225,12 @@ export default function AdminKnowledgePage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            node.nodeType === 'markdown'
-                              ? 'bg-blue-100 text-blue-800'
-                              : node.nodeType === 'mindmap'
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${node.nodeType === 'markdown'
+                            ? 'bg-blue-100 text-blue-800'
+                            : node.nodeType === 'mindmap'
                               ? 'bg-purple-100 text-purple-800'
                               : 'bg-green-100 text-green-800'
-                          }`}
+                            }`}
                         >
                           {node.nodeType}
                         </span>
@@ -258,11 +257,10 @@ export default function AdminKnowledgePage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            node.isPublished
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${node.isPublished
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                            }`}
                         >
                           {node.isPublished ? 'Published' : 'Draft'}
                         </span>
@@ -271,23 +269,21 @@ export default function AdminKnowledgePage() {
                         {new Date(node.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <Link href={`/admin/knowledge/${node.id}`}>
-                          <Button variant="outline" size="sm">
-                            Edit
+                        <div className="flex justify-end space-x-2">
+                          <Link href={`/wiki/${node.id}`}>
+                            <Button variant="outline" size="sm">
+                              <BookOpen className="w-4 h-4 mr-2" />
+                              View / Edit
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDeleteNode(node.id)}
+                          >
+                            Delete
                           </Button>
-                        </Link>
-                        <Link href={`/knowledge/${node.id}`} target="_blank">
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteNode(node.id)}
-                        >
-                          Delete
-                        </Button>
+                        </div>
                       </td>
                     </tr>
                   ))

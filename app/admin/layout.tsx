@@ -16,6 +16,7 @@ import {
   FolderKanban,
   Calendar,
 } from 'lucide-react';
+import AppSwitcher from '@/components/layout/AppSwitcher';
 
 export default async function AdminLayout({
   children,
@@ -160,12 +161,18 @@ export default async function AdminLayout({
         <div className="p-6 border-t border-gray-200 bg-white shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{(user as any).firstName} {(user as any).lastName}</p>
-              <p className="text-xs text-gray-500">Administrator</p>
+              <div className="flex flex-col">
+                <p className="text-sm font-medium text-gray-900 truncate">{(user as any).firstName}</p>
+                <p className="text-sm font-medium text-gray-700 truncate">{(user as any).lastName}</p>
+                <p className="text-xs text-gray-500">Administrator</p>
+              </div>
             </div>
-            <Link href="/api/auth/signout" className="text-gray-400 hover:text-gray-600">
-              <LogOut className="w-5 h-5" />
-            </Link>
+            <div className="flex items-center space-x-2">
+              <AppSwitcher />
+              <Link href="/api/auth/signout" className="text-gray-400 hover:text-gray-600">
+                <LogOut className="w-5 h-5" />
+              </Link>
+            </div>
           </div>
         </div>
       </aside>

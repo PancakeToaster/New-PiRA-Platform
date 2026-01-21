@@ -12,19 +12,20 @@ datasource db {
 // ============================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String
-  firstName     String
-  lastName      String
-  avatar        String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  lastLogin     DateTime?
+  id         String    @id @default(cuid())
+  email      String    @unique
+  password   String
+  firstName  String
+  lastName   String
+  avatar     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastLogin  DateTime?
+  isApproved Boolean   @default(false)
 
   // Relationships
-  roles         UserRole[]
-  sessions      Session[]
+  roles    UserRole[]
+  sessions Session[]
 
   // Parent-specific
   parentProfile ParentProfile?
@@ -36,20 +37,23 @@ model User {
   teacherProfile TeacherProfile?
 
   // Activity tracking
-  pageViews     PageView[]
-  blogComments  BlogComment[]
+  pageViews    PageView[]
+  blogComments BlogComment[]
 
   // LMS relationships
-  knowledgeNodes KnowledgeNode[]
-  teacherAssignments Assignment[] @relation("TeacherAssignments")
-  instructorCourses  Course[]
+  knowledgeNodes       KnowledgeNode[]
+  teacherAssignments   Assignment[]          @relation("TeacherAssignments")
+  instructorCourses    Course[]
+  knowledgeSuggestions KnowledgeSuggestion[] @relation("SuggestionAuthor")
+  reviewedSuggestions  KnowledgeSuggestion[] @relation("SuggestionReviewer")
+  knowledgeComments    KnowledgeComment[]
 
   // Project Management relationships
-  teamMemberships  TeamMember[]
-  taskAssignments  TaskAssignee[]
-  taskComments     TaskComment[]
-  taskAttachments  TaskAttachment[]
-  taskActivities   TaskActivity[]
+  teamMemberships TeamMember[]
+  taskAssignments TaskAssignee[]
+  taskComments    TaskComment[]
+  taskAttachments TaskAttachment[]
+  taskActivities  TaskActivity[]
 
   // Calendar relationships
   createdEvents    CalendarEvent[]
@@ -74,12 +78,12 @@ model Role {
 
 model Permission {
   id          String   @id @default(cuid())
-  resource    String   // e.g., "blog", "invoice", "user"
-  action      String   // e.g., "create", "read", "update", "delete"
+  resource    String // e.g., "blog", "invoice", "user"
+  action      String // e.g., "create", "read", "update", "delete"
   description String?
   createdAt   DateTime @default(now())
 
-  roles       RolePermission[]
+  roles RolePermission[]
 
   @@unique([resource, action])
   @@index([resource, action])
@@ -131,44 +135,44 @@ model Session {
 // ============================================
 
 model ParentProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  phone       String?
-  address     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  students    ParentStudent[]
-  invoices    Invoice[]
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students ParentStudent[]
+  invoices Invoice[]
 }
 
 model StudentProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
+  id          String    @id @default(cuid())
+  userId      String    @unique
   dateOfBirth DateTime?
   grade       String?
   school      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parents           ParentStudent[]
-  assignments       Assignment[]
-  progress          StudentProgress[]
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parents               ParentStudent[]
+  assignments           Assignment[]
+  progress              StudentProgress[]
   assignmentSubmissions AssignmentSubmission[]
-  courseEnrollments CourseEnrollment[]
+  courseEnrollments     CourseEnrollment[]
 }
 
 model TeacherProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  bio         String?
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  bio            String?
   specialization String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ParentStudent {
@@ -190,36 +194,40 @@ model ParentStudent {
 // ============================================
 
 model Page {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  content     String   @db.Text
-  isDraft     Boolean  @default(false)
-  metaTitle   String?
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  title           String
+  content         String    @db.Text
+  builderData     String?   @db.Text // Craft.js JSON data
+  editorType      String    @default("html") // "html" or "builder"
+  isDraft         Boolean   @default(false)
+  metaTitle       String?
   metaDescription String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  publishedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  publishedAt     DateTime?
 
-  views       PageView[]
+  views PageView[]
 
   @@index([slug])
 }
 
 model Blog {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String    @id @default(cuid())
+  slug        String    @unique
   title       String
   excerpt     String?
-  content     String   @db.Text
+  content     String    @db.Text
+  builderData String?   @db.Text // Craft.js JSON data
+  editorType  String    @default("html") // "html" or "builder"
   coverImage  String?
-  isDraft     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isDraft     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
 
-  comments    BlogComment[]
-  views       PageView[]
+  comments BlogComment[]
+  views    PageView[]
 
   @@index([slug])
   @@index([publishedAt])
@@ -245,7 +253,7 @@ model Course {
   name          String
   slug          String   @unique
   description   String   @db.Text
-  level         String?  // e.g., "Beginner", "Intermediate", "Advanced"
+  level         String? // e.g., "Beginner", "Intermediate", "Advanced"
   duration      String?
   ageRange      String?
   price         Float?
@@ -274,7 +282,7 @@ model Activity {
   description String   @db.Text
   date        DateTime
   image       String?
-  category    String?  // e.g., "tournament", "event", "achievement"
+  category    String? // e.g., "tournament", "event", "achievement"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -301,21 +309,21 @@ model ContactSubmission {
 // ============================================
 
 model Invoice {
-  id          String   @id @default(cuid())
-  invoiceNumber String @unique
-  parentId    String
-  status      String   @default("unpaid") // unpaid, paid, overdue, cancelled
-  dueDate     DateTime
-  paidDate    DateTime?
-  subtotal    Float
-  tax         Float    @default(0)
-  total       Float
-  notes       String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String    @id @default(cuid())
+  invoiceNumber String    @unique
+  parentId      String
+  status        String    @default("unpaid") // unpaid, paid, overdue, cancelled
+  dueDate       DateTime
+  paidDate      DateTime?
+  subtotal      Float
+  tax           Float     @default(0)
+  total         Float
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  parent      ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  items       InvoiceItem[]
+  parent ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  items  InvoiceItem[]
 
   @@index([parentId])
   @@index([status])
@@ -343,25 +351,96 @@ model InvoiceItem {
 model KnowledgeNode {
   id          String   @id @default(cuid())
   title       String
-  content     String   @db.Text
-  nodeType    String   @default("markdown") // markdown, mindmap, graph
+  slug        String   @unique
+  content     String   @db.Text // Tiptap JSON for rich editing
+  nodeType    String   @default("markdown") // markdown, graph, mindmap, canvas
   authorId    String
   folderId    String?
   tags        String[]
   attachments String[]
+  icon        String? // Custom icon for navigation
+  order       Int      @default(0) // Manual sorting within folders
   isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  author         User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  folder         Folder?               @relation(fields: [folderId], references: [id])
-  relationships  NodeRelationship[]    @relation("NodeFrom")
-  relatedTo      NodeRelationship[]    @relation("NodeTo")
+  // Visualization data (stored as JSON)
+  canvasData  String? @db.Text // Obsidian-style canvas positions
+  graphData   String? @db.Text // Graph visualization metadata
+  mindmapData String? @db.Text // Mindmap layout data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author          User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  folder          Folder?               @relation(fields: [folderId], references: [id])
+  relationships   NodeRelationship[]    @relation("NodeFrom")
+  relatedTo       NodeRelationship[]    @relation("NodeTo")
   studentProgress StudentProgress[]
+  views           PageView[]
+  suggestions     KnowledgeSuggestion[]
+  comments        KnowledgeComment[]
+  linksFrom       KnowledgeNodeLink[]   @relation("LinksFrom")
+  linksTo         KnowledgeNodeLink[]   @relation("LinksTo")
 
   @@index([authorId])
   @@index([folderId])
   @@index([isPublished])
+  @@index([slug])
+  @@index([nodeType])
+}
+
+model KnowledgeSuggestion {
+  id         String    @id @default(cuid())
+  nodeId     String
+  userId     String
+  content    String    @db.Text // Suggested change (Tiptap JSON)
+  reason     String?   @db.Text // Why this change is suggested
+  status     String    @default("pending") // pending, approved, rejected
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  reviewedAt DateTime?
+  reviewedBy String?
+
+  node     KnowledgeNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user     User          @relation("SuggestionAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer User?         @relation("SuggestionReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([nodeId])
+  @@index([userId])
+  @@index([status])
+  @@index([reviewedBy])
+}
+
+model KnowledgeComment {
+  id         String   @id @default(cuid())
+  nodeId     String
+  userId     String
+  content    String   @db.Text
+  isResolved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  node KnowledgeNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId])
+  @@index([userId])
+  @@index([isResolved])
+}
+
+model KnowledgeNodeLink {
+  id         String   @id @default(cuid())
+  fromNodeId String
+  toNodeId   String
+  label      String?
+  style      String?  @db.Text // JSON for line styling
+  createdAt  DateTime @default(now())
+
+  fromNode KnowledgeNode @relation("LinksFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNode   KnowledgeNode @relation("LinksTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([fromNodeId, toNodeId])
+  @@index([fromNodeId])
+  @@index([toNodeId])
 }
 
 model Folder {
@@ -369,6 +448,7 @@ model Folder {
   name      String
   parentId  String?
   color     String?
+  order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -401,12 +481,12 @@ model Assignment {
   dueDate     DateTime
   points      Int      @default(100)
   teacherId   String
-  studentId   String?  // null = assigned to all students
+  studentId   String? // null = assigned to all students
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  teacher     User                     @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
-  student     StudentProfile?          @relation(fields: [studentId], references: [id])
+  teacher     User                   @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
+  student     StudentProfile?        @relation(fields: [studentId], references: [id])
   submissions AssignmentSubmission[]
 
   @@index([teacherId])
@@ -415,15 +495,15 @@ model Assignment {
 }
 
 model AssignmentSubmission {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   assignmentId String
   studentId    String
-  content      String   @db.Text
+  content      String    @db.Text
   attachments  String[]
-  status       String   @default("submitted") // submitted, graded, returned
+  status       String    @default("submitted") // submitted, graded, returned
   grade        Int?
-  feedback     String?  @db.Text
-  submittedAt  DateTime @default(now())
+  feedback     String?   @db.Text
+  submittedAt  DateTime  @default(now())
   gradedAt     DateTime?
 
   assignment Assignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
@@ -436,14 +516,14 @@ model AssignmentSubmission {
 }
 
 model StudentProgress {
-  id        String   @id @default(cuid())
-  studentId String
-  nodeId    String
-  status    String   @default("not_started") // not_started, in_progress, completed
-  progress  Int      @default(0) // 0-100
+  id         String   @id @default(cuid())
+  studentId  String
+  nodeId     String
+  status     String   @default("not_started") // not_started, in_progress, completed
+  progress   Int      @default(0) // 0-100
   lastViewed DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   node    KnowledgeNode  @relation(fields: [nodeId], references: [id], onDelete: Cascade)
@@ -458,29 +538,32 @@ model StudentProgress {
 // ============================================
 
 model PageView {
-  id        String   @id @default(cuid())
-  path      String
-  userId    String?
-  userRole  String?
-  pageId    String?
-  blogId    String?
-  viewedAt  DateTime @default(now())
-  sessionId String?
+  id              String   @id @default(cuid())
+  path            String
+  userId          String?
+  userRole        String?
+  pageId          String?
+  blogId          String?
+  knowledgeNodeId String?
+  viewedAt        DateTime @default(now())
+  sessionId       String?
 
-  user User? @relation(fields: [userId], references: [id])
-  page Page? @relation(fields: [pageId], references: [id])
-  blog Blog? @relation(fields: [blogId], references: [id])
+  user          User?          @relation(fields: [userId], references: [id])
+  page          Page?          @relation(fields: [pageId], references: [id])
+  blog          Blog?          @relation(fields: [blogId], references: [id])
+  knowledgeNode KnowledgeNode? @relation(fields: [knowledgeNodeId], references: [id])
 
   @@index([path])
   @@index([userId])
   @@index([viewedAt])
+  @@index([knowledgeNodeId])
 }
 
 model SystemMetric {
   id        String   @id @default(cuid())
-  metric    String   // cpu, memory, disk, network, dbConnections
+  metric    String // cpu, memory, disk, network, dbConnections
   value     Float
-  unit      String   // percent, MB, GB, count
+  unit      String // percent, MB, GB, count
   timestamp DateTime @default(now())
 
   @@index([metric, timestamp])
@@ -517,9 +600,9 @@ model Team {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members     TeamMember[]
-  projects    Project[]
-  events      CalendarEvent[]
+  members  TeamMember[]
+  projects Project[]
+  events   CalendarEvent[]
 
   @@index([slug])
   @@index([isActive])
@@ -556,7 +639,7 @@ model Project {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  team       Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
   tasks      Task[]
   milestones Milestone[]
   tags       ProjectTag[]
@@ -606,17 +689,17 @@ model Task {
   updatedAt      DateTime  @updatedAt
   completedAt    DateTime?
 
-  project       Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  milestone     Milestone?         @relation(fields: [milestoneId], references: [id])
-  parent        Task?              @relation("TaskSubtasks", fields: [parentId], references: [id])
-  subtasks      Task[]             @relation("TaskSubtasks")
-  assignees     TaskAssignee[]
-  dependencies  TaskDependency[]   @relation("TaskDependencyFrom")
-  dependentOn   TaskDependency[]   @relation("TaskDependencyTo")
-  comments      TaskComment[]
-  attachments   TaskAttachment[]
-  tags          TaskTagAssignment[]
-  activities    TaskActivity[]
+  project      Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone    Milestone?          @relation(fields: [milestoneId], references: [id])
+  parent       Task?               @relation("TaskSubtasks", fields: [parentId], references: [id])
+  subtasks     Task[]              @relation("TaskSubtasks")
+  assignees    TaskAssignee[]
+  dependencies TaskDependency[]    @relation("TaskDependencyFrom")
+  dependentOn  TaskDependency[]    @relation("TaskDependencyTo")
+  comments     TaskComment[]
+  attachments  TaskAttachment[]
+  tags         TaskTagAssignment[]
+  activities   TaskActivity[]
 
   @@index([projectId])
   @@index([milestoneId])
@@ -698,7 +781,7 @@ model TaskActivity {
   id        String   @id @default(cuid())
   taskId    String
   userId    String
-  action    String   // created, updated, status_changed, assigned, commented, attached
+  action    String // created, updated, status_changed, assigned, commented, attached
   field     String?
   oldValue  String?
   newValue  String?
@@ -748,7 +831,7 @@ model CalendarEvent {
   id          String    @id @default(cuid())
   title       String
   description String?   @db.Text
-  eventType   String    // competition, deadline, meeting, class, practice, other
+  eventType   String // competition, deadline, meeting, class, practice, other
   startTime   DateTime
   endTime     DateTime?
   allDay      Boolean   @default(false)
@@ -760,8 +843,8 @@ model CalendarEvent {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  createdBy User  @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  team      Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdBy User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  team      Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   attendees EventAttendee[]
 
   @@index([startTime, endTime])
@@ -831,7 +914,7 @@ model Lesson {
   title       String
   content     String   @db.Text
   order       Int      @default(0)
-  duration    Int?     // in minutes
+  duration    Int? // in minutes
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -849,7 +932,7 @@ model Lesson {
 model Testimonial {
   id        String   @id @default(cuid())
   name      String
-  role      String   // "Parent", "Student", etc.
+  role      String // "Parent", "Student", etc.
   content   String   @db.Text
   rating    Int      @default(5) // 1-5 star rating
   avatar    String?
@@ -865,7 +948,7 @@ model Testimonial {
 model PublicStaff {
   id           String   @id @default(cuid())
   name         String
-  role         String   // Job title like "CEO", "Director", etc.
+  role         String // Job title like "CEO", "Director", etc.
   bio          String?  @db.Text
   image        String?
   email        String?

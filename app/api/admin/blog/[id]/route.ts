@@ -44,7 +44,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, slug, excerpt, content, coverImage, isDraft } = body;
+    const { title, slug, excerpt, content, coverImage, isDraft, builderData, editorType } = body;
 
     // Check if slug is taken by another post
     if (slug) {
@@ -85,6 +85,8 @@ export async function PUT(
         excerpt,
         content,
         coverImage,
+        builderData,
+        editorType,
         isDraft,
         publishedAt,
       },

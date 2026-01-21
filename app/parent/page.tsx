@@ -32,7 +32,14 @@ export default async function ParentDashboard() {
   });
 
   if (!parentProfile) {
-    return <div>Parent profile not found</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Profile Not Found</h3>
+        <p className="text-gray-600">
+          We couldn't find a parent profile linked to your account.
+        </p>
+      </div>
+    );
   }
 
   const totalInvoices = await prisma.invoice.count({
@@ -169,13 +176,12 @@ export default async function ParentDashboard() {
                       <div className="text-right">
                         <p className="font-semibold">{formatCurrency(invoice.total)}</p>
                         <span
-                          className={`inline-block px-2 py-1 text-xs rounded-full ${
-                            invoice.status === 'paid'
-                              ? 'bg-green-100 text-green-800'
-                              : invoice.status === 'overdue'
+                          className={`inline-block px-2 py-1 text-xs rounded-full ${invoice.status === 'paid'
+                            ? 'bg-green-100 text-green-800'
+                            : invoice.status === 'overdue'
                               ? 'bg-red-100 text-red-800'
                               : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                            }`}
                         >
                           {invoice.status}
                         </span>

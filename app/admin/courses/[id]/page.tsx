@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Upload } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -29,6 +29,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [topicsInput, setTopicsInput] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -42,6 +43,40 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     isActive: true,
     isDevelopment: false,
   });
+
+  // ... existing useEffect ...
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    const file = files[0];
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({ ...prev, image: data.url }));
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to upload file');
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Failed to upload file');
+    } finally {
+      setIsUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
 
   useEffect(() => {
     async function fetchCourse() {
@@ -246,15 +281,47 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
+                  Course Image
                 </label>
-                <input
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="url"
+                      value={formData.image}
+                      onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                    <label className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      {isUploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-sky-600" />
+                      ) : (
+                        <Upload className="w-4 h-4 text-gray-600" />
+                      )}
+                      <span className="text-sm text-gray-700 whitespace-nowrap">
+                        {isUploading ? 'Uploading...' : 'Upload Image'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {formData.image && (
+                    <div className="relative aspect-video w-full max-w-md rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                      <img
+                        src={formData.image}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

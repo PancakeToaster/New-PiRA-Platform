@@ -1,75 +1,94 @@
 # Product Specification Document: Robotics Academy Platform
 
 ## 1. Introduction
-This document defines the specifications for the **Robotics Academy Platform**, a unified web application designed to manage the end-to-end operations of a robotics education business. It integrates marketing, learning management, parent communication, project management, and administration into a single self-hosted solution.
+This document defines the technical and functional specifications for the **Robotics Academy Platform**, a unified web application designed to manage the end-to-end operations of a robotics education business. It integrates marketing, learning management (LMS), parent communication, project management, and business administration into a single self-hosted solution.
 
 ## 2. User Personas
 
 | Persona | Description | Key Needs |
 | :--- | :--- | :--- |
-| **Public User** | Prospective parent or student | Information on courses, pricing, and proven success. Contact capability. |
-| **Student** | Active learner (8-18 years old) | Access course materials, submit assignments, track competition projects. |
-| **Parent** | Payer and guardian | View/pay invoices, track child's progress, manage enrollment. |
-| **Teacher** | Instructor or Coach | Create/grade assignments, manage class content, track student attendance. |
-| **Admin** | Business Owner/Manager | Full control over users, content, finance, and system configuration. |
+| **Public User** | Prospective parent or student | Course information, pricing, success stories, and contact forms. |
+| **Student** | Active learner (8-18 years old) | Course materials, assignment submission, project tracking, wiki access. |
+| **Parent** | Payer and guardian | Invoice management, payment history, child progress tracking. |
+| **Teacher/Coach** | Instructor or Team Lead | Content creation, assignment grading, attendance, team management. |
+| **Admin** | Business Owner/Manager | System-wide configuration, user roles, financial reporting, CMS. |
 
 ## 3. Functional Requirements
 
-### 3.1 Public Layer (Marketing)
-- **Course Catalog**: Display active courses with details (Age, Level, Price).
-- **Blog System**: SEO-friendly articles to drive traffic and demonstrate expertise.
-- **Dynamic Homepage**: Featured courses, "Coming Soon" development classes, and recent activity feed.
-- **Contact Integration**: Lead generation forms rooted in the database.
+### 3.1 Public Layer (Marketing & CMS)
+- **Course Catalog**: Dynamic display of courses with filtering by Age, Level, and Price. Includes support for "Featured" and "Coming Soon" statuses.
+- **Blog System**: SEO-optimized articles with support for rich text (TipTap) and visual media. Includes category tagging and author profiles.
+- **Contact Integration**: Lead generation forms with automated database logging and email notifications (Planned).
+- **SEO Management**: Customizable meta titles, descriptions, and OpenGraph images for every page and blog post.
 
-### 3.2 Learning Management System (LMS)
-- **Knowledge Base**: Markdown-based content nodes organized by folders/topics.
-- **Assignments**: Teachers create tasks; Students submit text/files; Teachers grade and provide feedback.
-- **Progress Tracking**: Visual indicators of course completion and assignment status.
-- **Resource Graph**: (Planned) Visual mapping of prerequisites and related topics.
+### 3.2 Admin Control Panel & Page Builder
+The platform follows an "Edit Everything" philosophy, allowing admins to modify layout and content without technical knowledge.
+- **Visual Page Builder (Craft.js Implementation)**:
+    - **Drag & Drop Interface**: Build layouts by dragging components from a sidebar toolbox onto a live canvas.
+    - **Core Components**: 
+        - **Text**: Rich text editing with support for custom sizing and colors.
+        - **Headings**: Semantic H1-H6 levels for accessibility and SEO.
+        - **Buttons**: Customizable links with visual style presets (Primary, Secondary, Sky).
+        - **Containers**: Flexible layout blocks with adjustable padding, margins, and background colors.
+        - **Images**: Responsive image blocks with styling for borders, rounding, and fit modes.
+    - **Delete & Reorder**: Select any component to delete it or move it within the document hierarchy.
+    - **Live Preview**: Real-time visual feedback of all changes before saving.
+- **Specialized Section Components**:
+    - **Mission/Vision Sections**: High-impact blocks for core company identity with integrated image support.
+    - **Services Section**: Editable list of offerings. Admins can add/remove service items, edit icons (emojis), titles, and descriptions.
+    - **Process Section**: Step-by-step roadmap module. Features automatic step renumbering and individual step editing.
+    - **Values Section**: Grid-based layout for company principles. Supports dynamic addition/removal of value cards.
+    - **Team Section**: Dynamic staff gallery. Admins can manage team members, including bio editing and image URL configuration (with initials-based fallback).
+- **Media Management**:
+    - **File Upload System**: Integrated file picker in the builder allows direct image uploads (JPEG, PNG, WebP).
+    - **Server-Side Processing**: Files are stored in `public/uploads/images/` with unique timestamped filenames.
+    - **Validation**: Strict checks for file type and size (5MB limit) ensures system stability.
 
-### 3.3 Parent Portal (Billing)
-- **Invoice Dashboard**: View current and past invoices.
-- **Payment Structure**: Invoices support line items (e.g., "Fall Semester Tuition", "Robotics Kit Fee").
-- **Student Linking**: Parents can view high-level progress of all their linked children.
+### 3.3 Learning Management System (LMS)
+- **Knowledge Base (Wiki System)**:
+    - **Centralized Hub**: Located at `/wiki`, serving as the single source of truth for technical documentation and curriculum notes.
+    - **Markdown Native**: Writes and renders in Markdown for easy versioning and portability.
+    - **Permissions**: Granular control over node accessibility (Public vs. Student-only).
+- **Assignments & Grading**:
+    - **Task Creation**: Teachers can set deadlines, instructions, and attach reference files.
+    - **Submission Engine**: Students can upload files (PDF, ZIP, CODE) or provide text-based responses.
+    - **Feedback Loop**: Support for numerical grading and qualitative instructor comments.
 
-### 3.4 Project Management (Competition Teams)
-- **Team Workspaces**: Dedicated areas for competition teams (e.g., VEX, FLL).
-- **Kanban/Task Board**: Track tasks (To Do, In Progress, Done) for robot builds.
-- **Milestones**: Track deadlines for competitions and build phases.
-- **Role-Based Access**: Team Captains have management rights; Members have view/update rights.
+### 3.4 Parent Portal & Financials
+- **Billing Dashboard**: Centralized view for parents to track enrollment costs and payment status.
+- **Invoice Management**: 
+    - **Line Items**: Detailed breakdowns for tuition, kits, and competition fees.
+    - **PDF Generation**: (Planned) Automated download of invoices for record-keeping.
+- **Financial Analytics**: Admin-only view of total revenue, outstanding balances, and enrollment trends.
 
-### 3.5 Admin Control Panel
-- **User Management**: Create/Edit/Delete users and assign Roles (RBAC).
-- **Content Management**: “Edit Everything” philosophy.Manage public pages, blogs, and courses without code.
-- **Financial Overview**: Dashboard with revenue metrics (Paid vs Unpaid invoices).
-- **Analytics**: System health monitoring and page view tracking.
+### 3.5 Project Management (Competition Teams)
+- **Team Workspaces**: Dedicated private areas for competition teams (VEX, FLL, FIRST).
+- **Collaboration Tools**:
+    - **Task Tracking**: Kanban/Scrum boards for robot build progress and software development.
+    - **Milestones**: Track season-specific deadlines (e.g., Regional Qualifiers, State Championships).
+- **Hardware Inventory**: (Planned) Registry for tracking robot components and loaner kits.
 
 ## 4. Technical Specifications
 
 ### 4.1 Technology Stack
-- **Frontend**: Next.js 14 (App Router), React, TailwindCSS.
-- **Backend**: Next.js API Routes (Serverless functions).
-- **Database**: PostgreSQL with Prisma ORM.
-- **Authentication**: NextAuth.js (JWT-based).
-- **Infrastructure**: Docker & Docker Compose with Nginx reverse proxy.
+- **Framework**: Next.js 14+ (App Router) utilizing Server Components for performance.
+- **Styling**: TailwindCSS for utility-first design and consistent UI tokens.
+- **Database**: PostgreSQL with Prisma ORM for type-safe relational data management.
+- **State Management**: React Context (for global UI) and Craft.js State (for builder operations).
+- **Authentication**: NextAuth.js with JWT-based session management and Role-Based Access Control (RBAC).
 
 ### 4.2 Security Requirements
-- **Encryption**: Sensitive fields (Phone, Address) must be encrypted at rest (AES-256).
-- **Access Control**: Strict RBAC enforced via API Middleware.
-- **Audit Logging**: Immutable logs for all sensitive admin actions.
-- **Headers**: CSP and Security Headers strictly enforced by Nginx.
+- **Data Protection**: AES-256 encryption for sensitive PII (Personally Identifiable Information).
+- **Access Control**: Strict middleware checks on all `/api/admin/*` and `/admin/*` routes.
+- **Input Sanitization**: Compulsory use of Zod for API request validation and XSS protection in rendered content.
 
-## 5. Data Model (High Level)
-- **User**: Central identity entity. Linked to specific profiles (Parent, Student, Teacher).
-- **Course/Invoice/Assignment**: Core business entities linked to Users.
-- **Team/Project/Task**: Hierarchical structure for the Project Management layer.
+## 5. Deployment & Infrastructure
+- **Hosting**: Designed for single-node VPS environments (DigitalOcean, AWS, Vultr).
+- **Orchestration**: Docker & Docker Compose for managing the Next.js app, PostgreSQL database, and Nginx reverse proxy.
+- **Load Balancing**: Nginx handles SSL termination and security headers (CSP, HSTS).
 
-## 6. Deployment Strategy
-- **Self-Hosted**: Designed to run on a single VPS (e.g., DigitalOcean, Vultr).
-- **Containerized**: `docker-compose` orchestration for App + DB + Proxy.
-- **CI/CD**: (Recommended) GitHub Actions for automated testing and image building.
-
-## 7. Future Roadmap
-- **Phase 1 (Security)**: Implementation of Field Encryption & Global Middleware (In Progress).
-- **Phase 2 (Automation)**: Automated invoice generation and email notifications.
-- **Phase 3 (AI)**: AI-driven tutoring assistant and content generation for teachers.
+## 6. Development Roadmap
+- **Phase 1 (Core)**: Complete Page Builder stability and Content Migration logic. [COMPLETED]
+- **Phase 2 (UX)**: Full Item editing for specialized sections and File Upload system. [COMPLETED]
+- **Phase 3 (Financials)**: Integration of automated payment reminders and payment gateway hooks.
+- **Phase 4 (Advanced LMS)**: Mindmap/Graph visualization for curriculum dependencies.

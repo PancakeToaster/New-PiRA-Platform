@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Loader2, X, Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CalendarView, { CalendarEvent } from '@/components/calendar/CalendarView';
@@ -26,8 +27,10 @@ interface Team {
 }
 
 export default function CalendarPage() {
+  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const teamFilter = searchParams.get('team');
+  const isPublicView = status === 'unauthenticated';
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -52,21 +55,37 @@ export default function CalendarPage() {
 
   useEffect(() => {
     fetchData();
-  }, [teamFilter]);
+  }, [teamFilter, status]);
 
   async function fetchData() {
     try {
-      const [eventsRes, teamsRes] = await Promise.all([
-        fetch(`/api/calendar${teamFilter ? `?team=${teamFilter}` : ''}`),
-        fetch('/api/projects/teams'),
-      ]);
+      // Don't fetch teams if public
+      const promises = [fetch(`/api/calendar${teamFilter ? `?team=${teamFilter}` : ''}`)];
+      if (!isPublicView) {
+        promises.push(fetch('/api/projects/teams'));
+      }
+
+      const [eventsRes, teamsRes] = await Promise.all(promises);
 
       if (eventsRes.ok) {
         const data = await eventsRes.json();
-        setEvents(data.events);
+        // Frontend filtering/mapping for public view just in case, though API should handle it.
+        // Also map display names for public tags
+        const processedEvents = data.events.map((evt: CalendarEvent) => {
+          if (isPublicView) {
+            // For public view, we might want to map types or ensure they are displayed nicely.
+            // The user asked to "Hide competition... tags from public users. Public users can instead see 2 new tags 'Center Closed' and 'Events'"
+            // This might mean we remap the displayed type, or we rely on the saved type being one of the new ones.
+            // Let's assume we treat 'center_closed' -> 'Center Closed' and everything else as 'Events' if public?
+            // Or just display raw if it matches, and 'Events' fallback.
+            return evt;
+          }
+          return evt;
+        });
+        setEvents(processedEvents);
       }
 
-      if (teamsRes.ok) {
+      if (teamsRes && teamsRes.ok) {
         const data = await teamsRes.json();
         setTeams(data.teams);
       }
@@ -83,6 +102,7 @@ export default function CalendarPage() {
   };
 
   const handleDateClick = (date: Date) => {
+    if (isPublicView) return; // Disable creation for public
     setSelectedDate(date);
     setEventForm((prev) => ({
       ...prev,
@@ -93,6 +113,7 @@ export default function CalendarPage() {
   };
 
   const handleAddEvent = () => {
+    if (isPublicView) return;
     setSelectedEvent(null);
     setSelectedDate(new Date());
     const now = new Date();
@@ -187,13 +208,33 @@ export default function CalendarPage() {
     window.open(url, '_blank');
   };
 
-  if (isLoading) {
+  if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
       </div>
     );
   }
+
+  // Helper to format event type for display
+  const getDisplayEventType = (type: string) => {
+    if (isPublicView) {
+      if (type === 'center_closed') return 'Center Closed';
+      return 'Event'; // Default fallback for public
+    }
+    // Internal view full map
+    const map: Record<string, string> = {
+      'center_closed': 'Center Closed',
+      'public_event': 'Public Event',
+      'meeting': 'Meeting',
+      'competition': 'Competition',
+      'deadline': 'Deadline',
+      'class': 'Class',
+      'practice': 'Practice',
+      'other': 'Other'
+    };
+    return map[type] || type;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -216,18 +257,17 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Team Filter */}
-        {teams.length > 0 && (
+        {/* Team Filter - Hide for public */}
+        {!isPublicView && teams.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center space-x-2 overflow-x-auto pb-2">
               <span className="text-sm text-gray-500 flex-shrink-0">Filter by team:</span>
               <a
                 href="/calendar"
-                className={`px-3 py-1.5 text-sm rounded-full ${
-                  !teamFilter
-                    ? 'bg-sky-500 text-white'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                }`}
+                className={`px-3 py-1.5 text-sm rounded-full ${!teamFilter
+                  ? 'bg-sky-500 text-white'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
               >
                 All
               </a>
@@ -235,11 +275,10 @@ export default function CalendarPage() {
                 <a
                   key={team.id}
                   href={`/calendar?team=${team.slug}`}
-                  className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap ${
-                    teamFilter === team.slug
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap ${teamFilter === team.slug
+                    ? 'bg-sky-500 text-white'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    }`}
                 >
                   {team.name}
                 </a>
@@ -253,7 +292,8 @@ export default function CalendarPage() {
           events={events}
           onEventClick={handleEventClick}
           onDateClick={handleDateClick}
-          onAddEvent={handleAddEvent}
+          onAddEvent={!isPublicView ? handleAddEvent : undefined}
+          isPublicView={isPublicView}
         />
 
         {/* Event Modal */}
@@ -281,7 +321,7 @@ export default function CalendarPage() {
                     <h4 className="text-xl font-semibold text-gray-900">
                       {selectedEvent.title}
                     </h4>
-                    {selectedEvent.team && (
+                    {selectedEvent.team && !isPublicView && (
                       <p className="text-sm text-gray-500">{selectedEvent.team.name}</p>
                     )}
                   </div>
@@ -305,7 +345,7 @@ export default function CalendarPage() {
                     )}
                     <div className="flex items-center space-x-2 text-gray-600">
                       <span className="font-medium">Type:</span>
-                      <span className="capitalize">{selectedEvent.eventType}</span>
+                      <span className="capitalize">{getDisplayEventType(selectedEvent.eventType)}</span>
                     </div>
                   </div>
                   <div className="flex space-x-2 pt-4 border-t">
@@ -316,159 +356,177 @@ export default function CalendarPage() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Title *
-                    </label>
-                    <input
-                      type="text"
-                      value={eventForm.title}
-                      onChange={(e) =>
-                        setEventForm((prev) => ({ ...prev, title: e.target.value }))
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                      placeholder="Event title"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      value={eventForm.description}
-                      onChange={(e) =>
-                        setEventForm((prev) => ({ ...prev, description: e.target.value }))
-                      }
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                      placeholder="Event description"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
+                !isPublicView && (
+                  <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Event Type
-                      </label>
-                      <select
-                        value={eventForm.eventType}
-                        onChange={(e) =>
-                          setEventForm((prev) => ({ ...prev, eventType: e.target.value }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                      >
-                        <option value="meeting">Meeting</option>
-                        <option value="competition">Competition</option>
-                        <option value="deadline">Deadline</option>
-                        <option value="class">Class</option>
-                        <option value="practice">Practice</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Team
-                      </label>
-                      <select
-                        value={eventForm.teamId}
-                        onChange={(e) =>
-                          setEventForm((prev) => ({ ...prev, teamId: e.target.value }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                      >
-                        <option value="">No team (personal)</option>
-                        {teams.map((team) => (
-                          <option key={team.id} value={team.id}>
-                            {team.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="allDay"
-                      checked={eventForm.allDay}
-                      onChange={(e) =>
-                        setEventForm((prev) => ({ ...prev, allDay: e.target.checked }))
-                      }
-                      className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="allDay" className="text-sm text-gray-700">
-                      All day event
-                    </label>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start
+                        Title *
                       </label>
                       <input
-                        type={eventForm.allDay ? 'date' : 'datetime-local'}
-                        value={eventForm.startTime}
+                        type="text"
+                        value={eventForm.title}
                         onChange={(e) =>
-                          setEventForm((prev) => ({ ...prev, startTime: e.target.value }))
+                          setEventForm((prev) => ({ ...prev, title: e.target.value }))
                         }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        placeholder="Event title"
                         required
                       />
                     </div>
 
-                    {!eventForm.allDay && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        value={eventForm.description}
+                        onChange={(e) =>
+                          setEventForm((prev) => ({ ...prev, description: e.target.value }))
+                        }
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        placeholder="Event description"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          End
+                          Event Type
                         </label>
-                        <input
-                          type="datetime-local"
-                          value={eventForm.endTime}
+                        <select
+                          value={eventForm.eventType}
                           onChange={(e) =>
-                            setEventForm((prev) => ({ ...prev, endTime: e.target.value }))
+                            setEventForm((prev) => ({ ...prev, eventType: e.target.value }))
                           }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        >
+                          <option value="meeting">Meeting</option>
+                          <option value="competition">Competition</option>
+                          <option value="deadline">Deadline</option>
+                          <option value="class">Class</option>
+                          <option value="practice">Practice</option>
+                          <option value="center_closed">Center Closed</option>
+                          <option value="public_event">Public Event</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Team
+                        </label>
+                        <select
+                          value={eventForm.teamId}
+                          onChange={(e) =>
+                            setEventForm((prev) => ({ ...prev, teamId: e.target.value }))
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        >
+                          <option value="">No team (personal)</option>
+                          {teams.map((team) => (
+                            <option key={team.id} value={team.id}>
+                              {team.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="allDay"
+                        checked={eventForm.allDay}
+                        onChange={(e) =>
+                          setEventForm((prev) => ({ ...prev, allDay: e.target.checked }))
+                        }
+                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="allDay" className="text-sm text-gray-700">
+                        All day event
+                      </label>
+                    </div>
+
+                    {/* Public visibility toggle */}
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="isPublic"
+                        checked={eventForm.isPublic}
+                        onChange={(e) => setEventForm(prev => ({ ...prev, isPublic: e.target.checked }))}
+                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="isPublic" className="text-sm text-gray-700">
+                        Visible to Public (Login not required)
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start
+                        </label>
+                        <input
+                          type={eventForm.allDay ? 'date' : 'datetime-local'}
+                          value={eventForm.startTime}
+                          onChange={(e) =>
+                            setEventForm((prev) => ({ ...prev, startTime: e.target.value }))
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                          required
                         />
                       </div>
-                    )}
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      value={eventForm.location}
-                      onChange={(e) =>
-                        setEventForm((prev) => ({ ...prev, location: e.target.value }))
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
-                      placeholder="Event location"
-                    />
-                  </div>
+                      {!eventForm.allDay && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            End
+                          </label>
+                          <input
+                            type="datetime-local"
+                            value={eventForm.endTime}
+                            onChange={(e) =>
+                              setEventForm((prev) => ({ ...prev, endTime: e.target.value }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                          />
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex justify-end space-x-3 pt-4 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowEventModal(false);
-                        resetForm();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={isCreating}>
-                      {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Event'}
-                    </Button>
-                  </div>
-                </form>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        value={eventForm.location}
+                        onChange={(e) =>
+                          setEventForm((prev) => ({ ...prev, location: e.target.value }))
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        placeholder="Event location"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4 border-t">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setShowEventModal(false);
+                          resetForm();
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={isCreating}>
+                        {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Event'}
+                      </Button>
+                    </div>
+                  </form>
+                )
               )}
             </div>
           </div>
