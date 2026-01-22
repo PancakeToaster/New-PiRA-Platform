@@ -2,6 +2,8 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
+import { cookies } from 'next/headers';
+import { TEST_ROLE_CONFIGS } from './permissions';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -96,12 +98,33 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.roles = token.roles as string[];
-        session.user.permissions = token.permissions as { resource: string; action: string }[];
-        session.user.profiles = token.profiles as {
-          parent?: string;
-          student?: string;
-          teacher?: string;
-        };
+        session.user.permissions = token.permissions as any;
+        session.user.profiles = token.profiles as any;
+
+        try {
+          const cookieStore = cookies();
+          const testModeRole = cookieStore.get('test-mode-role')?.value;
+
+          if (testModeRole && (token.roles as string[]).includes('Admin')) {
+            if (TEST_ROLE_CONFIGS[testModeRole]) {
+              const testConfig = TEST_ROLE_CONFIGS[testModeRole];
+              session.user.roles = testConfig.roles;
+              session.user.permissions = testConfig.permissions.map(p => ({
+                resource: p.resource,
+                action: p.action
+              }));
+            } else {
+              // Fallback if config not found but role exists (e.g. simple UI switch)
+              session.user.roles = [testModeRole];
+            }
+            // @ts-ignore
+            session.user.isTestMode = true;
+            // @ts-ignore
+            session.user.testRole = testModeRole;
+          }
+        } catch (e) {
+          // Ignore cookie errors
+        }
       }
       return session;
     },

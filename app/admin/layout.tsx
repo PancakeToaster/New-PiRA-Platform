@@ -15,6 +15,7 @@ import {
   LogOut,
   FolderKanban,
   Calendar,
+  Boxes,
 } from 'lucide-react';
 import AppSwitcher from '@/components/layout/AppSwitcher';
 
@@ -39,28 +40,17 @@ export default async function AdminLayout({
             <Link href="/" className="block mb-8">
               <h1 className="text-xl font-bold text-gray-900">Robotics Academy</h1>
             </Link>
-            <h2 className="text-sm font-semibold text-sky-600 uppercase tracking-wider mb-4">Admin Panel</h2>
+
+            <Link href="/admin" className="flex items-center space-x-2 text-sky-600 mb-6 hover:text-sky-700 transition-colors">
+              <LayoutDashboard className="w-5 h-5" />
+              <span className="text-sm font-bold uppercase tracking-wider">Admin Panel</span>
+            </Link>
 
             <nav className="space-y-1">
-              <Link
-                href="/admin"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-              >
-                <LayoutDashboard className="w-5 h-5" />
-                <span>Dashboard</span>
-              </Link>
-
-              <div className="pt-4 pb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">Content</h3>
+              {/* CONTENT & OFFERINGS */}
+              <div className="pt-2 pb-2">
+                <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">Content & Offerings</h3>
               </div>
-
-              <Link
-                href="/admin/pages"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-              >
-                <FileText className="w-5 h-5" />
-                <span>Pages</span>
-              </Link>
 
               <Link
                 href="/admin/blog"
@@ -75,27 +65,7 @@ export default async function AdminLayout({
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
               >
                 <GraduationCap className="w-5 h-5" />
-                <span>Courses</span>
-              </Link>
-
-              <div className="pt-4 pb-2">
-                <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">Management</h3>
-              </div>
-
-              <Link
-                href="/admin/users"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-              >
-                <Users className="w-5 h-5" />
-                <span>Users</span>
-              </Link>
-
-              <Link
-                href="/admin/invoices"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
-              >
-                <DollarSign className="w-5 h-5" />
-                <span>Invoices</span>
+                <span>Offerings</span>
               </Link>
 
               <Link
@@ -106,6 +76,45 @@ export default async function AdminLayout({
                 <span>Knowledge Base</span>
               </Link>
 
+              {/* FINANCE & OPS */}
+              <div className="pt-4 pb-2">
+                <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">Finance & Ops</h3>
+              </div>
+
+
+              <Link
+                href="/admin/invoices"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <DollarSign className="w-5 h-5" />
+                <span>Invoices</span>
+              </Link>
+
+              <Link
+                href="/admin/finance/expenses"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <FileText className="w-5 h-5" />
+                <span>Expenses</span>
+              </Link>
+
+              <Link
+                href="/admin/finance/inventory"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <Boxes className="w-5 h-5" />
+                <span>Inventory</span>
+              </Link>
+
+              <Link
+                href="/admin/finance/payroll"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <Users className="w-5 h-5" />
+                <span>Payroll</span>
+              </Link>
+
+              {/* PROJECTS */}
               <div className="pt-4 pb-2">
                 <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">Projects</h3>
               </div>
@@ -126,9 +135,18 @@ export default async function AdminLayout({
                 <span>Calendar Events</span>
               </Link>
 
+              {/* SYSTEM */}
               <div className="pt-4 pb-2">
                 <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase">System</h3>
               </div>
+
+              <Link
+                href="/admin/users"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <Users className="w-5 h-5" />
+                <span>Users</span>
+              </Link>
 
               <Link
                 href="/admin/analytics"

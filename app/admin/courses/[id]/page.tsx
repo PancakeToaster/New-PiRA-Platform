@@ -19,6 +19,8 @@ interface Course {
   topics: string[];
   image: string | null;
   isActive: boolean;
+  isHidden: boolean;
+  hidePrice: boolean;
   isDevelopment: boolean;
 }
 
@@ -41,6 +43,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     price: '',
     image: '',
     isActive: true,
+    isHidden: false,
+    hidePrice: false,
     isDevelopment: false,
   });
 
@@ -94,6 +98,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
             price: course.price?.toString() || '',
             image: course.image || '',
             isActive: course.isActive,
+            isHidden: course.isHidden || false,
+            hidePrice: course.hidePrice || false,
             isDevelopment: course.isDevelopment || false,
           });
           setTopicsInput(course.topics?.join(', ') || '');
@@ -358,13 +364,39 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
               <div className="flex items-center">
                 <input
                   type="checkbox"
+                  id="isHidden"
+                  checked={formData.isHidden}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isHidden: e.target.checked }))}
+                  className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+                />
+                <label htmlFor="isHidden" className="ml-2 text-sm text-gray-700">
+                  Hidden (accessible via direct link only)
+                </label>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="hidePrice"
+                  checked={formData.hidePrice}
+                  onChange={(e) => setFormData(prev => ({ ...prev, hidePrice: e.target.checked }))}
+                  className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+                />
+                <label htmlFor="hidePrice" className="ml-2 text-sm text-gray-700">
+                  Hide Price (contact for pricing)
+                </label>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
                   id="isDevelopment"
                   checked={formData.isDevelopment}
                   onChange={(e) => setFormData(prev => ({ ...prev, isDevelopment: e.target.checked }))}
                   className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                 />
                 <label htmlFor="isDevelopment" className="ml-2 text-sm text-gray-700">
-                  In Development (shows in "Coming Soon" section, allows interest voting)
+                  In Development (shows in "Coming Soon" section)
                 </label>
               </div>
             </div>

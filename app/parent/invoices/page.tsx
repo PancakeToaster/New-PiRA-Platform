@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Link from 'next/link';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import InvoiceDownloadButton from '@/components/invoices/InvoiceDownloadButton';
 
 export default async function ParentInvoicesPage() {
   const user = await getCurrentUser();
@@ -112,10 +113,16 @@ export default async function ParentInvoicesPage() {
                   )}
                 </div>
 
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-end gap-3">
+                  {/* Client-side PDF Download */}
+                  {/* Using suppressHydrationWarning to avoid mismatch on PDF blob generation */}
+                  <div suppressHydrationWarning>
+                    <InvoiceDownloadButton invoice={invoice} />
+                  </div>
+
                   <Link
                     href={`/parent/invoices/${invoice.id}`}
-                    className="text-sky-500 hover:text-sky-600 text-sm font-medium"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                   >
                     View Details →
                   </Link>

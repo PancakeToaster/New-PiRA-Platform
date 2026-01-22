@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isDevelopment } = body;
+    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isHidden, hidePrice, isDevelopment } = body;
 
     if (!name || !slug || !description) {
       return NextResponse.json(
@@ -84,6 +84,8 @@ export async function POST(request: NextRequest) {
         topics: topics || [],
         image,
         isActive: isActive ?? true,
+        isHidden: isHidden ?? false,
+        hidePrice: hidePrice ?? false,
         isDevelopment: isDevelopment ?? false,
       },
     });

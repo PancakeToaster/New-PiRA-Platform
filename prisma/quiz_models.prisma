@@ -1,0 +1,91 @@
+model Quiz {
+  id               String   @id @default(cuid())
+  lessonId         String?  @unique // Link to lesson if part of course
+  courseId         String?  // Denormalized for easier querying
+  title            String
+  description      String?  @db.Text
+  instructions     String?  @db.Text
+  timeLimit        Int?     // in minutes, null = no limit
+  passingScore     Float    @default(70) // percentage
+  maxAttempts      Int?     // null = unlimited
+  shuffleQuestions Boolean  @default(false)
+  shuffleAnswers   Boolean  @default(false)
+  showResults      Boolean  @default(true) // Show results immediately after submission
+  isPublished      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  lesson    Lesson?        @relation(fields: [lessonId], references: [id])
+  course    Course?        @relation(fields: [courseId], references: [id])
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  @@index([lessonId])
+  @@index([courseId])
+}
+
+model QuizQuestion {
+  id            String   @id @default(cuid())
+  quizId        String
+  questionType  String   // multiple_choice, true_false, short_answer, essay
+  question      String   @db.Text
+  points        Float    @default(1)
+  order         Int      @default(0)
+  explanation   String?  @db.Text // Shown after answering
+  options       Json?    // For multiple choice: [{text: string, isCorrect: boolean}]
+  correctAnswer String?  @db.Text // For true/false, short answer
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  quiz    Quiz                 @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizQuestionAnswer[]
+
+  @@index([quizId])
+  @@index([order])
+}
+
+model QuizAttempt {
+  id           String    @id @default(cuid())
+  quizId       String
+  studentId    String
+  startedAt    DateTime  @default(now())
+  submittedAt  DateTime?
+  score        Float?    // Percentage score
+  pointsEarned Float?    // Total points earned
+  pointsTotal  Float?    // Total points possible
+  isPassing    Boolean?  // Based on passingScore
+  timeSpent    Int?      // in seconds
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  quiz     Quiz                 @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student  StudentProfile       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers  QuizQuestionAnswer[]
+
+  @@index([quizId])
+  @@index([studentId])
+  @@index([submittedAt])
+}
+
+model QuizQuestionAnswer {
+  id           String    @id @default(cuid())
+  attemptId    String
+  questionId   String
+  answer       String?   @db.Text // Student's answer
+  isCorrect    Boolean?  // Auto-graded for objective questions
+  pointsEarned Float?    // Points awarded
+  feedback     String?   @db.Text // Teacher feedback for manual grading
+  gradedBy     String?   // Teacher who graded (for manual grading)
+  gradedAt     DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  grader   User?        @relation("QuizGrader", fields: [gradedBy], references: [id])
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
+  @@index([questionId])
+  @@index([gradedBy])
+}

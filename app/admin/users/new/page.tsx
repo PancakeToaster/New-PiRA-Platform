@@ -76,6 +76,7 @@ export default function CreateUserPage() {
       });
 
       if (response.ok) {
+        router.refresh();
         router.push('/admin/users');
       } else {
         const data = await response.json();
@@ -200,11 +201,10 @@ export default function CreateUserPage() {
                 .map((role) => (
                   <label
                     key={role.id}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                      formData.roles.includes(role.name)
-                        ? 'border-sky-500 bg-sky-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData.roles.includes(role.name)
+                      ? 'border-sky-500 bg-sky-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                   >
                     <input
                       type="checkbox"

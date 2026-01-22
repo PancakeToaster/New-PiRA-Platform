@@ -119,12 +119,7 @@ export default function Navbar() {
   }, []);
 
   const getDashboardLink = () => {
-    if (!user) return '/login';
-    if (clientHasRole(user, 'Admin')) return '/admin';
-    if (clientHasRole(user, 'Teacher')) return '/lms';
-    if (clientHasRole(user, 'Student')) return '/lms';
-    if (clientHasRole(user, 'Parent')) return '/parent';
-    return '/dashboard';
+    return user ? '/portal' : '/login';
   };
 
   // Collapsed state when scrolled
@@ -195,11 +190,11 @@ export default function Navbar() {
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
                       <Link
-                        href={getDashboardLink()}
+                        href="/portal"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50"
                         onClick={() => setIsDropdownOpen(false)}
                       >
-                        Dashboard
+                        Portal
                       </Link>
                       <Link
                         href="/contact"

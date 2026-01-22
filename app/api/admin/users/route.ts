@@ -21,9 +21,32 @@ export async function GET() {
               role: true,
             },
           },
-          studentProfile: { select: { id: true } },
-          parentProfile: { select: { id: true } },
-          teacherProfile: { select: { id: true } },
+          studentProfile: {
+            include: {
+              referrals: { select: { id: true, user: { select: { firstName: true, lastName: true } } } },
+              referredBy: { select: { id: true, user: { select: { firstName: true, lastName: true } } } },
+              parents: { include: { parent: { include: { user: { select: { firstName: true, lastName: true } } } } } },
+            }
+          },
+          parentProfile: {
+            include: {
+              students: {
+                include: {
+                  student: {
+                    include: {
+                      user: { select: { firstName: true, lastName: true } },
+                      _count: { select: { referrals: true } }
+                    }
+                  }
+                }
+              },
+              invoices: {
+                where: { status: { not: 'paid' } },
+                select: { id: true, total: true, status: true, dueDate: true }
+              }
+            }
+          },
+          teacherProfile: { select: { id: true, specialization: true } },
         },
       }),
       prisma.studentProfile.count(),

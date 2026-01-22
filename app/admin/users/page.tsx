@@ -4,24 +4,37 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Search, UserPlus, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/Switch';
+import { Search, UserPlus, Loader2, DollarSign, Users as UsersIcon, GraduationCap, AlertCircle, Edit2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
-interface UserWithRoles {
+// Types reflecting the updated API response
+interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   createdAt: string;
-  lastLogin: string | null;
-  roles: {
-    role: {
-      id: string;
-      name: string;
-    };
-  }[];
-  studentProfile: { id: string } | null;
-  parentProfile: { id: string } | null;
-  teacherProfile: { id: string } | null;
+  // This is now fetched
+  isApproved: boolean;
+  roles: { role: { id: string; name: string } }[];
+
+  studentProfile?: {
+    id: string;
+    performanceDiscount: number;
+    referredBy?: { user: { firstName: string; lastName: string } };
+    referrals: { id: string }[];
+    parents: { parent: { user: { firstName: string; lastName: string } } }[];
+  } | null;
+
+  parentProfile?: {
+    id: string;
+    students: { student: { user: { firstName: string; lastName: string } } }[];
+    invoices: { id: string; total: number; status: string; dueDate: string }[];
+  } | null;
+
+  teacherProfile?: { id: string; specialization: string } | null;
 }
 
 interface UserStats {
@@ -29,55 +42,42 @@ interface UserStats {
   students: number;
   parents: number;
   teachers: number;
+  pending?: number; // Optional if you want to track pending here
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserWithRoles[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats>({ total: 0, students: 0, parents: 0, teachers: 0 });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'students' | 'parents' | 'teachers'>('all');
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const response = await fetch('/api/admin/users');
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data.users);
-          setStats(data.stats);
-        }
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch =
-      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (roleFilter === 'all') return matchesSearch;
-
-    const roleNames = user.roles.map(r => r.role.name.toLowerCase());
-    return matchesSearch && roleNames.includes(roleFilter.toLowerCase());
-  });
+  async function fetchUsers() {
+    try {
+      const response = await fetch('/api/admin/users', { cache: 'no-store' });
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data.users);
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleDeleteUser = async (userId: string) => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return;
     }
-
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
-      });
-
+      const response = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
       if (response.ok) {
         setUsers(users.filter(u => u.id !== userId));
         setStats(prev => ({ ...prev, total: prev.total - 1 }));
@@ -85,10 +85,51 @@ export default function AdminUsersPage() {
         alert('Failed to delete user');
       }
     } catch (error) {
-      console.error('Failed to delete user:', error);
       alert('Failed to delete user');
     }
   };
+
+  const handleStatusToggle = async (userId: string, currentStatus: boolean) => {
+    setTogglingId(userId);
+    try {
+      const newStatus = !currentStatus;
+      // We are sending `approve: newStatus`.
+      // If newStatus is true (Approve), API approves.
+      // If newStatus is false (Deactivate), API logic (which we updated):
+      // if approve is false, and no explicit 'reject' action, it deactivates.
+      const response = await fetch('/api/admin/users/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, approve: newStatus }),
+      });
+
+      if (response.ok) {
+        setUsers(users.map(u => u.id === userId ? { ...u, isApproved: newStatus } : u));
+      } else {
+        alert('Failed to update status');
+      }
+    } catch (error) {
+      console.error('Failed to toggle status:', error);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  // Filtering Logic
+  const filteredUsers = users.filter(user => {
+    const matchesSearch =
+      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (activeTab === 'students') return user.roles.some(r => r.role.name.toLowerCase() === 'student');
+    if (activeTab === 'parents') return user.roles.some(r => r.role.name.toLowerCase() === 'parent');
+    if (activeTab === 'teachers') return user.roles.some(r => r.role.name.toLowerCase() === 'teacher');
+
+    return true; // 'all'
+  });
 
   if (loading) {
     return (
@@ -101,7 +142,7 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-3xl font-bold text-gray-900">CRM & Users</h1>
         <Link href="/admin/users/new">
           <Button>
             <UserPlus className="w-4 h-4 mr-2" />
@@ -110,76 +151,212 @@ export default function AdminUsersPage() {
         </Link>
       </div>
 
+      {/* Stats Cards - Click to switch tabs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-500">Total Users</p>
-            </div>
+        <Card
+          className={`cursor-pointer transition-all ${activeTab === 'all' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          onClick={() => setActiveTab('all')}
+        >
+          <CardContent className="pt-6 text-center">
+            <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+            <p className="text-sm text-gray-500">Total Users</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-sky-600">{stats.students}</p>
-              <p className="text-sm text-gray-500">Students</p>
-            </div>
+        <Card
+          className={`cursor-pointer transition-all ${activeTab === 'students' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          onClick={() => setActiveTab('students')}
+        >
+          <CardContent className="pt-6 text-center">
+            <p className="text-3xl font-bold text-sky-600">{stats.students}</p>
+            <p className="text-sm text-gray-500">Students</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">{stats.parents}</p>
-              <p className="text-sm text-gray-500">Parents</p>
-            </div>
+        <Card
+          className={`cursor-pointer transition-all ${activeTab === 'parents' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          onClick={() => setActiveTab('parents')}
+        >
+          <CardContent className="pt-6 text-center">
+            <p className="text-3xl font-bold text-green-600">{stats.parents}</p>
+            <p className="text-sm text-gray-500">Parents</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-purple-600">{stats.teachers}</p>
-              <p className="text-sm text-gray-500">Teachers</p>
-            </div>
+        <Card
+          className={`cursor-pointer transition-all ${activeTab === 'teachers' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          onClick={() => setActiveTab('teachers')}
+        >
+          <CardContent className="pt-6 text-center">
+            <p className="text-3xl font-bold text-purple-600">{stats.teachers}</p>
+            <p className="text-sm text-gray-500">Teachers</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Search and Filter */}
-      <Card>
-        <CardContent className="py-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-            >
-              <option value="all">All Roles</option>
-              <option value="student">Students</option>
-              <option value="parent">Parents</option>
-              <option value="teacher">Teachers</option>
-              <option value="admin">Admins</option>
-            </select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-4 bg-white p-4 rounded-lg border shadow-sm">
+        <Search className="text-gray-400 w-5 h-5" />
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 outline-none text-sm"
+        />
+      </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>All Users ({filteredUsers.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+        <CardContent className="p-0">
+          {/* TABS CONTENT */}
+
+          {/* --- STUDENTS TAB --- */}
+          {activeTab === 'students' && (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent(s)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referrals</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.map(user => (
+                  <tr key={user.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold mr-3">
+                          {user.firstName[0]}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{user.firstName} {user.lastName}</div>
+                          <div className="text-xs text-gray-500">{user.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.studentProfile?.parents.map(p => (
+                        <div key={p.parent.user.firstName} className="text-sm text-gray-600">
+                          {p.parent.user.firstName} {p.parent.user.lastName}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-600">
+                        {user.studentProfile?.referrals.length || 0} Students
+                      </div>
+                      {user.studentProfile?.referredBy && (
+                        <div className="text-xs text-gray-400">
+                          Referred by: {user.studentProfile.referredBy.user.firstName}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={user.isApproved}
+                          onCheckedChange={() => handleStatusToggle(user.id, user.isApproved)}
+                          disabled={togglingId === user.id}
+                        />
+                        <span className={`text-xs font-medium ${user.isApproved ? 'text-green-600' : 'text-amber-600'}`}>
+                          {user.isApproved ? 'Active' : 'Pending'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-green-600">
+                          {/* Calculate total discount: 5% per referral (cap 20%) + Performance */}
+                          {Math.min((user.studentProfile?.referrals.length || 0) * 5, 20) + (user.studentProfile?.performanceDiscount || 0)}%
+                        </span>
+                        {/* TODO: Add Edit Dialog for Performance Discount */}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link href={`/admin/users/${user.id}`}>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {/* --- PARENTS TAB --- */}
+          {activeTab === 'parents' && (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Children</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.map(user => {
+                  const overdueInvoices = user.parentProfile?.invoices.filter(i => {
+                    // Simple check for now, can improve
+                    return i.status !== 'paid' && new Date(i.dueDate) < new Date();
+                  }) || [];
+
+                  return (
+                    <tr key={user.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
+                            {user.firstName[0]}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">{user.firstName} {user.lastName}</div>
+                            <div className="text-xs text-gray-500">{user.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {user.parentProfile?.students.map(s => (
+                          <span key={s.student.user.firstName} className="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs text-gray-700 mr-2 mb-1">
+                            {s.student.user.firstName} {s.student.user.lastName}
+                          </span>
+                        ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={user.isApproved}
+                            onCheckedChange={() => handleStatusToggle(user.id, user.isApproved)}
+                            disabled={togglingId === user.id}
+                          />
+                          <span className={`text-xs font-medium ${user.isApproved ? 'text-green-600' : 'text-amber-600'}`}>
+                            {user.isApproved ? 'Active' : 'Pending'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {overdueInvoices.length > 0 ? (
+                          <div className="flex items-center text-red-600 gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-sm font-medium">{overdueInvoices.length} Overdue</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-green-600 font-medium">Up to date</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Link href={`/admin/users/${user.id}`}>
+                          <Button variant="ghost" size="sm">Edit</Button>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+
+          {/* --- ALL / TEACHERS TAB --- */}
+          {(activeTab === 'all' || activeTab === 'teachers') && (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -243,9 +420,16 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={user.isApproved}
+                            onCheckedChange={() => handleStatusToggle(user.id, user.isApproved)}
+                            disabled={togglingId === user.id}
+                          />
+                          <span className={`text-xs font-medium ${user.isApproved ? 'text-green-600' : 'text-amber-600'}`}>
+                            {user.isApproved ? 'Active' : 'Pending'}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}
@@ -254,11 +438,6 @@ export default function AdminUsersPage() {
                         <Link href={`/admin/users/${user.id}`}>
                           <Button variant="outline" size="sm">
                             Edit
-                          </Button>
-                        </Link>
-                        <Link href={`/admin/users/${user.id}/view`}>
-                          <Button variant="outline" size="sm">
-                            View
                           </Button>
                         </Link>
                         <Button
@@ -274,7 +453,7 @@ export default function AdminUsersPage() {
                 )}
               </tbody>
             </table>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { logActivity } from '@/lib/logging';
 
 export async function GET(
   request: NextRequest,
@@ -110,6 +111,16 @@ export async function PUT(
       },
     });
 
+    await logActivity({
+      userId: currentUser.id,
+      action: 'invoice.updated',
+      entityType: 'Invoice',
+      entityId: id,
+      details: { status, fields: Object.keys(body) },
+      ipAddress: request.headers.get('x-forwarded-for') || undefined,
+      userAgent: request.headers.get('user-agent') || undefined,
+    });
+
     return NextResponse.json({ invoice });
   } catch (error) {
     console.error('Failed to update invoice:', error);
@@ -132,6 +143,15 @@ export async function DELETE(
   try {
     await prisma.invoice.delete({
       where: { id },
+    });
+
+    await logActivity({
+      userId: currentUser.id,
+      action: 'invoice.deleted',
+      entityType: 'Invoice',
+      entityId: id,
+      ipAddress: request.headers.get('x-forwarded-for') || undefined,
+      userAgent: request.headers.get('user-agent') || undefined,
     });
 
     return NextResponse.json({ success: true });

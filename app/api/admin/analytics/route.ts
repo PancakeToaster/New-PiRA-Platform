@@ -81,6 +81,28 @@ export async function GET() {
       }),
     ]);
 
+    // Fetch recent activity and error logs
+    const [activityLogs, errorLogs] = await Promise.all([
+      prisma.activityLog.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { firstName: true, lastName: true },
+          },
+        },
+      }),
+      prisma.errorLog.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { firstName: true, lastName: true },
+          },
+        },
+      }),
+    ]);
+
     return NextResponse.json({
       users: {
         total: totalUsers,
@@ -109,6 +131,8 @@ export async function GET() {
         path: pv.path,
         count: pv._count.path,
       })),
+      activityLogs,
+      errorLogs,
     });
   } catch (error) {
     console.error('Failed to fetch analytics:', error);

@@ -41,18 +41,7 @@ export default function LoginPage() {
         const response = await fetch('/api/auth/session');
         const session = await response.json();
 
-        // Redirect based on user role
-        if (session?.user?.roles?.some((role: any) => role.name === 'Admin')) {
-          router.push('/admin');
-        } else if (session?.user?.roles?.some((role: any) => role.name === 'Teacher')) {
-          router.push('/lms');
-        } else if (session?.user?.roles?.some((role: any) => role.name === 'Parent')) {
-          router.push('/parent');
-        } else if (session?.user?.roles?.some((role: any) => role.name === 'Student')) {
-          router.push('/lms');
-        } else {
-          router.push('/');
-        }
+        router.push('/portal');
         router.refresh();
       }
     } catch (err) {

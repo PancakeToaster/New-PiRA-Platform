@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import bcrypt from 'bcryptjs';
+import { logActivity } from '@/lib/logging';
 
 export async function GET(
   request: NextRequest,
@@ -25,7 +26,21 @@ export async function GET(
           },
         },
         studentProfile: true,
-        parentProfile: true,
+        parentProfile: {
+          include: {
+            students: {
+              include: {
+                student: {
+                  include: {
+                    user: {
+                      select: { firstName: true, lastName: true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         teacherProfile: true,
       },
     });
@@ -133,6 +148,17 @@ export async function PUT(
             roleId: role.id,
           })),
         });
+
+        // Log role change
+        await logActivity({
+          userId: currentUser.id,
+          action: 'user.roles.updated',
+          entityType: 'User',
+          entityId: id,
+          details: { newRoles: roleNames },
+          ipAddress: request.headers.get('x-forwarded-for') || undefined,
+          userAgent: request.headers.get('user-agent') || undefined,
+        });
       }
 
       // Update profiles
@@ -146,17 +172,21 @@ export async function PUT(
             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
             grade,
             school,
+            performanceDiscount: body.performanceDiscount ? parseFloat(body.performanceDiscount) : 0,
+            referredById: body.referredById || null,
           },
           update: {
             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
             grade,
             school,
+            performanceDiscount: body.performanceDiscount ? parseFloat(body.performanceDiscount) : 0,
+            referredById: body.referredById || null,
           },
         });
       }
 
       if (roleNamesList.includes('parent')) {
-        await tx.parentProfile.upsert({
+        const parentProfile = await tx.parentProfile.upsert({
           where: { userId: id },
           create: {
             userId: id,
@@ -168,6 +198,25 @@ export async function PUT(
             address,
           },
         });
+
+        // Update Children Links
+        // We expect body.studentIds to be an array of StudentProfile IDs
+        if (body.studentIds && Array.isArray(body.studentIds)) {
+          // Delete existing links
+          await tx.parentStudent.deleteMany({
+            where: { parentId: parentProfile.id }
+          });
+
+          // Create new links
+          if (body.studentIds.length > 0) {
+            await tx.parentStudent.createMany({
+              data: body.studentIds.map((sid: string) => ({
+                parentId: parentProfile.id,
+                studentId: sid
+              }))
+            });
+          }
+        }
       }
 
       if (roleNamesList.includes('teacher')) {
@@ -187,6 +236,23 @@ export async function PUT(
 
       return user;
     });
+
+    // Log profile update
+    const changedFields = Object.keys(body).filter(key =>
+      !['studentIds'].includes(key) // Exclude internal fields
+    );
+
+    if (changedFields.length > 0) {
+      await logActivity({
+        userId: currentUser.id,
+        action: 'user.profile.updated',
+        entityType: 'User',
+        entityId: id,
+        details: { fields: changedFields },
+        ipAddress: request.headers.get('x-forwarded-for') || undefined,
+        userAgent: request.headers.get('user-agent') || undefined,
+      });
+    }
 
     return NextResponse.json({ user: updatedUser });
   } catch (error) {
@@ -220,7 +286,16 @@ export async function DELETE(
       where: { id },
     });
 
-    return NextResponse.json({ success: true });
+    await logActivity({
+      userId: currentUser.id,
+      action: 'user.deleted',
+      entityType: 'User',
+      entityId: id,
+      ipAddress: request.headers.get('x-forwarded-for') || undefined,
+      userAgent: request.headers.get('user-agent') || undefined,
+    });
+
+    return NextResponse.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Failed to delete user:', error);
     return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });

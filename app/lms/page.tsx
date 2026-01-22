@@ -286,18 +286,18 @@ export default async function LMSDashboard() {
             {isTeacher && (
               <>
                 <Link
-                  href="/lms/knowledge/new"
+                  href="/wiki"
                   className="block p-4 bg-sky-50 border-2 border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
                 >
                   <h3 className="font-semibold text-sky-800">Create Knowledge Node</h3>
-                  <p className="text-sm text-sky-600">Add new content to the knowledge base</p>
+                  <p className="text-sm text-sky-600">Go to Wiki to add content</p>
                 </Link>
                 <Link
-                  href="/lms/assignments/new"
+                  href="/admin/courses"
                   className="block p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
                 >
                   <h3 className="font-semibold text-blue-900">Create Assignment</h3>
-                  <p className="text-sm text-blue-700">Assign work to students</p>
+                  <p className="text-sm text-blue-700">Select a course to add assignment</p>
                 </Link>
               </>
             )}

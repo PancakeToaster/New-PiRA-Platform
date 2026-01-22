@@ -102,13 +102,22 @@ export async function POST(request: NextRequest) {
         total,
         notes,
         items: {
-          create: items.map((item: { description: string; quantity: number; unitPrice: number }) => ({
+          create: items.map((item: { description: string; quantity: number; unitPrice: number; studentId?: string; courseId?: string }) => ({
             description: item.description,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             total: item.quantity * item.unitPrice,
+            studentId: item.studentId || null,
+            courseId: item.courseId || null,
           })),
         },
+        installments: {
+          create: body.installments?.map((inst: { amount: number; dueDate: string }) => ({
+            amount: inst.amount,
+            dueDate: new Date(inst.dueDate),
+            status: 'unpaid'
+          })) || []
+        }
       },
       include: {
         parent: {

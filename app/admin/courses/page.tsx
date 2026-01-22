@@ -19,6 +19,8 @@ interface Course {
   topics: string[];
   image: string | null;
   isActive: boolean;
+  isHidden: boolean;
+  hidePrice: boolean;
   isDevelopment: boolean;
   interestCount: number;
   createdAt: string;
@@ -50,6 +52,8 @@ export default function AdminCoursesPage() {
     price: '',
     topics: '',
     isActive: true,
+    isHidden: false,
+    hidePrice: false,
     isDevelopment: false,
   });
 
@@ -147,6 +151,8 @@ export default function AdminCoursesPage() {
         price: createForm.price ? parseFloat(createForm.price) : null,
         topics: createForm.topics ? createForm.topics.split(',').map(t => t.trim()).filter(t => t) : [],
         isActive: createForm.isActive,
+        isHidden: createForm.isHidden,
+        hidePrice: createForm.hidePrice,
         isDevelopment: createForm.isDevelopment,
       };
 
@@ -169,7 +175,8 @@ export default function AdminCoursesPage() {
         setIsCreateModalOpen(false);
         setCreateForm({
           name: '', slug: '', description: '', level: '', duration: '',
-          ageRange: '', price: '', topics: '', isActive: true, isDevelopment: false,
+          ageRange: '', price: '', topics: '', isActive: true, isHidden: false,
+          hidePrice: false, isDevelopment: false,
         });
       } else {
         const data = await response.json();
@@ -337,11 +344,10 @@ export default function AdminCoursesPage() {
                         <div className="flex flex-col gap-1">
                           <button
                             onClick={() => handleToggleStatus(course)}
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${
-                              course.isActive
-                                ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                            }`}
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${course.isActive
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                              }`}
                           >
                             {course.isActive ? 'Active' : 'Inactive'}
                           </button>
@@ -365,6 +371,11 @@ export default function AdminCoursesPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <Link href={`/admin/courses/${course.id}/builder`}>
+                          <Button variant="primary" size="sm">
+                            Builder
+                          </Button>
+                        </Link>
                         <Link href={`/admin/courses/${course.id}`}>
                           <Button variant="outline" size="sm">
                             Edit
@@ -543,6 +554,32 @@ export default function AdminCoursesPage() {
               />
               <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
                 Active (visible on site)
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isHidden"
+                checked={createForm.isHidden}
+                onChange={(e) => setCreateForm({ ...createForm, isHidden: e.target.checked })}
+                className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+              />
+              <label htmlFor="isHidden" className="ml-2 block text-sm text-gray-700">
+                Hidden (Accessible via Link only)
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="hidePrice"
+                checked={createForm.hidePrice}
+                onChange={(e) => setCreateForm({ ...createForm, hidePrice: e.target.checked })}
+                className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+              />
+              <label htmlFor="hidePrice" className="ml-2 block text-sm text-gray-700">
+                Hide Price (Contact for Pricing)
               </label>
             </div>
 

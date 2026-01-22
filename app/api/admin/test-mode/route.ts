@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60, // 1 hour
+    path: '/',
   });
 
   cookieStore.set('test-mode-role', roleName, {
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60,
+    path: '/',
   });
 
   return NextResponse.json({ success: true, role: roleName, portal: validRole.portal });

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Search, Receipt, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import InvoiceDownloadButton from '@/components/invoices/InvoiceDownloadButton';
+import SendInvoiceEmailButton from '@/components/invoices/SendInvoiceEmailButton';
 
 interface InvoiceWithParent {
   id: string;
@@ -257,15 +259,14 @@ export default function AdminInvoicesPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            invoice.status === 'paid'
-                              ? 'bg-green-100 text-green-800'
-                              : invoice.status === 'unpaid'
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${invoice.status === 'paid'
+                            ? 'bg-green-100 text-green-800'
+                            : invoice.status === 'unpaid'
                               ? 'bg-yellow-100 text-yellow-800'
                               : invoice.status === 'overdue'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
                         >
                           {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                         </span>
@@ -279,6 +280,20 @@ export default function AdminInvoicesPage() {
                             View
                           </Button>
                         </Link>
+
+                        {/* Client-side PDF generation */}
+                        {/* suppressHydrationWarning added for client-only rendering of PDF */}
+                        <div suppressHydrationWarning className="inline-block">
+                          <InvoiceDownloadButton invoice={invoice} />
+                        </div>
+
+                        <div className="inline-block">
+                          <SendInvoiceEmailButton
+                            invoiceId={invoice.id}
+                            parentEmail={invoice.parent.user.email}
+                          />
+                        </div>
+
                         <Link href={`/admin/invoices/${invoice.id}/edit`}>
                           <Button variant="outline" size="sm">
                             Edit

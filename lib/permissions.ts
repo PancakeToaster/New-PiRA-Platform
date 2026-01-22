@@ -9,7 +9,7 @@ export type { Permission } from './permissions-client';
 import type { Permission } from './permissions-client';
 
 // Test mode role configurations - what permissions each test role has
-const TEST_ROLE_CONFIGS: Record<string, { roles: string[]; permissions: Permission[] }> = {
+export const TEST_ROLE_CONFIGS: Record<string, { roles: string[]; permissions: Permission[] }> = {
   Parent: {
     roles: ['Parent'],
     permissions: [

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
 import { clientHasRole } from '@/lib/permissions-client';
+import { logActivity } from '@/lib/logging';
 
 export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const { userId, approve } = await request.json();
+        const { userId, approve, action } = await request.json();
 
         if (!userId) {
             return NextResponse.json({ error: 'User ID required' }, { status: 400 });
@@ -27,15 +28,53 @@ export async function POST(request: NextRequest) {
                 where: { id: userId },
                 data: { isApproved: true },
             });
+
+            await logActivity({
+                userId: user.id,
+                action: 'user.approved',
+                entityType: 'User',
+                entityId: userId,
+                ipAddress: request.headers.get('x-forwarded-for') || undefined,
+                userAgent: request.headers.get('user-agent') || undefined,
+            });
+
             return NextResponse.json({ user: updatedUser });
         } else {
-            // Reject (Delete) user? Or just leave unapproved?
-            // "I don't want people to make account and access anything without approval"
-            // Deleting rejected accounts keeps the DB clean.
-            await prisma.user.delete({
-                where: { id: userId },
-            });
-            return NextResponse.json({ message: 'User rejected and deleted' });
+            // Check explicit action
+            if (action === 'reject') {
+                // Permanently delete (Reject)
+                await prisma.user.delete({
+                    where: { id: userId },
+                });
+
+                await logActivity({
+                    userId: user.id,
+                    action: 'user.rejected',
+                    entityType: 'User',
+                    entityId: userId,
+                    ipAddress: request.headers.get('x-forwarded-for') || undefined,
+                    userAgent: request.headers.get('user-agent') || undefined,
+                });
+
+                return NextResponse.json({ message: 'User rejected and deleted' });
+            } else {
+                // Just suspend/deactivate
+                const updatedUser = await prisma.user.update({
+                    where: { id: userId },
+                    data: { isApproved: false },
+                });
+
+                await logActivity({
+                    userId: user.id,
+                    action: 'user.deactivated',
+                    entityType: 'User',
+                    entityId: userId,
+                    ipAddress: request.headers.get('x-forwarded-for') || undefined,
+                    userAgent: request.headers.get('user-agent') || undefined,
+                });
+
+                return NextResponse.json({ user: updatedUser, message: 'User deactivated' });
+            }
         }
 
     } catch (error) {

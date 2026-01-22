@@ -84,14 +84,17 @@ export default async function WikiNodePage({ params }: Props) {
     }
 
     // Log View
-    await prisma.pageView.create({
-        data: {
-            path: `/wiki/${node.id}`,
-            userId: user.id,
-            userRole: 'user',
-            knowledgeNodeId: node.id,
-        },
-    });
+    // Log View (only for non-admins)
+    if (!isAdminUser) {
+        await prisma.pageView.create({
+            data: {
+                path: `/wiki/${node.id}`,
+                userId: user.id,
+                userRole: 'user',
+                knowledgeNodeId: node.id,
+            },
+        });
+    }
 
     // Determine user role
     const isTeacher = await hasRole('Teacher');

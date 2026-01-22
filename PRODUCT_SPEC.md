@@ -45,28 +45,90 @@ The platform follows an "Edit Everything" philosophy, allowing admins to modify 
     - **Validation**: Strict checks for file type and size (5MB limit) ensures system stability.
 
 ### 3.3 Learning Management System (LMS)
-- **Knowledge Base (Wiki System)**:
-    - **Centralized Hub**: Located at `/wiki`, serving as the single source of truth for technical documentation and curriculum notes.
-    - **Markdown Native**: Writes and renders in Markdown for easy versioning and portability.
-    - **Permissions**: Granular control over node accessibility (Public vs. Student-only).
-- **Assignments & Grading**:
-    - **Task Creation**: Teachers can set deadlines, instructions, and attach reference files.
-    - **Submission Engine**: Students can upload files (PDF, ZIP, CODE) or provide text-based responses.
-    - **Feedback Loop**: Support for numerical grading and qualitative instructor comments.
+This section defines the core educational functionality, modeled after platforms like Canvas and Moodle but tailored for robotics education.
 
-### 3.4 Parent Portal & Financials
-- **Billing Dashboard**: Centralized view for parents to track enrollment costs and payment status.
-- **Invoice Management**: 
-    - **Line Items**: Detailed breakdowns for tuition, kits, and competition fees.
-    - **PDF Generation**: (Planned) Automated download of invoices for record-keeping.
-- **Financial Analytics**: Admin-only view of total revenue, outstanding balances, and enrollment trends.
+#### 3.3.1 Course Structure & Content
+- **Modular Curriculum**: Courses are organized into **Modules** (Units) containing ordered lists of **Lessons**.
+- **Rich Lesson Content**: Lessons can include:
+    - **Video Embeds**: YouTube/Vimeo or self-hosted.
+    - **PDF Viewers**: Embedded slides or manuals.
+    - **Interactive Code Blocks**: Syntax-highlighted snippets.
+    - **Wiki References**: Direct links to Knowledge Base articles.
+- **Progress Tracking**: Visual progress bars for students showing module completion percentages.
 
-### 3.5 Project Management (Competition Teams)
+#### 3.3.2 Assignments & Assessments
+- **Assignment Engine**:
+    - **Submission Types**: File Upload (PDF/Zip/Images) with size validation, Online Text.
+    - **Grading**: Flexible points system (decimal support).
+    - **Status Tracking**: Draft, Submitted, Graded, Returned.
+    - **Attachments**: Teacher can attach reference files; Students can attach submission files.
+- **Quiz System** (Phase 14):
+    - **Question Types**: Multiple Choice, True/False, Short Answer, Essay.
+    - **Auto-Grading**: Automatic scoring for objective questions.
+    - **Attempt Management**: Time limits, max attempts, and retake logic.
+    - **Review**: Secure review mode (strips correct answers until permitted).
+
+#### 3.3.3 Grading & Feedback (Gradebook)
+- **Virtual Gradebook** (Phase 15):
+    - **Aggregation**: Unified grid view combining Assignments and Quizzes.
+    - **Calculation**: Real-time student average and course average calculation.
+    - **Logic**: Handles mixed grading scales (Points vs Percentages).
+    - **Export**: CSV export for administrative records.
+- **Feedback**:
+    - **Teacher Grading**: Interface for viewing submissions and assigning grades/feedback.
+    - **Student View**: Dashboard showing grades, status, and feedback comments.
+
+#### 3.3.4 Knowledge Base (Wiki System)
+- **Centralized Hub**: Located at `/wiki`, serving as the single source of truth.
+- **Markdown Native**: Writes and renders in Markdown.
+- **Permissions**: Granular control over node accessibility (Public vs. Student-only).
+
+#### 3.3.5 Certificates & Achievements (Phase 16)
+- **Certificates**: Formal awards for course completion.
+    - **Verification**: Unique generate codes (e.g., CERT-2024-XYZ).
+    - **Templates**: Admin-definable designs.
+- **Badges**: Gamification elements for milestones (e.g., "Quiz Master").
+- **Profile Integration**: "Achievements" section visible to Students, Parents, and Admins.
+
+### 3.4 Finance & Operations Module
+A comprehensive suite for managing the business side of the academy.
+- **Financial Dashboard**:
+    - **Health Overview**: Real-time metrics for Total Revenue, Expenses, Net Profit, and Outstanding Invoices.
+    - **Cash Flow Analysis**: Visual charts tracking financial trends over time.
+    - **Hot Commodities**: automated identification of top-selling or high-usage inventory items.
+- **Expense Management**:
+    - **Categorization**: Detailed tracking of recurring and one-time expenses (Rent, Utilities, Hardware).
+    - **Recurring Logic**: Automated generation of monthly/yearly expense records.
+- **Inventory System**:
+    - **Asset Tracking**: centralized registry of robotics kits, computers, and furniture.
+    - **Stock Alerts**: Automated indicators for low-quantity items.
+    - **Valuation**: Real-time calculation of total physical asset value.
+- **Payroll**:
+    - **Staff Compensation**: Database of employee salaries and hourly rates.
+    - **Payment Runs**: Historical logging of all payroll events for tax and accounting purposes.
+
+### 3.5 Parent Portal
+- **Dashboard**: Personalized view for parents to manage their relationship with the academy.
+- **Family Management**:
+    - **Student Linking**: View progression, grades, and attendance for all linked children.
+    - **Calendar**: Unified schedule showing classes and events for all family members.
+- **Billing**: Access to invoices, payment history, and one-click payment options (Planned).
+
+### 3.6 User Management
+- **Unified Directory**: Centralized, searchable list of all system users with role filtering (Student, Parent, Teacher, Admin).
+- **Access Control**:
+    - **Approval System**: New registrations default to "Pending"; Admins activate accounts via a simple toggle in the User List.
+    - **Role Management**: Granular control over permissions and role assignments (including multiple roles per user).
+- **Relationship Management**:
+    - **Parent-Student Links**: Explicit databases linking of legal guardians to student accounts.
+    - **Referral Tracking**: Integrated CRM features to track referrer sources and apply performance-based discounts.
+
+### 3.7 Project Management (Competition Teams)
 - **Team Workspaces**: Dedicated private areas for competition teams (VEX, FLL, FIRST).
 - **Collaboration Tools**:
     - **Task Tracking**: Kanban/Scrum boards for robot build progress and software development.
     - **Milestones**: Track season-specific deadlines (e.g., Regional Qualifiers, State Championships).
-- **Hardware Inventory**: (Planned) Registry for tracking robot components and loaner kits.
+- **Hardware Inventory**: Integration with the central Inventory System for part checkouts.
 
 ## 4. Technical Specifications
 
@@ -81,6 +143,31 @@ The platform follows an "Edit Everything" philosophy, allowing admins to modify 
 - **Data Protection**: AES-256 encryption for sensitive PII (Personally Identifiable Information).
 - **Access Control**: Strict middleware checks on all `/api/admin/*` and `/admin/*` routes.
 - **Input Sanitization**: Compulsory use of Zod for API request validation and XSS protection in rendered content.
+
+### 4.3 Integrations & External Services
+- **Transactional Email**: SMTP/API integration (e.g., Resend or SendGrid) for password resets, invoicing, and notifications.
+- **File Storage**: Object storage compatible (AWS S3 or Cloudflare R2) for handling user uploads and media assets.
+- **Payment Methods**: Primary support for manual payment recording (Zelle, Venmo, Check, Cash).
+- **Online Payments**: (Future) Optional Stripe integration for credit card processing.
+
+### 4.4 UX & Accessibility Standards
+- **Responsive Design**: Mobile-first approach ensuring full functionality on phones (Parents/Students) and desktops (Admins/Teachers).
+- **Accessibility**: Commitment to WCAG 2.1 AA compliance, featuring high-contrast modes, keyboard navigation, and screen reader support.
+- **Performance**: Target Core Web Vitals scores of 90+ (LCP < 2.5s, CLS < 0.1) using Next.js optimizations.
+
+### 4.5 Data Retention & Compliance
+- **Data Minimization**: Only essential PII is collected.
+- **Retention Policy**:
+    - Inactive accounts archived after 2 years.
+    - Financial records retained for 7 years (tax compliance).
+- **Privacy**: Feature flags to enable GDPR/COPPA compliant modes (e.g., parental consent flows for users under 13).
+
+### 4.6 System Monitoring & Telemetry
+- **Hardware Metrics**: (Planned) Monitoring of server CPU, Memory, and Disk usage via dashboard.
+- **Application Health**: 
+    - **Error Logging**: Centralized capture of runtime errors (Server & Client).
+    - **Performance Tracing**: Measurement of API route latency and database query times.
+- **Activity Logs**: Audit trails for sensitive actions (e.g., User Deletion, Role Changes, Financial Edits).
 
 ## 5. Deployment & Infrastructure
 - **Hosting**: Designed for single-node VPS environments (DigitalOcean, AWS, Vultr).

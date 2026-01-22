@@ -40,6 +40,14 @@ export function CardContent({ className, children, ...props }: CardProps) {
   );
 }
 
+export function CardDescription({ className, children, ...props }: CardProps) {
+  return (
+    <div className={cn('text-sm text-gray-500', className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
 export function CardFooter({ className, children, ...props }: CardProps) {
   return (
     <div className={cn('px-6 py-4 bg-gray-50 border-t border-gray-200', className)} {...props}>

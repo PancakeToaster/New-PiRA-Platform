@@ -4,14 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
-    Grip,
-    FolderKanban,
-    GraduationCap,
+    LayoutDashboard,
     BookOpen,
+    GraduationCap,
     Calendar,
-    Home,
     Shield,
-    X
+    UserCircle,
+    X,
+    Grid,
+    FolderKanban,
+    Grip,
+    Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -63,7 +66,7 @@ export default function AppSwitcher() {
             icon: GraduationCap,
             color: 'text-purple-600',
             bg: 'bg-purple-100',
-            allowedRoles: ['Student', 'Teacher', 'Parent', 'Admin']
+            allowedRoles: ['Student', 'Teacher', 'Admin']
         },
         {
             name: 'Wiki',
@@ -80,6 +83,14 @@ export default function AppSwitcher() {
             color: 'text-orange-600',
             bg: 'bg-orange-100',
             allowedRoles: ['*']
+        },
+        {
+            name: 'Parent Portal',
+            href: '/parent',
+            icon: UserCircle,
+            color: 'text-pink-600',
+            bg: 'bg-pink-100',
+            allowedRoles: ['Parent', 'Admin']
         },
         {
             name: 'Admin',
