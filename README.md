@@ -57,7 +57,8 @@ The platform is fully built and feature-complete as of **January 2026**.
 - **LMS**: Full course builder, grading system, quizzes
 - **Finance**: Invoices, expenses, payroll, inventory
 - **Wiki**: Knowledge base with graph visualizations
-- **Projects**: Team management and Kanban boards
+- **Projects**: Team management with Kanban boards, Gantt charts, and subteams
+- **Team Management**: Safe deletion, archival workflows, and restore capabilities
 - **Analytics**: System health (App+DB size), activity logging, error tracking
 
 ## Tech Stack

@@ -29,6 +29,7 @@ interface Team {
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState<'active' | 'archived'>('active');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -49,10 +50,15 @@ export default function TeamsPage() {
     }
   }
 
-  const filteredTeams = teams.filter((team) =>
-    team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    team.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTeams = teams.filter((team) => {
+    const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      team.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Filter by Active vs Archived
+    if (status === 'active') return matchesSearch && (team.isActive !== false); // Default true
+    if (status === 'archived') return matchesSearch && (team.isActive === false);
+    return matchesSearch;
+  });
 
   if (isLoading) {
     return (
@@ -92,6 +98,30 @@ export default function TeamsPage() {
         />
       </div>
 
+      {/* Tabs */}
+      {teams.some(t => !t.isActive) && ( // Only show tabs if there are archived teams
+        <div className="flex space-x-1 border-b border-gray-200 mb-6">
+          <button
+            onClick={() => setStatus('active')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${status === 'active'
+              ? 'border-sky-500 text-sky-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+          >
+            Active Teams
+          </button>
+          <button
+            onClick={() => setStatus('archived')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${status === 'archived'
+              ? 'border-sky-500 text-sky-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+          >
+            Archived
+          </button>
+        </div>
+      )}
+
       {/* Teams Grid */}
       {filteredTeams.length === 0 ? (
         <Card>
@@ -113,9 +143,10 @@ export default function TeamsPage() {
                 </>
               ) : (
                 <>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No teams found</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No {status} teams found</h3>
                   <p className="text-gray-500">
-                    Try adjusting your search query.
+                    {searchQuery ? 'Try adjusting your search query.' :
+                      status === 'archived' ? 'You have no archived teams.' : 'You have no active teams.'}
                   </p>
                 </>
               )}
@@ -126,22 +157,22 @@ export default function TeamsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTeams.map((team) => (
             <Link key={team.id} href={`/projects/teams/${team.slug}`}>
-              <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className={`h-full hover:shadow-lg transition-shadow cursor-pointer ${!team.isActive ? 'bg-gray-50 border-gray-200' : ''}`}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl ${!team.isActive ? 'grayscale opacity-70' : ''}`}
                       style={{ backgroundColor: team.color || '#0ea5e9' }}
                     >
                       {team.name.charAt(0).toUpperCase()}
                     </div>
                     {!team.isActive && (
-                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
-                        Inactive
+                      <span className="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full font-medium">
+                        Archived
                       </span>
                     )}
                   </div>
-                  <CardTitle className="mt-4">{team.name}</CardTitle>
+                  <CardTitle className={`mt-4 ${!team.isActive ? 'text-gray-600' : ''}`}>{team.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {team.description && (

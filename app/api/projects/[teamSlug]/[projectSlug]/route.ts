@@ -14,9 +14,14 @@ export async function GET(
   }
 
   try {
-    // Find team by slug
-    const team = await prisma.team.findUnique({
-      where: { slug: teamSlug },
+    // Find team by slug or id
+    const team = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { slug: teamSlug },
+          { id: teamSlug }
+        ]
+      },
     });
 
     if (!team) {
@@ -97,7 +102,10 @@ export async function GET(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ project, userRole: membership.role });
+    return NextResponse.json({
+      project,
+      userRole: membership.role,
+    });
   } catch (error) {
     console.error('Failed to fetch project:', error);
     return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 });
@@ -116,8 +124,13 @@ export async function PUT(
   }
 
   try {
-    const team = await prisma.team.findUnique({
-      where: { slug: teamSlug },
+    const team = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { slug: teamSlug },
+          { id: teamSlug }
+        ]
+      },
     });
 
     if (!team) {

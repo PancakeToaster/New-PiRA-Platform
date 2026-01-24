@@ -59,7 +59,7 @@ export async function GET(
         const threads = await prisma.forumThread.findMany({
             where: whereClause,
             include: {
-                student: {
+                StudentProfile: {
                     include: {
                         user: {
                             select: {

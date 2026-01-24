@@ -1,52 +1,63 @@
 # Robotics Academy Platform - QA Checklist
 
-Use this checklist to verify the platform functions correctly before production deployment.
+Verify these key flows before official release:
 
-## 1. Public Layer (No Login)
-- [ ] **Homepage**: Verify all sections load (Hero, Shapes, Stats). check that "Explore Courses" link works.
-- [ ] **Courses**: Ensure course list loads. Click "Learn More" -> Should go to generic Contact page (or course detail if implemented).
-- [ ] **Blog**: Verify blog post list loads. Click a post -> Ensure content reads correctly.
-- [ ] **Contact**: Fill out form -> Submit. Check if "Message Sent" success state appears.
-- [ ] **Responsiveness**: Resize window to mobile width. Verify Navbar becomes a hamburger menu and layout stacks.
+## 1. Authentication & Onboarding
+- [ ] **Sign Up**: Register a new user account. Verify email confirmation (if enabled) or immediate login.
+- [ ] **Sign In**: Log in with existing credentials. Verify redirection to appropriate dashboard.
+- [ ] **Forgot Password**: Verify the "Forgot Password" flow works (if configured).
+- [ ] **Profile**: Check Profile page. Update name/email/avatar. Verify persistence.
+- [ ] **Logout**: Click Logout. Verify session is cleared and redirected to login.
 
-## 2. Authentication
-- [ ] **Login**: Attempt login with invalid credentials -> Expect error message.
-- [ ] **Login**: Log in as each user type (Admin, Teacher, Student, Parent).
-- [ ] **Logout**: Verify clicking Logout redirects to login page.
-- [ ] **Persistance**: Refresh page after login -> Should stay logged in.
-- [ ] **Redirects**: Try accessing `/admin` as Student -> Should redirect to `/login` or 403 Page (after middleware fix).
+## 2. Team Management
+- [ ] **Create Team**: Create a new team as Admin. Verify redirection to team dashboard.
+- [ ] **Invite Members**: Add users to team. Verify they appear in member list with correct role.
+- [ ] **Roles**: Promote a member to Captain/Mentor. Verify their permissions (e.g., can they create projects?).
+- [ ] **Settings**: Update Team Name/Description/Color. Verify changes in sidebar.
+- [ ] **Safe Delete**: Try to delete a team. Verify confirmation dialog requires typing name.
+- [ ] **Archive Team**: Archive a team. 
+  - [ ] Verify Regular Members strictly cannot see it in sidebar or list.
+  - [ ] Verify Admin/Owner CAN see it in "Archived" tab.
+  - [ ] Verify team is read-only (state `isActive: false`).
+- [ ] **Restore Team**: Restore an archived team. Verify it reappears in "Active" tab and sidebar.
+- [ ] **Member Removal**: Verify that Archiving removed regular members (check member list).
 
-## 3. Admin Panel (Logged in as Admin)
-- [ ] **Dashboard**: Verify stats (Total Users, Revenue) match database expectations.
-- [ ] **User Management**:
-    - [ ] Create a new User (Student).
-    - [ ] Edit that User (Change name).
-    - [ ] Delete a test User.
-- [ ] **Role Management**: View Roles page (Note: currently Mock data, testing if it renders).
-- [ ] **Invoices**: Create a new Invoice for a Parent. Verify it appears in the list.
-- [ ] **Content**: Create a new Blog post. Verify it appears on the Public site.
+## 3. Project & Task Management
+- [ ] **Create Project**: Create a project inside a team. Verify it appears in sidebar.
+- [ ] **Project Settings**: Edit project details. Change status/priority.
+- [ ] **Tasks**:
+  - [ ] Create a Task.
+  - [ ] Edit Task details/description.
+  - [ ] Assign Task to a member.
+  - [ ] Change Task status (Kanban drag & drop).
+  - [ ] Delete Task.
+- [ ] **Subteams**: Create a subteam. Assign a project to it. Verify filtering.
+- [ ] **Gantt Chart**: Verify tasks appear on timeline correctly. Dependency linking (if implemented).
+- [ ] **Files**: Upload a file to a project/team. Verify detailed view and download.
 
-## 4. Student Portal (Logged in as Student)
-- [ ] **LMS Dashboard**: Verify "My Courses" list is visible.
-- [ ] **Assignments**: View an assignment. Submit text/file (if implemented).
-- [ ] **Projects**:
-    - [ ] Create a new Task.
-    - [ ] Move task status (Drag & Drop if available, or Edit).
-    - [ ] Comment on a task.
+## 4. File Management (Team Level)
+- [ ] **Upload**: Upload text, image, and PDF files. Verify preview.
+- [ ] **Folders**: Create Folders and nested Subfolders.
+- [ ] **Navigation**: Navigate into folders. Use Breadcrumbs and "Back" button.
+- [ ] **Move**: Drag and drop files into folders. Verify move persistence.
+- [ ] **View Modes**: Switch between Grid and List view. Refresh page to verify preference saved.
 
-## 5. Parent Portal (Logged in as Parent)
-- [ ] **Dashboard**: Verify linked Student(s) are visible.
-- [ ] **Invoices**:
-    - [ ] View list of invoices.
-    - [ ] Click an invoice to view details (Line items).
-    - [ ] (If enabled) Click "Pay" -> Verify mock payment flow.
+## 5. LMS & Wiki (If Enabled)
+- [ ] **Course View**: Student can see enrolled courses.
+- [ ] **Forum**: 
+  - [ ] Create a Thread.
+  - [ ] Reply to a Thread.
+  - [ ] Verify Private vs Public thread visibility.
+- [ ] **Grades**: Teacher can edit grades; Student can view own grades.
+- [ ] **Wiki**: Create and nest pages. Drag and drop pages to reorder/nest.
 
-## 6. Teacher Portal (Logged in as Teacher)
-- [ ] **LMS**: Create a new Folder/Knowledge Node.
-- [ ] **Assignments**: Create a new Assignment.
-- [ ] **Grading**: View student submission and assign a grade.
+## 6. Security & Permissions
+- [ ] **Member Isolation**: Verify regular members cannot access Admin settings.
+- [ ] **Cross-Team**: Verify users cannot access teams they don't belong to (unless Admin).
+- [ ] **Archived Access**: Verify archived teams are read-only or hidden for non-admins.
+- [ ] **Route Protection**: Try accessing `/admin` as Student. Verify Redirect/403.
 
 ## 7. Critical Edge Cases
-- [ ] **Mock Data**: Verify Home Page still works even if Database is empty (due to `realData.ts` fallback).
-- [ ] **Seeding**: Run `npm run prisma:seed` twice. Verify it doesn't crash or create duplicate admin users.
-- [ ] **Uploads**: Upload a profile picture. Verify it persists after refresh.
+- [ ] **Empty States**: Verify Team/Project lists look good when empty.
+- [ ] **Search**: value search filters in lists (Teams, Projects).
+- [ ] **Mobile View**: Resize window. Verify Sidebar toggles and layout stacks correctly.

@@ -16,6 +16,7 @@ import {
     X,
     BookOpen,
     LogOut,
+    Folder,
 } from 'lucide-react';
 import AppSwitcher from '@/components/layout/AppSwitcher';
 
@@ -51,9 +52,11 @@ export default function ProjectsAppShell({
             const response = await fetch('/api/projects/teams');
             if (response.ok) {
                 const data = await response.json();
-                setTeams(data.teams);
-                if (data.teams.length > 0 && !selectedTeam) {
-                    setSelectedTeam(data.teams[0]);
+                // Only show active teams in sidebar dropdown
+                const activeTeams = data.teams.filter((t: any) => t.isActive !== false);
+                setTeams(activeTeams);
+                if (activeTeams.length > 0 && !selectedTeam) {
+                    setSelectedTeam(activeTeams[0]);
                 }
             }
         } catch (error) {
@@ -70,6 +73,7 @@ export default function ProjectsAppShell({
     const teamNavigation = selectedTeam
         ? [
             { name: 'Projects', href: `/projects/teams/${selectedTeam.slug}`, icon: FolderKanban },
+            { name: 'Files', href: `/projects/teams/${selectedTeam.slug}/files`, icon: Folder }, // Re-using FolderKanban or Folder if imported? Folder is better.
             { name: 'Members', href: `/projects/teams/${selectedTeam.slug}/members`, icon: Users },
             { name: 'Settings', href: `/projects/teams/${selectedTeam.slug}/settings`, icon: Settings },
         ]

@@ -136,9 +136,13 @@ A comprehensive suite for managing the business side of the academy.
 
 ### 3.7 Project Management (Competition Teams)
 - **Team Workspaces**: Dedicated private areas for competition teams (VEX, FLL, FIRST).
+    - **Subteams**: Hierarchical structure allowing smaller groups within a main team (e.g., "Build Team", "Programming Team").
+    - **Lifecycle Management**: Archive inactive teams to preserve history while decluttering the dashboard; Restore capability for reactivation.
 - **Collaboration Tools**:
-    - **Task Tracking**: Kanban/Scrum boards for robot build progress and software development.
-    - **Milestones**: Track season-specific deadlines (e.g., Regional Qualifiers, State Championships).
+    - **Task Tracking**: Kanban/Scrum boards with drag-and-drop status changes.
+    - **Gantt Charts**: Timeline view for project scheduling and dependency tracking.
+    - **Milestones**: Track season-specific deadlines (e.g., Regional Qualifiers).
+- **File Management**: Centralized repository for team documents with nested folders and drag-and-drop support.
 - **Hardware Inventory**: Integration with the central Inventory System for part checkouts.
 
 ## 4. Technical Specifications

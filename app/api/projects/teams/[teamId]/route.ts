@@ -161,7 +161,41 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, description, color, isActive } = body;
+    const { name, description, color, isActive, archive } = body;
+
+    // Handle Archival
+    if (archive) {
+      // 1. Set inactive
+      await prisma.team.update({
+        where: { id: team.id },
+        data: { isActive: false },
+      });
+
+      // 2. Remove all members EXCEPT admins (owner, captain, mentor)
+      // We need to fetch members first since they weren't included in the initial query
+      const teamMembers = await prisma.teamMember.findMany({
+        where: { teamId: team.id }
+      });
+
+      const admins = teamMembers.filter(m => ['owner', 'captain', 'mentor'].includes(m.role));
+      const adminUserIds = admins.map(m => m.userId);
+
+      if (adminUserIds.length > 0) {
+        await prisma.teamMember.deleteMany({
+          where: {
+            teamId: team.id,
+            userId: { notIn: adminUserIds }, // Keep all admins
+          },
+        });
+      } else {
+        // Fallback: If somehow no admins found (unlikely), keep owner only or handle gracefully
+        // But team.members should be populated.
+        // If empty, just skip delete or delete all? 
+        // We'll proceed with keeping nothing if no admins found (edge case)
+      }
+
+      return NextResponse.json({ success: true });
+    }
 
     const updatedTeam = await prisma.team.update({
       where: { id: team.id },

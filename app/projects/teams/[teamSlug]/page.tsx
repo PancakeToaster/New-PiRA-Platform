@@ -189,6 +189,25 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
           </Card>
         </Link>
 
+        <Link href={`/projects/teams/${team.slug}/files`}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-pink-100 rounded-lg">
+                    <FolderKanban className="w-5 h-5 text-pink-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Files</p>
+                    <p className="text-sm text-gray-500">Docs & assets</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         <Link href={`/calendar?team=${team.slug}`}>
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="pt-6">
@@ -315,6 +334,59 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
           )}
         </CardContent>
       </Card>
+
+      {/* Recent Files Widget */}
+      <RecentFilesWidget teamId={team.id} teamSlug={team.slug} />
     </div>
+  );
+}
+
+function RecentFilesWidget({ teamId, teamSlug }: { teamId: string; teamSlug: string }) {
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/projects/teams/${teamId}/files?recent=true`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.files) setFiles(data.files);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [teamId]);
+
+  if (!loading && files.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle>Recent Files</CardTitle>
+          <Link href={`/projects/teams/${teamSlug}/files`}>
+            <Button variant="ghost" size="sm">View All</Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex justify-center py-4"><Loader2 className="animate-spin text-gray-400" /></div>
+        ) : (
+          <div className="space-y-3">
+            {files.map(file => (
+              <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <FolderKanban className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                    <p className="text-xs text-gray-500">By {file.uploader.firstName} • {new Date(file.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <a href={file.url} download target="_blank" className="text-sky-600 hover:text-sky-700 text-sm font-medium">Download</a>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
