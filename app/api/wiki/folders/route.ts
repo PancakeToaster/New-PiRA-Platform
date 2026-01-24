@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const folder = await prisma.folder.create({
             data: {
                 name,
-                parentId: parentId || null,
+                // parentId removed for flat structure
                 color: 'sky', // Default color
             },
         });

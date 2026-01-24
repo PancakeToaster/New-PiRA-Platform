@@ -492,7 +492,7 @@ export default function ListPage({
 
       {/* Task Detail Modal */}
       <TaskDetailModal
-        task={selectedTask}
+        task={selectedTask ? { ...selectedTask, kanbanOrder: selectedTask.kanbanOrder ?? 0 } as any : null}
         isOpen={!!selectedTask}
         onClose={() => setSelectedTask(null)}
         onUpdate={handleUpdateTask as any}

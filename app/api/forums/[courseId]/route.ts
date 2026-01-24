@@ -47,7 +47,7 @@ export async function GET(
             whereClause = {
                 courseId,
                 OR: [
-                    { studentId: user.profiles.student },
+                    { studentProfileId: user.profiles.student },
                     { isPublic: true },
                 ],
             };
@@ -59,7 +59,7 @@ export async function GET(
         const threads = await prisma.forumThread.findMany({
             where: whereClause,
             include: {
-                StudentProfile: {
+                studentProfile: {
                     include: {
                         user: {
                             select: {
@@ -150,9 +150,10 @@ export async function POST(
         // Create thread
         const thread = await prisma.forumThread.create({
             data: {
+                creatorId: user.id,
                 lmsCourseId: courseId,
                 title,
-                studentId: isStudent ? user.profiles?.student : null,
+                studentProfileId: isStudent && user.profiles?.student ? user.profiles.student : null,
                 isPublic: isPublic || false,
             },
         });

@@ -63,7 +63,11 @@ export async function GET(
             },
           },
         },
-        checklistItem: false, // Disabling/Ignoring checklist for now or removing if causing issues
+        checklistItems: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
         subtasks: {
           select: {
             id: true,

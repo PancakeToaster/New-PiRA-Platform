@@ -102,7 +102,7 @@ export async function POST(
                 where: {
                     lmsCourseId_studentId: {
                         lmsCourseId: id,
-                        studentId: user.profiles.student,
+                        studentId: isStudent as string,
                     },
                 },
             });
@@ -127,6 +127,7 @@ export async function POST(
                     creatorId: user.id,
                     title,
                     isPublic,
+                    studentProfileId: typeof isStudent === 'string' ? isStudent : null,
                 },
             });
 

@@ -29,9 +29,9 @@ export async function GET(
                         },
                     },
                 },
-            },
-            checklistItems: {
-                orderBy: { order: 'asc' }
+                checklistItems: {
+                    orderBy: { order: 'asc' }
+                },
             },
         });
 

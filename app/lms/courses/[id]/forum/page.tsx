@@ -128,9 +128,13 @@ export default async function CourseForumPage({
                                                     </span>
                                                 )}
                                                 {thread.isPublic ? (
-                                                    <Globe className="w-4 h-4 text-green-600" title="Public thread" />
+                                                    <span title="Public thread">
+                                                        <Globe className="w-4 h-4 text-green-600" />
+                                                    </span>
                                                 ) : (
-                                                    <Lock className="w-4 h-4 text-gray-600" title="Private thread" />
+                                                    <span title="Private thread">
+                                                        <Lock className="w-4 h-4 text-gray-600" />
+                                                    </span>
                                                 )}
                                             </div>
                                             <h3 className="font-semibold text-lg text-gray-900 mb-1">

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
                 select: {
                     id: true,
                     name: true,
-                    parentId: true,
+                    // parentId: true, // Removed
                 },
             }),
             prisma.knowledgeNode.findMany({
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
                 data: {
                     label: folder.name,
                     type: 'folder',
-                    parentId: folder.parentId
+                    // parentId removed
                 },
                 position: { x: 0, y: 0 }, // Position will be calculated by layout engine
             })),
@@ -57,17 +57,8 @@ export async function GET(request: NextRequest) {
         ];
 
         const graphEdges = [
-            // Folder hierarchy
-            ...folders
-                .filter(folder => folder.parentId)
-                .map(folder => ({
-                    id: `e-${folder.parentId}-${folder.id}`,
-                    source: folder.parentId!,
-                    target: folder.id,
-                    type: 'smoothstep',
-                    animated: true,
-                    style: { stroke: '#cbd5e1' },
-                })),
+            // Folder hierarchy removed (flat structure)
+
             // Node hierarchy (files in folders)
             ...nodes
                 .filter(node => node.folderId)

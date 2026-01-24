@@ -44,10 +44,13 @@ export async function PATCH(
         const userAgent = headersList.get('user-agent') || 'unknown';
 
         // Process grade updates in a transaction
-        const updates = [];
+        const updates: { studentId: string; assignmentId: string; newGrade: number | null }[] = [];
         for (const [studentId, assignmentGrades] of Object.entries(grades)) {
-            for (const [assignmentId, newGrade] of Object.entries(assignmentGrades as Record<string, number | null>)) {
-                updates.push({ studentId, assignmentId, newGrade });
+            for (const [assignmentId, gradeValue] of Object.entries(assignmentGrades as Record<string, number | null | string>)) {
+                const newGrade = gradeValue === null || gradeValue === '' ? null : Number(gradeValue);
+                if (!isNaN(Number(newGrade)) || newGrade === null) {
+                    updates.push({ studentId, assignmentId, newGrade });
+                }
             }
         }
 

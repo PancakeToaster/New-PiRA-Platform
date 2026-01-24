@@ -19,7 +19,7 @@ export async function GET(
             where: { id: threadId },
             include: {
                 lmsCourse: true,
-                student: {
+                studentProfile: {
                     include: {
                         user: {
                             select: {
@@ -65,8 +65,8 @@ export async function GET(
         const isEnrolled = !!enrollment;
 
         // Private thread access check
-        if (!thread.isPublic && thread.studentId) {
-            const isThreadOwner = thread.studentId === user.profiles?.student;
+        if (!thread.isPublic && thread.studentProfileId) {
+            const isThreadOwner = thread.studentProfileId === user.profiles?.student;
             if (!isThreadOwner && !isInstructor && !isAdmin) {
                 return NextResponse.json({ error: 'Access denied' }, { status: 403 });
             }
@@ -137,8 +137,8 @@ export async function POST(
 
         const isEnrolled = !!enrollment;
 
-        if (!thread.isPublic && thread.studentId) {
-            const isThreadOwner = thread.studentId === user.profiles?.student;
+        if (!thread.isPublic && thread.studentProfileId) {
+            const isThreadOwner = thread.studentProfileId === user.profiles?.student;
             if (!isThreadOwner && !isInstructor && !isAdmin) {
                 return NextResponse.json({ error: 'Access denied' }, { status: 403 });
             }

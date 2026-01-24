@@ -1546,7 +1546,7 @@ model ForumThread {
   creator          User                     @relation("ForumThreadCreator", fields: [creatorId], references: [id])
   posts            ForumPost[]
   participants     ForumThreadParticipant[]
-  StudentProfile   StudentProfile?          @relation(fields: [studentProfileId], references: [id])
+  studentProfile   StudentProfile?          @relation(fields: [studentProfileId], references: [id])
   studentProfileId String?
 
   @@index([lmsCourseId])

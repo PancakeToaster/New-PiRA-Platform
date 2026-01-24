@@ -307,7 +307,7 @@ export default function BoardPage({
 
       {/* Task Detail Modal */}
       <TaskDetailModal
-        task={selectedTask}
+        task={selectedTask ? { ...selectedTask, kanbanOrder: selectedTask.kanbanOrder ?? 0 } : null}
         isOpen={!!selectedTask}
         onClose={() => setSelectedTask(null)}
         onUpdate={handleUpdateTask}

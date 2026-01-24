@@ -197,7 +197,7 @@ export default function ProjectSettingsPage({
                     <p className="text-sm text-gray-600 mb-4">
                         Deleting a project is irreversible. All tasks, documents, and data associated with this project will be permanently removed.
                     </p>
-                    <Button variant="destructive" disabled>
+                    <Button variant="danger" disabled={true}>
                         <Trash2 className="w-4 h-4 mr-2" />
                         Delete Project (Coming Soon)
                     </Button>
