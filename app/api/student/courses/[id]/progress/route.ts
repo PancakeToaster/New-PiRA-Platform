@@ -26,7 +26,7 @@ export async function GET(
 
         // Get all lessons in the course with progress
         const modules = await prisma.module.findMany({
-            where: { courseId: id, isPublished: true },
+            where: { lmsCourseId: id, isPublished: true },
             include: {
                 lessons: {
                     where: { isPublished: true },

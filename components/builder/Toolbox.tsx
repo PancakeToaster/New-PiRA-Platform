@@ -21,9 +21,9 @@ export const Toolbox = () => {
             <h3 className="text-lg font-bold mb-4 text-gray-900">Components</h3>
             <div className="space-y-2">
                 <button
-                    ref={(ref) =>
-                        ref && connectors.create(ref, <Element is={Container} canvas />)
-                    }
+                    ref={(ref) => {
+                        if (ref) connectors.create(ref, <Element is={Container} canvas />);
+                    }}
                     className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
                 >
                     <div className="font-semibold text-gray-900">Container</div>
@@ -31,7 +31,7 @@ export const Toolbox = () => {
                 </button>
 
                 <button
-                    ref={(ref) => ref && connectors.create(ref, <Heading />)}
+                    ref={(ref) => { if (ref) connectors.create(ref, <Heading text="Heading" level="h2" />); }}
                     className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
                 >
                     <div className="font-semibold text-gray-900">Heading</div>
@@ -39,7 +39,7 @@ export const Toolbox = () => {
                 </button>
 
                 <button
-                    ref={(ref) => ref && connectors.create(ref, <Text />)}
+                    ref={(ref) => { if (ref) connectors.create(ref, <Text text="Edit this text" />); }}
                     className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
                 >
                     <div className="font-semibold text-gray-900">Text</div>
@@ -47,7 +47,7 @@ export const Toolbox = () => {
                 </button>
 
                 <button
-                    ref={(ref) => ref && connectors.create(ref, <ButtonComponent />)}
+                    ref={(ref) => { if (ref) connectors.create(ref, <ButtonComponent text="Click me" />); }}
                     className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
                 >
                     <div className="font-semibold text-gray-900">Button</div>
@@ -55,7 +55,7 @@ export const Toolbox = () => {
                 </button>
 
                 <button
-                    ref={(ref) => ref && connectors.create(ref, <Image />)}
+                    ref={(ref) => { if (ref) connectors.create(ref, <Image />); }}
                     className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
                 >
                     <div className="font-semibold text-gray-900">Image</div>
@@ -66,7 +66,7 @@ export const Toolbox = () => {
                     <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Sections</h4>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <MissionSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <MissionSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors mb-2"
                     >
                         <div className="font-semibold text-indigo-900">Mission Section</div>
@@ -74,7 +74,7 @@ export const Toolbox = () => {
                     </button>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <VisionSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <VisionSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors mb-2"
                     >
                         <div className="font-semibold text-indigo-900">Vision Section</div>
@@ -82,7 +82,7 @@ export const Toolbox = () => {
                     </button>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <ServicesSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <ServicesSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors mb-2"
                     >
                         <div className="font-semibold text-indigo-900">Services Grid</div>
@@ -90,7 +90,7 @@ export const Toolbox = () => {
                     </button>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <ProcessSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <ProcessSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors mb-2"
                     >
                         <div className="font-semibold text-indigo-900">Process Steps</div>
@@ -98,7 +98,7 @@ export const Toolbox = () => {
                     </button>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <ValuesSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <ValuesSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors mb-2"
                     >
                         <div className="font-semibold text-indigo-900">Values Grid</div>
@@ -106,7 +106,7 @@ export const Toolbox = () => {
                     </button>
 
                     <button
-                        ref={(ref) => ref && connectors.create(ref, <TeamSection />)}
+                        ref={(ref) => { if (ref) connectors.create(ref, <TeamSection />); }}
                         className="w-full text-left px-4 py-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
                     >
                         <div className="font-semibold text-indigo-900">Team Section</div>

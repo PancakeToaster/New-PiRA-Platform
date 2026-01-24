@@ -57,6 +57,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    immediatelyRender: false,
   });
 
   if (!editor) {
@@ -108,9 +109,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`p-2 rounded hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-        isActive ? 'bg-gray-200 text-sky-600' : 'text-gray-600'
-      }`}
+      className={`p-2 rounded hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isActive ? 'bg-gray-200 text-sky-600' : 'text-gray-600'
+        }`}
     >
       {children}
     </button>

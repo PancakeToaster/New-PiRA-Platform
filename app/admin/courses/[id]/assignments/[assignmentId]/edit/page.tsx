@@ -32,22 +32,22 @@ export default async function EditAssignmentPage({
     }
 
     // Verify course context matches
-    if (assignment.courseId !== id) {
+    if (assignment.lmsCourseId !== id) {
         notFound();
     }
 
     // Fetch lessons for the dropdown
     const courseLessons = await prisma.lesson.findMany({
-        where: { courseId: id },
+        where: { lmsCourseId: id },
         select: { id: true, title: true },
-        orderBy: { orderIndex: 'asc' },
+        orderBy: { order: 'asc' },
     });
 
     return (
         <div className="max-w-3xl mx-auto py-8">
             <h1 className="text-2xl font-bold mb-6">Edit Assignment</h1>
             <AssignmentForm
-                courseId={id}
+                lmsCourseId={id}
                 lessons={courseLessons}
                 initialData={{
                     ...assignment,

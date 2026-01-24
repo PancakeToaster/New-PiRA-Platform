@@ -146,6 +146,7 @@ export default function Navbar() {
                   src="/images/logo.png"
                   alt="Robotics Academy Logo"
                   fill
+                  sizes="(max-width: 768px) 100vw, 240px"
                   className="object-contain object-left"
                   priority
                 />

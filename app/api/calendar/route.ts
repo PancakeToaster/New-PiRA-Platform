@@ -153,12 +153,49 @@ export async function GET(request: NextRequest) {
             lastName: true,
           },
         },
-        attendees: true, // Useful for frontend to show who is attending
+        attendees: true,
       },
       orderBy: {
         startTime: 'asc',
       },
     });
+
+    // If Parent, fetch Unpaid/Overdue Invoices and map to events
+    if (user.roles.includes('Parent') && user.profiles?.parent) {
+      const invoices = await prisma.invoice.findMany({
+        where: {
+          parentId: user.profiles.parent,
+          status: { in: ['unpaid', 'overdue'] }
+        }
+      });
+
+      const invoiceEvents = invoices.map(inv => ({
+        id: `invoice_${inv.id}`,
+        title: `Invoice Due: #${inv.invoiceNumber} ($${inv.total})`,
+        description: `Invoice Status: ${inv.status.toUpperCase()}`,
+        eventType: 'deadline', // Use deadline so it shows up with an icon
+        startTime: inv.dueDate,
+        endTime: inv.dueDate,
+        allDay: true,
+        location: 'Online',
+        color: inv.status === 'overdue' ? '#ef4444' : '#f59e0b', // Red if overdue, Orange if unpaid
+        teamId: null,
+        createdById: user.id, // Placeholder
+        isPublic: false,
+        team: null,
+        createdBy: { firstName: 'System', lastName: 'Billing' },
+        attendees: []
+      }));
+
+      // Merge and sort
+      // We cast invoiceEvents to any to avoid strict type mismatch with partial query result, 
+      // but the shape matches what the frontend expects for display.
+      const allEvents = [...events, ...invoiceEvents].sort((a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+
+      return NextResponse.json({ events: allEvents });
+    }
 
     return NextResponse.json({ events });
   } catch (error) {
@@ -172,6 +209,14 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Only Admin, Teacher, or Mentor can create events
+  const allowedRoles = ['Admin', 'Teacher', 'Mentor'];
+  const hasPermission = user.roles.some((role: string) => allowedRoles.includes(role));
+
+  if (!hasPermission) {
+    return NextResponse.json({ error: 'Access denied. Only valid staff can create events.' }, { status: 403 });
   }
 
   try {

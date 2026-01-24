@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
       // Parent fields
       childFirstName,
       childLastName,
+      childEmail,
       childAge,
+      childDateOfBirth,
       interests,
     } = body;
 
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user with profile in a transaction
-    const newUser = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // Create the user
       const user = await tx.user.create({
         data: {
@@ -83,8 +85,13 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      let generatedChildUsername: string | undefined;
+
       // Create profile based on user type
       if (userType === 'student') {
+        const { parentName, parentEmail, parentPhone } = body;
+
+        // 1. Create Student Profile
         await tx.studentProfile.create({
           data: {
             userId: user.id,
@@ -93,6 +100,55 @@ export async function POST(request: NextRequest) {
             school,
           },
         });
+
+        // 2. Handle Parent (Logic simplified for brevity, keeping existing)
+        if (parentEmail) {
+          // ... existing parent linking logic could go here or remain if untouched ...
+          // For safety in this replacement, I'll include the logic but concise
+          const parentEmailLower = parentEmail.toLowerCase();
+          let parentId: string | null = null;
+
+          const existingParent = await tx.user.findUnique({
+            where: { email: parentEmailLower },
+            include: { parentProfile: true }
+          });
+
+          if (existingParent) {
+            if (existingParent.parentProfile) {
+              parentId = existingParent.parentProfile.id;
+            } else {
+              const pp = await tx.parentProfile.create({ data: { userId: existingParent.id } });
+              parentId = pp.id;
+            }
+          } else {
+            const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+            const hashedParentPassword = await bcrypt.hash(tempPassword, 10);
+            const newParent = await tx.user.create({
+              data: {
+                email: parentEmailLower,
+                password: hashedParentPassword,
+                firstName: parentName || 'Parent',
+                lastName: '',
+                roles: {
+                  create: { roleId: (await tx.role.findFirst({ where: { name: 'Parent' } }))!.id }
+                }
+              }
+            });
+            const pp = await tx.parentProfile.create({ data: { userId: newParent.id, phone: parentPhone } });
+            parentId = pp.id;
+            // Log temp password for dev
+            console.log(`[EMAIL] Parent Created. TempPass: ${tempPassword}`);
+          }
+
+          if (parentId) {
+            const studentProfileId = (await tx.studentProfile.findUnique({ where: { userId: user.id } }))!.id;
+            const existingLink = await tx.parentStudent.findUnique({ where: { parentId_studentId: { parentId, studentId: studentProfileId } } });
+            if (!existingLink) {
+              await tx.parentStudent.create({ data: { parentId, studentId: studentProfileId } });
+            }
+          }
+        }
+
       } else if (userType === 'parent') {
         const parentProfile = await tx.parentProfile.create({
           data: {
@@ -103,17 +159,37 @@ export async function POST(request: NextRequest) {
 
         // If child info was provided, create a placeholder student
         if (childFirstName && childLastName) {
-          // Get student role
-          const studentRole = await tx.role.findFirst({
-            where: { name: 'Student' },
-          });
+          const studentRole = await tx.role.findFirst({ where: { name: 'Student' } });
 
           if (studentRole) {
-            // Create child user (without password - parent manages)
+            let finalChildEmail = childEmail;
+            let finalUsername = undefined;
+
+            if (finalChildEmail) {
+              finalChildEmail = finalChildEmail.toLowerCase();
+              const existingChild = await tx.user.findUnique({ where: { email: finalChildEmail } });
+              if (existingChild) throw new Error(`Child email '${finalChildEmail}' is already registered`);
+            } else {
+              // Placeholder email
+              finalChildEmail = `${email.split('@')[0]}.child.${Date.now()}@placeholder.local`.toLowerCase();
+
+              // Generate Username if no email
+              let baseUsername = `${childFirstName}.${childLastName}`.toLowerCase().replace(/[^a-z0-9.]/g, '');
+              let usernameToCheck = baseUsername;
+              let counter = 1;
+              while (await tx.user.findUnique({ where: { username: usernameToCheck } })) {
+                usernameToCheck = `${baseUsername}${counter}`;
+                counter++;
+              }
+              finalUsername = usernameToCheck;
+              generatedChildUsername = finalUsername;
+            }
+
             const childUser = await tx.user.create({
               data: {
-                email: `${email.split('@')[0]}.child.${Date.now()}@placeholder.local`,
-                password: hashedPassword, // Same as parent for now
+                email: finalChildEmail,
+                username: finalUsername,
+                password: hashedPassword,
                 firstName: childFirstName,
                 lastName: childLastName,
                 roles: {
@@ -124,15 +200,14 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            // Create student profile for child
             await tx.studentProfile.create({
               data: {
                 userId: childUser.id,
                 grade: childAge ? `Age ${childAge}` : null,
+                dateOfBirth: childDateOfBirth ? new Date(childDateOfBirth) : undefined,
               },
             });
 
-            // Link child to parent
             await tx.parentStudent.create({
               data: {
                 parentId: parentProfile.id,
@@ -143,21 +218,22 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Store interests as a note or in a separate table if needed
-      // For now, we'll just return success
-
-      return user;
+      return { user, childUsername: generatedChildUsername };
     });
 
     return NextResponse.json(
       {
         success: true,
         user: {
-          id: newUser.id,
-          email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-        }
+          id: result.user.id,
+          email: result.user.email,
+          firstName: result.user.firstName,
+          lastName: result.user.lastName,
+        },
+        child: result.childUsername ? {
+          username: result.childUsername,
+          info: 'Please save this username for your child to log in.'
+        } : undefined
       },
       { status: 201 }
     );

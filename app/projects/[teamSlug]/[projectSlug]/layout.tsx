@@ -1,18 +1,17 @@
 'use client';
 
-import { use } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, List, BarChart3, FileText } from 'lucide-react';
+import { LayoutGrid, List, BarChart3, FileText, Settings, Folder } from 'lucide-react';
 
 export default function ProjectLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ teamSlug: string; projectSlug: string }>;
+  params: { teamSlug: string; projectSlug: string };
 }) {
-  const { teamSlug, projectSlug } = use(params);
+  const { teamSlug, projectSlug } = params;
   const pathname = usePathname();
 
   const basePath = `/projects/${teamSlug}/${projectSlug}`;
@@ -21,7 +20,7 @@ export default function ProjectLayout({
     { name: 'Overview', href: basePath, icon: FileText },
     { name: 'Board', href: `${basePath}/board`, icon: LayoutGrid },
     { name: 'List', href: `${basePath}/list`, icon: List },
-    { name: 'Gantt', href: `${basePath}/gantt`, icon: BarChart3 },
+    { name: 'Settings', href: `${basePath}/settings`, icon: Settings },
   ];
 
   return (
@@ -35,11 +34,10 @@ export default function ProjectLayout({
               <Link
                 key={tab.name}
                 href={tab.href}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  isActive
-                    ? 'border-sky-500 text-sky-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${isActive
+                  ? 'border-sky-500 text-sky-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 <tab.icon className="w-4 h-4" />
                 <span>{tab.name}</span>

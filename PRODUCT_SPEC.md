@@ -7,8 +7,8 @@ This document defines the technical and functional specifications for the **Robo
 
 | Persona | Description | Key Needs |
 | :--- | :--- | :--- |
-| **Public User** | Prospective parent or student | Course information, pricing, success stories, and contact forms. |
-| **Student** | Active learner (8-18 years old) | Course materials, assignment submission, project tracking, wiki access. |
+| **Public User** | Prospective parent or student | Course information (Offerings), pricing, success stories, and contact forms. |
+| **Student** | Active learner (8-18 years old) | LMS Course materials, assignment submission, project tracking, wiki access (view-only). |
 | **Parent** | Payer and guardian | Invoice management, payment history, child progress tracking. |
 | **Teacher/Coach** | Instructor or Team Lead | Content creation, assignment grading, attendance, team management. |
 | **Admin** | Business Owner/Manager | System-wide configuration, user roles, financial reporting, CMS. |
@@ -61,15 +61,15 @@ This section defines the core educational functionality, modeled after platforms
     - **Submission Types**: File Upload (PDF/Zip/Images) with size validation, Online Text.
     - **Grading**: Flexible points system (decimal support).
     - **Status Tracking**: Draft, Submitted, Graded, Returned.
-    - **Attachments**: Teacher can attach reference files; Students can attach submission files.
-- **Quiz System** (Phase 14):
+    - **Attachment**: Teacher can attach reference files; Students can attach submission files.
+- **Quiz System**:
     - **Question Types**: Multiple Choice, True/False, Short Answer, Essay.
     - **Auto-Grading**: Automatic scoring for objective questions.
     - **Attempt Management**: Time limits, max attempts, and retake logic.
     - **Review**: Secure review mode (strips correct answers until permitted).
 
 #### 3.3.3 Grading & Feedback (Gradebook)
-- **Virtual Gradebook** (Phase 15):
+- **Virtual Gradebook**:
     - **Aggregation**: Unified grid view combining Assignments and Quizzes.
     - **Calculation**: Real-time student average and course average calculation.
     - **Logic**: Handles mixed grading scales (Points vs Percentages).
@@ -80,10 +80,21 @@ This section defines the core educational functionality, modeled after platforms
 
 #### 3.3.4 Knowledge Base (Wiki System)
 - **Centralized Hub**: Located at `/wiki`, serving as the single source of truth.
-- **Markdown Native**: Writes and renders in Markdown.
-- **Permissions**: Granular control over node accessibility (Public vs. Student-only).
+- **Content Engine**:
+    - **MarkDown & Tiptap**: Rich text editing with Tiptap, supporting inline images and formatting.
+    - **Visualization Modes**:
+        - **Graph View**: Interactive node-link diagram showing connections between pages.
+        - **Mindmap View**: Hierarchical tree visualization of page structures.
+        - **Canvas Mode**: Obsidian-style infinite canvas for spatial organization of notes and media.
+- **Permissions**: Granular Role-Based Access Control (RBAC):
+    - **Admins**: Full control (Create, Edit, Delete, Publish, Comment).
+    - **Teachers/Mentors**: Create, Edit, Comment, Suggest (No Delete).
+    - **Students/Parents**: View-only access to published content.
+- **Collaboration**:
+    - **Comments**: Threaded discussions on wiki pages (Teachers/Admins only).
+    - **Suggestions**: "Track changes" style suggestion mode for non-Admins to propose edits.
 
-#### 3.3.5 Certificates & Achievements (Phase 16)
+#### 3.3.5 Certificates & Achievements
 - **Certificates**: Formal awards for course completion.
     - **Verification**: Unique generate codes (e.g., CERT-2024-XYZ).
     - **Templates**: Admin-definable designs.
@@ -112,7 +123,7 @@ A comprehensive suite for managing the business side of the academy.
 - **Family Management**:
     - **Student Linking**: View progression, grades, and attendance for all linked children.
     - **Calendar**: Unified schedule showing classes and events for all family members.
-- **Billing**: Access to invoices, payment history, and one-click payment options (Planned).
+- **Billing**: Access to invoices, payment history, and one-click payment options.
 
 ### 3.6 User Management
 - **Unified Directory**: Centralized, searchable list of all system users with role filtering (Student, Parent, Teacher, Admin).
@@ -148,7 +159,7 @@ A comprehensive suite for managing the business side of the academy.
 - **Transactional Email**: SMTP/API integration (e.g., Resend or SendGrid) for password resets, invoicing, and notifications.
 - **File Storage**: Object storage compatible (AWS S3 or Cloudflare R2) for handling user uploads and media assets.
 - **Payment Methods**: Primary support for manual payment recording (Zelle, Venmo, Check, Cash).
-- **Online Payments**: (Future) Optional Stripe integration for credit card processing.
+- **Online Payments**: Optional Stripe integration for credit card processing.
 
 ### 4.4 UX & Accessibility Standards
 - **Responsive Design**: Mobile-first approach ensuring full functionality on phones (Parents/Students) and desktops (Admins/Teachers).
@@ -163,19 +174,12 @@ A comprehensive suite for managing the business side of the academy.
 - **Privacy**: Feature flags to enable GDPR/COPPA compliant modes (e.g., parental consent flows for users under 13).
 
 ### 4.6 System Monitoring & Telemetry
-- **Hardware Metrics**: (Planned) Monitoring of server CPU, Memory, and Disk usage via dashboard.
+- **Hardware Metrics**: Real-time dashboard showing CPU load, Memory usage, and Disk space (App vs. Database).
 - **Application Health**: 
-    - **Error Logging**: Centralized capture of runtime errors (Server & Client).
-    - **Performance Tracing**: Measurement of API route latency and database query times.
-- **Activity Logs**: Audit trails for sensitive actions (e.g., User Deletion, Role Changes, Financial Edits).
+    - **Error Logging**: Centralized capture of runtime errors (Server & Client) stored in database.
+    - **Activity Logs**: Audit trails for sensitive actions (e.g., User Deletion, Role Changes, Financial Edits, Wiki Deletions).
 
 ## 5. Deployment & Infrastructure
 - **Hosting**: Designed for single-node VPS environments (DigitalOcean, AWS, Vultr).
 - **Orchestration**: Docker & Docker Compose for managing the Next.js app, PostgreSQL database, and Nginx reverse proxy.
 - **Load Balancing**: Nginx handles SSL termination and security headers (CSP, HSTS).
-
-## 6. Development Roadmap
-- **Phase 1 (Core)**: Complete Page Builder stability and Content Migration logic. [COMPLETED]
-- **Phase 2 (UX)**: Full Item editing for specialized sections and File Upload system. [COMPLETED]
-- **Phase 3 (Financials)**: Integration of automated payment reminders and payment gateway hooks.
-- **Phase 4 (Advanced LMS)**: Mindmap/Graph visualization for curriculum dependencies.

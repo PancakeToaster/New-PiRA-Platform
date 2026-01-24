@@ -1,0 +1,26 @@
+// ============================================
+// LMS COURSE (INTERNAL TEACHING) - PHASE 20
+// ============================================
+
+model LMSCourse {
+  id            String   @id @default(cuid())
+  name          String
+  code          String   @unique  // e.g., "CS101", "ROBO-ADV"
+  description   String   @db.Text
+  instructorId  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  instructor    User?              @relation("LMSInstructor", fields: [instructorId], references: [id])
+  enrollments   CourseEnrollment[] @relation("LMSEnrollments")
+  modules       Module[]           @relation("LMSModules")
+  assignments   Assignment[]       @relation("LMSAssignments")
+  quizzes       Quiz[]             @relation("LMSQuizzes")
+  certificates  Certificate[]      @relation("LMSCertificates")
+  forumThreads  ForumThread[]      @relation("LMSForumThreads")
+  
+  @@index([instructorId])
+  @@index([isActive])
+  @@index([code])
+}

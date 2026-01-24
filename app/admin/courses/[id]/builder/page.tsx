@@ -30,6 +30,7 @@ interface Lesson {
     order: number;
     isPublished: boolean;
     isFree: boolean;
+    videoUrl?: string;
 }
 
 interface Module {

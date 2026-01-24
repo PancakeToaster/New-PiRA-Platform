@@ -47,6 +47,33 @@ const config: Config = {
           900: '#701a75',
         },
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            'pre': {
+              backgroundColor: 'transparent',
+              border: '2px solid #000',
+              color: '#1f2937',
+            },
+            'pre code': {
+              backgroundColor: 'transparent',
+              color: 'inherit',
+            },
+            'code': {
+              backgroundColor: '#f3f4f6',
+              padding: '0.2em 0.4em',
+              borderRadius: '0.25rem',
+              fontWeight: '600',
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+          },
+        },
+      },
     },
   },
   plugins: [

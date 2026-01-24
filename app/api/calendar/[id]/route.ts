@@ -162,9 +162,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Only creator or admin can delete
-    if (existingEvent.createdById !== user.id && !userIsAdmin) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    // Only admin can delete
+    if (!userIsAdmin) {
+      return NextResponse.json({ error: 'Access denied. Only admins can delete events.' }, { status: 403 });
     }
 
     await prisma.calendarEvent.delete({

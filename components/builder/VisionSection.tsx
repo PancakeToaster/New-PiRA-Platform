@@ -17,7 +17,7 @@ export const VisionSection = ({
 
     return (
         <section
-            ref={(ref) => ref && connect(drag(ref))}
+            ref={(ref) => { if (ref) connect(drag(ref)); }}
             className={`mb-16 p-4 ${selected ? 'border-2 border-sky-400 rounded-lg' : ''}`}
         >
             <h2 className="text-3xl font-bold mb-6 text-gray-900">{title}</h2>

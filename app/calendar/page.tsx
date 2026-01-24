@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Loader2, X, Download, ExternalLink } from 'lucide-react';
+import { Loader2, X, Download, ExternalLink, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CalendarView, { CalendarEvent } from '@/components/calendar/CalendarView';
 
@@ -26,11 +26,20 @@ interface Team {
   slug: string;
 }
 
-export default function CalendarPage() {
+import { Suspense } from 'react';
+
+function CalendarContent() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const teamFilter = searchParams.get('team');
   const isPublicView = status === 'unauthenticated';
+
+  // Role-based permissions
+  const userRoles = (session?.user as any)?.roles || [];
+  const canCreate = userRoles.some((role: string) => ['Admin', 'Teacher', 'Mentor'].includes(role));
+  const canDelete = userRoles.includes('Admin');
+
+
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -154,6 +163,27 @@ export default function CalendarPage() {
       console.error('Failed to create event:', error);
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent || !window.confirm('Are you sure you want to delete this event?')) return;
+
+    try {
+      const response = await fetch(`/api/calendar/${selectedEvent.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setEvents((prev) => prev.filter((e) => e.id !== selectedEvent.id));
+        setShowEventModal(false);
+        resetForm();
+      } else {
+        alert('Failed to delete event. You may not have permission.');
+      }
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      alert('An error occurred while deleting the event.');
     }
   };
 
@@ -292,7 +322,7 @@ export default function CalendarPage() {
           events={events}
           onEventClick={handleEventClick}
           onDateClick={handleDateClick}
-          onAddEvent={!isPublicView ? handleAddEvent : undefined}
+          onAddEvent={canCreate ? handleAddEvent : undefined}
           isPublicView={isPublicView}
         />
 
@@ -348,15 +378,21 @@ export default function CalendarPage() {
                       <span className="capitalize">{getDisplayEventType(selectedEvent.eventType)}</span>
                     </div>
                   </div>
-                  <div className="flex space-x-2 pt-4 border-t">
+                  <div className="flex space-x-2 pt-4 border-t justify-between">
                     <Button variant="outline" onClick={handleAddToGoogleCalendar}>
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Add to Google Calendar
                     </Button>
+                    {canDelete && (
+                      <Button variant="danger" onClick={handleDeleteEvent}>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
-                !isPublicView && (
+                canCreate && (
                   <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -564,5 +600,13 @@ export default function CalendarPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-sky-600" /></div>}>
+      <CalendarContent />
+    </Suspense>
   );
 }

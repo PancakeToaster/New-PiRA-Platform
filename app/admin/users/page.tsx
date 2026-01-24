@@ -45,17 +45,46 @@ interface UserStats {
   pending?: number; // Optional if you want to track pending here
 }
 
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { Check, Trash2, Shield, ShieldOff, MoreHorizontal, X } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<{ id: string; name: string }[]>([]);
   const [stats, setStats] = useState<UserStats>({ total: 0, students: 0, parents: 0, teachers: 0 });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'students' | 'parents' | 'teachers'>('all');
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+
+  // Bulk Actions
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkSubmitting, setIsBulkSubmitting] = useState(false);
 
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
   }, []);
+
+  async function fetchRoles() {
+    try {
+      const res = await fetch('/api/admin/roles');
+      if (res.ok) {
+        const data = await res.json();
+        setRoles(data.roles);
+      }
+    } catch (e) { }
+  }
+
 
   async function fetchUsers() {
     try {
@@ -72,14 +101,13 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return; // Should be set by state
+
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      const response = await fetch(`/api/admin/users/${userToDelete}`, { method: 'DELETE' });
       if (response.ok) {
-        setUsers(users.filter(u => u.id !== userId));
+        setUsers(users.filter(u => u.id !== userToDelete));
         setStats(prev => ({ ...prev, total: prev.total - 1 }));
       } else {
         alert('Failed to delete user');
@@ -130,6 +158,56 @@ export default function AdminUsersPage() {
 
     return true; // 'all'
   });
+
+  const toggleSelection = (userId: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId);
+    } else {
+      newSelected.add(userId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredUsers.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredUsers.map(u => u.id)));
+    }
+  };
+
+  const handleBulkAction = async (action: 'delete' | 'add_role' | 'remove_role', data?: any) => {
+    if (selectedIds.size === 0) return;
+    if (action === 'delete' && !confirm(`Are you sure you want to delete ${selectedIds.size} users?`)) return;
+
+    setIsBulkSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/users/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userIds: Array.from(selectedIds),
+          action,
+          data
+        })
+      });
+
+      if (res.ok) {
+        // Refresh
+        fetchUsers();
+        setSelectedIds(new Set());
+        alert('Bulk action completed successfully');
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Bulk action failed');
+      }
+    } catch (e) {
+      alert('Bulk action failed');
+    } finally {
+      setIsBulkSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -202,6 +280,89 @@ export default function AdminUsersPage() {
         />
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border border-gray-200 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 animate-in slide-in-from-bottom-4 duration-300">
+          <span className="text-sm font-medium text-gray-700 flex items-center whitespace-nowrap">
+            <div className="bg-sky-100 text-sky-700 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 font-bold">
+              {selectedIds.size}
+            </div>
+            Selected
+          </span>
+
+          <div className="h-6 w-px bg-gray-200" />
+
+          <div className="flex items-center gap-2">
+            {/* Add Role */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-500 hover:text-sky-600 hover:bg-sky-50 rounded-full" title="Add Role">
+                  <Shield className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="center">
+                <DropdownMenuLabel>Add Role</DropdownMenuLabel>
+                {roles.map(role => (
+                  <DropdownMenuItem key={`add-${role.id}`} onClick={() => handleBulkAction('add_role', { roleName: role.name })}>
+                    {role.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Remove Role */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-full" title="Remove Role">
+                  <ShieldOff className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="center">
+                <DropdownMenuLabel>Remove Role</DropdownMenuLabel>
+                {roles.map(role => (
+                  <DropdownMenuItem key={`remove-${role.id}`} onClick={() => handleBulkAction('remove_role', { roleName: role.name })}>
+                    {role.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Delete */}
+            {(() => {
+              const selectedUsersList = users.filter(u => selectedIds.has(u.id));
+              const activeCount = selectedUsersList.filter(u => u.isApproved).length;
+              const isDisabled = activeCount > 0;
+
+              return (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 rounded-full ${isDisabled ? 'text-gray-300 hover:text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-red-600 hover:bg-red-50'}`}
+                  title={isDisabled ? `Cannot delete ${activeCount} active users` : "Delete Selected"}
+                  onClick={() => {
+                    if (isDisabled) {
+                      alert(`Cannot delete ${activeCount} active users. Please deactivate them first.`);
+                      return;
+                    }
+                    if (confirm(`Are you sure you want to delete ${selectedIds.size} users? This action cannot be undone.`)) {
+                      handleBulkAction('delete');
+                    }
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              );
+            })()}
+          </div>
+
+          <div className="h-6 w-px bg-gray-200" />
+
+          <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())} className="text-gray-500 hover:text-gray-700 h-8 px-2 rounded-full">
+            <X className="w-4 h-4 mr-1" />
+            Cancel
+          </Button>
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-0">
           {/* TABS CONTENT */}
@@ -211,6 +372,13 @@ export default function AdminUsersPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left">
+                    <input type="checkbox"
+                      checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
+                      onChange={toggleSelectAll}
+                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent(s)</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referrals</th>
@@ -222,6 +390,13 @@ export default function AdminUsersPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.map(user => (
                   <tr key={user.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input type="checkbox"
+                        checked={selectedIds.has(user.id)}
+                        onChange={() => toggleSelection(user.id)}
+                        className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold mr-3">
@@ -287,6 +462,13 @@ export default function AdminUsersPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left">
+                    <input type="checkbox"
+                      checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
+                      onChange={toggleSelectAll}
+                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Children</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -303,6 +485,13 @@ export default function AdminUsersPage() {
 
                   return (
                     <tr key={user.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox"
+                          checked={selectedIds.has(user.id)}
+                          onChange={() => toggleSelection(user.id)}
+                          className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
@@ -360,6 +549,13 @@ export default function AdminUsersPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left">
+                    <input type="checkbox"
+                      checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
+                      onChange={toggleSelectAll}
+                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User
                   </th>
@@ -383,13 +579,20 @@ export default function AdminUsersPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       No users found
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox"
+                          checked={selectedIds.has(user.id)}
+                          onChange={() => toggleSelection(user.id)}
+                          className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 bg-sky-100 rounded-full flex items-center justify-center">
@@ -443,7 +646,7 @@ export default function AdminUsersPage() {
                         <Button
                           variant="danger"
                           size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
+                          onClick={() => setUserToDelete(user.id)}
                         >
                           Delete
                         </Button>
@@ -456,6 +659,15 @@ export default function AdminUsersPage() {
           )}
         </CardContent>
       </Card>
+      <ConfirmDialog
+        isOpen={!!userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onConfirm={handleDeleteUser}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone and will remove all associated profiles and data."
+        confirmText="Delete User"
+        variant="danger"
+      />
     </div>
   );
 }

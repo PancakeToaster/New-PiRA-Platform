@@ -7,7 +7,7 @@ import {
   Draggable,
   DropResult,
 } from '@hello-pangea/dnd';
-import { Plus, MoreHorizontal, Calendar, User } from 'lucide-react';
+import { Plus, MoreHorizontal, Calendar, User, Trash2, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export interface Task {
@@ -18,6 +18,7 @@ export interface Task {
   priority: string;
   taskType: string;
   dueDate: string | null;
+  startDate: string | null;
   kanbanOrder: number;
   assignees: {
     user: {
@@ -26,6 +27,16 @@ export interface Task {
       lastName: string;
     };
   }[];
+  checklistItems?: {
+    id: string;
+    content: string;
+    isCompleted: boolean;
+    order: number;
+  }[];
+  subtasks?: { id: string; title: string; status: string; priority: string; dueDate: string | null }[];
+  parent?: { id: string; title: string };
+  projectName?: string;
+  projectColor?: string;
 }
 
 interface KanbanBoardProps {
@@ -33,6 +44,7 @@ interface KanbanBoardProps {
   onTaskMove: (taskId: string, newStatus: string, newOrder: number) => void;
   onTaskClick: (task: Task) => void;
   onAddTask: (status: string) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
 const COLUMNS = [
@@ -48,8 +60,10 @@ export default function KanbanBoard({
   onTaskMove,
   onTaskClick,
   onAddTask,
+  onDeleteTask,
 }: KanbanBoardProps) {
   const [localTasks, setLocalTasks] = useState(tasks);
+  const [openMenuTaskId, setOpenMenuTaskId] = useState<string | null>(null);
 
   const getColumnTasks = (columnId: string) => {
     return localTasks
@@ -160,11 +174,10 @@ export default function KanbanBoard({
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`min-h-[500px] p-2 rounded-b-lg transition-colors ${
-                      snapshot.isDraggingOver
-                        ? 'bg-sky-50'
-                        : 'bg-gray-50'
-                    }`}
+                    className={`min-h-[500px] p-2 rounded-b-lg transition-colors ${snapshot.isDraggingOver
+                      ? 'bg-sky-50'
+                      : 'bg-gray-50'
+                      }`}
                   >
                     {columnTasks.map((task, index) => (
                       <Draggable
@@ -178,23 +191,50 @@ export default function KanbanBoard({
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             onClick={() => onTaskClick(task)}
-                            className={`mb-2 p-3 bg-white rounded-lg border-l-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
-                              getPriorityColor(task.priority)
-                            } ${snapshot.isDragging ? 'shadow-lg rotate-2' : ''}`}
+                            className={`mb-2 p-3 bg-white rounded-lg border-l-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${getPriorityColor(task.priority)
+                              } ${snapshot.isDragging ? 'shadow-lg rotate-2' : ''}`}
                           >
                             {/* Task Type Badge */}
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm">
                                 {getTaskTypeIcon(task.taskType)}
                               </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                                className="p-1 hover:bg-gray-100 rounded"
-                              >
-                                <MoreHorizontal className="w-4 h-4 text-gray-400" />
-                              </button>
+                              <div className="relative">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenMenuTaskId(openMenuTaskId === task.id ? null : task.id);
+                                  }}
+                                  className="p-1 hover:bg-gray-100 rounded focus:outline-none"
+                                >
+                                  <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                                </button>
+
+                                {openMenuTaskId === task.id && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 z-10"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenMenuTaskId(null);
+                                      }}
+                                    />
+                                    <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-100 z-20 overflow-hidden">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          onDeleteTask(task.id);
+                                          setOpenMenuTaskId(null);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                                      >
+                                        <Trash2 className="w-3 h-3 mr-2" />
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
                             </div>
 
                             {/* Task Title */}
@@ -211,14 +251,24 @@ export default function KanbanBoard({
 
                             {/* Task Footer */}
                             <div className="flex items-center justify-between text-xs text-gray-500">
-                              {task.dueDate && (
-                                <div className="flex items-center space-x-1">
-                                  <Calendar className="w-3 h-3" />
-                                  <span>
-                                    {new Date(task.dueDate).toLocaleDateString()}
-                                  </span>
-                                </div>
-                              )}
+                              <div className="flex space-x-3">
+                                {task.dueDate && (
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>
+                                      {new Date(task.dueDate).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                )}
+                                {(task.checklistItems?.length ?? 0) > 0 && (
+                                  <div className="flex items-center space-x-1 text-gray-500" title="Subtasks">
+                                    <CheckSquare className="w-3 h-3" />
+                                    <span>
+                                      {task.checklistItems?.filter(i => i.isCompleted).length}/{task.checklistItems?.length}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
 
                               {task.assignees.length > 0 && (
                                 <div className="flex -space-x-1">

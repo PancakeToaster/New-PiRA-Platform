@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/permissions';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Unique filename
-        const filename = `receipt-${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const filename = `receipt-${randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
         const uploadDir = join(process.cwd(), 'public', 'uploads', 'receipts');
         // Using fs here assumes the dir exists. 
         // Ideally we should mkdir if not exists, but omitting for brevity/assuming setup.

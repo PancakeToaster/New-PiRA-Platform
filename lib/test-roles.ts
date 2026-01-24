@@ -1,0 +1,90 @@
+import { Permission } from './permissions-client';
+
+// Test mode role configurations - what permissions each test role has
+export const TEST_ROLE_CONFIGS: Record<string, { roles: string[]; permissions: Permission[] }> = {
+    Parent: {
+        roles: ['Parent'],
+        permissions: [
+            { resource: 'parent_portal', action: 'view' },
+            { resource: 'children', action: 'view' },
+            { resource: 'invoices', action: 'view' },
+            { resource: 'calendar', action: 'view' },
+            { resource: 'knowledge', action: 'view' },
+        ],
+    },
+    Student: {
+        roles: ['Student'],
+        permissions: [
+            { resource: 'lms', action: 'view' },
+            { resource: 'courses', action: 'view' },
+            { resource: 'knowledge', action: 'view' },
+            { resource: 'assignments', action: 'view' },
+            { resource: 'assignments', action: 'submit' },
+            { resource: 'calendar', action: 'view' },
+        ],
+    },
+    Teacher: {
+        roles: ['Teacher'],
+        permissions: [
+            { resource: 'lms', action: 'view' },
+            { resource: 'lms', action: 'manage' },
+            { resource: 'courses', action: 'view' },
+            { resource: 'courses', action: 'create' },
+            { resource: 'courses', action: 'edit' },
+            { resource: 'knowledge', action: 'view' },
+            { resource: 'knowledge', action: 'create' },
+            { resource: 'knowledge', action: 'edit' },
+            { resource: 'knowledge', action: 'comment' },
+            { resource: 'assignments', action: 'view' },
+            { resource: 'assignments', action: 'create' },
+            { resource: 'assignments', action: 'grade' },
+            { resource: 'students', action: 'view' },
+            { resource: 'calendar', action: 'view' },
+            { resource: 'calendar', action: 'create' },
+        ],
+    },
+    Mentor: {
+        roles: ['Mentor'],
+        permissions: [
+            { resource: 'projects', action: 'view' },
+            { resource: 'projects', action: 'manage' },
+            { resource: 'teams', action: 'view' },
+            { resource: 'teams', action: 'manage' },
+            { resource: 'tasks', action: 'view' },
+            { resource: 'tasks', action: 'create' },
+            { resource: 'tasks', action: 'edit' },
+            { resource: 'tasks', action: 'delete' },
+            { resource: 'knowledge', action: 'view' },
+            { resource: 'knowledge', action: 'create' },
+            { resource: 'knowledge', action: 'edit' },
+            { resource: 'knowledge', action: 'comment' },
+            { resource: 'calendar', action: 'view' },
+            { resource: 'calendar', action: 'create' },
+        ],
+    },
+    'Team Captain': {
+        roles: ['Team Captain'],
+        permissions: [
+            { resource: 'projects', action: 'view' },
+            { resource: 'teams', action: 'view' },
+            { resource: 'teams', action: 'manage_members' },
+            { resource: 'tasks', action: 'view' },
+            { resource: 'tasks', action: 'create' },
+            { resource: 'tasks', action: 'edit' },
+            { resource: 'tasks', action: 'delete' },
+            { resource: 'knowledge', action: 'view' },
+            { resource: 'calendar', action: 'view' },
+        ],
+    },
+    'Team Member': {
+        roles: ['Team Member'],
+        permissions: [
+            { resource: 'projects', action: 'view' },
+            { resource: 'teams', action: 'view' },
+            { resource: 'tasks', action: 'view' },
+            { resource: 'tasks', action: 'create' },
+            { resource: 'knowledge', action: 'view' },
+            { resource: 'calendar', action: 'view' },
+        ],
+    },
+};

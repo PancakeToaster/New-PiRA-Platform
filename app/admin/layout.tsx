@@ -69,6 +69,22 @@ export default async function AdminLayout({
               </Link>
 
               <Link
+                href="/admin/lms-courses"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <BookOpen className="w-5 h-5" />
+                <span>LMS Courses</span>
+              </Link>
+
+              <Link
+                href="/admin/announcements"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <Newspaper className="w-5 h-5" />
+                <span>Announcements</span>
+              </Link>
+
+              <Link
                 href="/admin/knowledge"
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
               >
@@ -149,6 +165,14 @@ export default async function AdminLayout({
               </Link>
 
               <Link
+                href="/admin/students"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+              >
+                <GraduationCap className="w-5 h-5" />
+                <span>Student Info</span>
+              </Link>
+
+              <Link
                 href="/admin/analytics"
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors"
               >
@@ -186,7 +210,7 @@ export default async function AdminLayout({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <AppSwitcher />
+              <AppSwitcher user={user} />
               <Link href="/api/auth/signout" className="text-gray-400 hover:text-gray-600">
                 <LogOut className="w-5 h-5" />
               </Link>

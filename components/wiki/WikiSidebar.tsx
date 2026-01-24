@@ -38,7 +38,7 @@ interface TreeItemProps {
 }
 
 const TreeItem = ({ item, depth, activeId, onCreatePage, onCreateFolder, index, isAdmin }: TreeItemProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true); // Default to open
     const hasChildren = item.children && item.children.length > 0;
     const isActive = item.type === 'node' && item.id === activeId;
     const draggableId = `${item.type}-${item.id}`;
@@ -133,50 +133,83 @@ const TreeItem = ({ item, depth, activeId, onCreatePage, onCreateFolder, index, 
         );
     }
 
-    // Node (File)
+    // Node (File/Page)
     return (
         <Draggable draggableId={draggableId} index={index} isDragDisabled={!isAdmin}>
             {(provided, snapshot) => (
-                <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    style={{ paddingLeft: `${depth * 12 + 8}px`, ...provided.draggableProps.style }}
-                    className="outline-none"
-                >
-                    <Link
-                        href={`/wiki/${item.id}`}
-                        className={cn(
-                            "group flex items-center py-1.5 px-2 rounded-md transition-colors relative",
-                            "text-sm font-medium",
-                            isActive
-                                ? "bg-sky-50 text-sky-700"
-                                : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-900",
-                            // Dragging State - Minimal
-                            snapshot.isDragging && "bg-white border-b-2 border-sky-500 shadow-sm opacity-90 z-50"
-                        )}
+                <div className="outline-none">
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={{ paddingLeft: `${depth * 12 + 8}px`, ...provided.draggableProps.style }}
                     >
-                        {/* Static Grip to match Folder */}
-                        {isAdmin && (
-                            <div className="mr-1 text-gray-400 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
-                                <GripVertical className="w-3 h-3" />
-                            </div>
-                        )}
-                        {!isAdmin && <div className="mr-1 w-3" />}
+                        <Link
+                            href={`/wiki/${item.id}`}
+                            className={cn(
+                                "group flex items-center py-1.5 px-2 rounded-md transition-colors relative",
+                                "text-sm font-medium",
+                                isActive
+                                    ? "bg-sky-50 text-sky-700"
+                                    : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-900",
+                                // Dragging State - Minimal
+                                snapshot.isDragging && "bg-white border-b-2 border-sky-500 shadow-sm opacity-90 z-50",
+                                // Drop Target State (Combine)
+                                snapshot.combineTargetFor && "bg-sky-50 ring-1 ring-sky-300"
+                            )}
+                        >
+                            {/* Static Grip to match Folder */}
+                            {isAdmin && (
+                                <div className="mr-1 text-gray-400 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="w-3 h-3" />
+                                </div>
+                            )}
+                            {!isAdmin && <div className="mr-1 w-3" />}
 
-                        {/* Icon to match Chevron spacing */}
-                        <div className="w-3.5 h-3.5 mr-1 flex items-center justify-center text-gray-400">
-                            <FileText className="w-3.5 h-3.5" />
+                            {/* Chevron for pages with children */}
+                            {hasChildren ? (
+                                <span
+                                    className={cn(
+                                        "mr-1 text-gray-400 transition-transform duration-200 cursor-pointer",
+                                        isOpen && "transform rotate-90"
+                                    )}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsOpen(!isOpen);
+                                    }}
+                                >
+                                    <ChevronRight className="w-3.5 h-3.5" />
+                                </span>
+                            ) : (
+                                <div className="w-3.5 h-3.5 mr-1 flex items-center justify-center text-gray-400">
+                                    <FileText className="w-3.5 h-3.5" />
+                                </div>
+                            )}
+
+                            {isActive && (
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-sky-500 rounded-r-full" />
+                            )}
+                            <span className="truncate flex-1">{item.title}</span>
+                            {!item.isPublished && (
+                                <span className="ml-2 w-1.5 h-1.5 rounded-full bg-yellow-400 shrink-0" title="Draft" />
+                            )}
+                        </Link>
+                    </div>
+
+                    {/* Render subpages if this page has children */}
+                    {hasChildren && isOpen && (
+                        <div className="mt-0.5">
+                            {/* Nested Droppable for Page Children (Subpages) */}
+                            <Droppable droppableId={`page-${item.id}`} type="ITEM" isCombineEnabled={isAdmin}>
+                                {(provided) => (
+                                    <div ref={provided.innerRef} {...provided.droppableProps} className="flex flex-col gap-0.5">
+                                        <WikiTreeList items={item.children} depth={depth + 1} activeId={activeId} onCreatePage={onCreatePage} onCreateFolder={onCreateFolder} isAdmin={isAdmin} />
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
                         </div>
-
-                        {isActive && (
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-sky-500 rounded-r-full" />
-                        )}
-                        <span className="truncate flex-1">{item.title}</span>
-                        {!item.isPublished && (
-                            <span className="ml-2 w-1.5 h-1.5 rounded-full bg-yellow-400 shrink-0" title="Draft" />
-                        )}
-                    </Link>
+                    )}
                 </div>
             )}
         </Draggable>
@@ -218,35 +251,43 @@ export default function WikiSidebar({ folders, nodes, isAdmin }: WikiSidebarProp
         setIsFolderDialogOpen(true);
     };
 
-    // Construct Tree
+    // Construct Tree with flat folders and hierarchical pages
     const tree = useMemo(() => {
         const folderMap = new Map();
-        // Initialize folder map with type='folder'
+        const nodeMap = new Map();
+
+        // Initialize folder map (folders are flat now, no nesting)
         folders.forEach(f => folderMap.set(f.id, { ...f, type: 'folder', children: [] }));
+
+        // Initialize node map with type='node'
+        nodes.forEach(n => nodeMap.set(n.id, { ...n, type: 'node', children: [] }));
 
         const roots: any[] = [];
 
-        // Build folder hierarchy
+        // Add all folders to roots (folders are flat)
         folders.forEach(f => {
-            if (f.parentId && folderMap.has(f.parentId)) {
-                folderMap.get(f.parentId).children.push(folderMap.get(f.id));
-            } else {
-                roots.push(folderMap.get(f.id));
-            }
+            roots.push(folderMap.get(f.id));
         });
 
-        // Add nodes to folders (mix in nodes)
+        // Build page hierarchy and add to folders
         nodes.forEach(n => {
-            const nodeWithType = { ...n, type: 'node' };
-            if (n.folderId && folderMap.has(n.folderId)) {
+            const nodeWithType = nodeMap.get(n.id);
+
+            // If page has a parent, add it to parent's children
+            if (n.parentId && nodeMap.has(n.parentId)) {
+                nodeMap.get(n.parentId).children.push(nodeWithType);
+            }
+            // If page has a folder but no parent, add to folder
+            else if (n.folderId && folderMap.has(n.folderId)) {
                 folderMap.get(n.folderId).children.push(nodeWithType);
-            } else if (!n.folderId) {
+            }
+            // If page has no folder and no parent, add to root
+            else if (!n.folderId && !n.parentId) {
                 roots.push(nodeWithType);
             }
         });
 
         // Sort roots and children
-        // Sort by order (asc), then by name (alpha)
         const sortItems = (items: any[]) => {
             items.sort((a, b) => {
                 // If order is different, sort by order
@@ -304,12 +345,28 @@ export default function WikiSidebar({ folders, nodes, isAdmin }: WikiSidebarProp
 
             if (targetType === 'folder') {
                 destinationFolderId = targetId;
+            } else if (targetType === 'node' && type === 'node') {
+                // Dropping a page onto another page - make it a subpage
+                console.log(`Making page ${id} a subpage of ${targetId}`);
+                try {
+                    const res = await fetch('/api/wiki/move', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'node',
+                            id,
+                            parentId: targetId,
+                        })
+                    });
+                    if (!res.ok) throw new Error('Failed to set parent');
+                    router.refresh();
+                } catch (error: any) {
+                    console.error(error);
+                    alert(error.message || 'Failed to make subpage');
+                }
+                return;
             } else {
-                // Dropping on a file usually doesn't mean "put inside file", generally "put next to file"
-                // But combine means "merge". We can treat it as "put in same folder as target".
-                // However, getting the parent ID of the target from here is hard without the full tree lookup.
-                // For now, let's only support dropping ON folders.
-                console.log('Dropped on a file, ignoring combine');
+                console.log('Invalid drop combination');
                 return;
             }
         } else if (destination) {

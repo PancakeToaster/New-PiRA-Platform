@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +12,7 @@ import {
   Calendar,
   MoreVertical,
   ArrowRight,
+  BarChart3,
 } from 'lucide-react';
 
 interface Project {
@@ -42,8 +43,8 @@ interface Team {
   projects: Project[];
 }
 
-export default function TeamPage({ params }: { params: Promise<{ teamSlug: string }> }) {
-  const { teamSlug } = use(params);
+export default function TeamPage({ params }: { params: { teamSlug: string } }) {
+  const { teamSlug } = params;
   const [team, setTeam] = useState<Team | null>(null);
   const [userRole, setUserRole] = useState<string>('member');
   const [isLoading, setIsLoading] = useState(true);
@@ -169,6 +170,25 @@ export default function TeamPage({ params }: { params: Promise<{ teamSlug: strin
           </Card>
         </Link>
 
+        <Link href={`/projects/teams/${team.slug}/subteams`}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Users className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Subteams</p>
+                    <p className="text-sm text-gray-500">Manage structure</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         <Link href={`/calendar?team=${team.slug}`}>
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="pt-6">
@@ -180,6 +200,25 @@ export default function TeamPage({ params }: { params: Promise<{ teamSlug: strin
                   <div>
                     <p className="font-medium text-gray-900">Calendar</p>
                     <p className="text-sm text-gray-500">Team events</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href={`/projects/teams/${team.slug}/gantt`}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <BarChart3 className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Team Gantt</p>
+                    <p className="text-sm text-gray-500">Master schedule</p>
                   </div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-gray-400" />

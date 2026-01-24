@@ -72,9 +72,8 @@ export default function WikiSuggestionModal({ nodeId, initialContent, isOpen, on
                     <div className="border rounded-md shadow-sm">
                         <div className="h-[400px] overflow-hidden">
                             <MarkdownEditor
-                                markdown={content}
+                                content={content}
                                 onChange={setContent}
-                                showToolbar={true}
                             />
                         </div>
                     </div>

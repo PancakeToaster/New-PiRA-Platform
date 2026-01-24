@@ -29,7 +29,7 @@ export default async function CourseGradesPage({
     }
 
     // Basic permission check (Teacher of course or Admin)
-    const course = await prisma.course.findUnique({
+    const course = await prisma.lMSCourse.findUnique({
         where: { id },
         include: {
             assignments: {
@@ -40,17 +40,17 @@ export default async function CourseGradesPage({
                     student: {
                         include: {
                             user: true,
-                            submissions: {
+                            assignmentSubmissions: {
                                 where: {
                                     assignment: {
-                                        courseId: id
+                                        lmsCourseId: id
                                     }
                                 }
                             },
                             quizAttempts: {
                                 where: {
                                     quiz: {
-                                        courseId: id
+                                        lmsCourseId: id
                                     }
                                 },
                                 include: {
@@ -126,8 +126,8 @@ export default async function CourseGradesPage({
                                         <TableCell className="font-medium sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                             <div className="flex items-center gap-3">
                                                 <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={user.image || undefined} />
-                                                    <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
+                                                    <AvatarImage src={user.avatar || undefined} />
+                                                    <AvatarFallback>{user.firstName?.[0] || ''}{user.lastName?.[0] || ''}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium">{user.firstName} {user.lastName}</span>
@@ -140,7 +140,7 @@ export default async function CourseGradesPage({
                                             let status = 'missing'; // missing, submitted, graded
 
                                             if (item.type === 'assignment') {
-                                                const submission = student.submissions.find(s => s.assignmentId === item.id);
+                                                const submission = student.assignmentSubmissions.find(s => s.assignmentId === item.id);
                                                 if (submission) {
                                                     score = submission.grade;
                                                     status = submission.status;
@@ -149,7 +149,7 @@ export default async function CourseGradesPage({
                                                 const attempts = student.quizAttempts.filter(qa => qa.quizId === item.id);
                                                 if (attempts.length > 0) {
                                                     // Best score
-                                                    const bestAttempt = attempts.reduce((prev, current) => (prev.score > current.score) ? prev : current);
+                                                    const bestAttempt = attempts.reduce((prev, current) => ((prev.score || 0) > (current.score || 0)) ? prev : current);
                                                     score = bestAttempt.score;
                                                     status = 'graded';
                                                 }

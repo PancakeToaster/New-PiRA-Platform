@@ -55,6 +55,7 @@ export default function AdminContentEditor({
         ],
         content: initialContent,
         editable: isEditMode,
+        immediatelyRender: false,
     });
 
     const handleSave = async () => {

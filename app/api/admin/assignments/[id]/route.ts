@@ -27,7 +27,7 @@ export async function GET(
                         email: true,
                     },
                 },
-                course: {
+                lmsCourse: {
                     select: {
                         id: true,
                         name: true,
@@ -52,12 +52,12 @@ export async function GET(
                                 },
                             },
                         },
-                        grader: {
-                            select: {
-                                firstName: true,
-                                lastName: true,
-                            },
-                        },
+                        // grader: {
+                        //     select: {
+                        //         firstName: true,
+                        //         lastName: true,
+                        //     },
+                        // },
                     },
                     orderBy: {
                         submittedAt: 'desc',

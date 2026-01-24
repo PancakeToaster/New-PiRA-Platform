@@ -20,7 +20,7 @@ export async function GET(
         // Ideally extract shared logic, but for now we repeat minimal fetch for independence
 
         // 1. Fetch Students
-        const course = await prisma.course.findUnique({
+        const course = await prisma.lMSCourse.findUnique({
             where: { id },
             include: {
                 enrollments: {
@@ -37,20 +37,20 @@ export async function GET(
 
         // 2. Fetch Assignments
         const assignments = await prisma.assignment.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             orderBy: { dueDate: 'asc' },
             include: { submissions: true }
         });
 
         // 3. Fetch Quizzes
         const quizzes = await prisma.quiz.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             orderBy: { createdAt: 'asc' },
         });
 
         // Fetch all attempts (optimization: could filter by course via relation but manual better here)
         const attempts = await prisma.quizAttempt.findMany({
-            where: { quiz: { courseId: id } },
+            where: { quiz: { lmsCourseId: id } },
             orderBy: { score: 'desc' }
         });
 
@@ -100,7 +100,7 @@ export async function GET(
             status: 200,
             headers: {
                 'Content-Type': 'text/csv',
-                'Content-Disposition': `attachment; filename="gradebook-${course.slug}.csv"`,
+                'Content-Disposition': `attachment; filename="gradebook-${course.code}.csv"`,
             },
         });
 

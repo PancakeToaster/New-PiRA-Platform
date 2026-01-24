@@ -12,6 +12,11 @@ export async function GET() {
 
   try {
     const roles = await prisma.role.findMany({
+      where: {
+        name: {
+          notIn: ['Mentor', 'Team Captain']
+        }
+      },
       orderBy: { name: 'asc' },
     });
 

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { Loader2, Plus, Search, Filter, ChevronDown, Calendar, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, Plus, Search, Filter, ChevronDown, Calendar, User, X, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { TaskDetailModal } from '@/components/projects/TaskDetailModal';
 
+// Using consistent Task interface
 interface Task {
   id: string;
   title: string;
@@ -15,6 +17,9 @@ interface Task {
   dueDate: string | null;
   estimatedHours: number | null;
   progress: number;
+  // properties required by TaskDetailModal
+  kanbanOrder?: number;
+  checklistItems?: { id: string; content: string; isCompleted: boolean; order: number }[];
   assignees: {
     user: {
       id: string;
@@ -24,18 +29,42 @@ interface Task {
   }[];
 }
 
+interface NewTaskForm {
+  title: string;
+  description: string;
+  priority: string;
+  taskType: string;
+  status: string;
+  startDate: string;
+  dueDate: string;
+}
+
 export default function ListPage({
   params,
 }: {
-  params: Promise<{ teamSlug: string; projectSlug: string }>;
+  params: { teamSlug: string; projectSlug: string };
 }) {
-  const { teamSlug, projectSlug } = use(params);
+  const { teamSlug, projectSlug } = params;
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('created');
+
+  // Modal State
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showNewTaskModal, setShowNewTaskModal] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTask, setNewTask] = useState<NewTaskForm>({
+    title: '',
+    description: '',
+    priority: 'medium',
+    taskType: 'task',
+    status: 'todo',
+    startDate: '',
+    dueDate: '',
+  });
 
   useEffect(() => {
     fetchTasks();
@@ -54,6 +83,139 @@ export default function ListPage({
       setIsLoading(false);
     }
   }
+
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTask.title.trim()) return;
+
+    setIsCreating(true);
+    try {
+      const response = await fetch(`/api/projects/${teamSlug}/${projectSlug}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTask),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTasks((prev) => [...prev, data.task]);
+        setShowNewTaskModal(false);
+        setNewTask({
+          title: '',
+          description: '',
+          priority: 'medium',
+          taskType: 'task',
+          status: 'todo',
+          startDate: '',
+          dueDate: '',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create task:', error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
+    try {
+      const res = await fetch(`/api/projects/${teamSlug}/${projectSlug}/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+
+      if (res.ok) {
+        setTasks(prev => prev.map(t =>
+          t.id === taskId ? { ...t, ...updates } as Task : t
+        ));
+        // Update selected task too if open
+        if (selectedTask?.id === taskId) {
+          setSelectedTask(prev => prev ? { ...prev, ...updates } as Task : null);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update task', error);
+    }
+  };
+
+  // Checklist Handlers (Copied/Adapted from BoardPage)
+  const handleChecklistAdd = async (taskId: string, content: string) => {
+    try {
+      const res = await fetch(`/api/projects/${teamSlug}/${projectSlug}/tasks/${taskId}/checklist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      if (res.ok) {
+        const { item } = await res.json();
+        // Update tasks state
+        setTasks(prev => prev.map(t =>
+          t.id === taskId ? { ...t, checklistItems: [...(t.checklistItems || []), item] } : t
+        ));
+        // Update selected task
+        if (selectedTask?.id === taskId) {
+          setSelectedTask(prev => prev ? { ...prev, checklistItems: [...(prev.checklistItems || []), item] } : null);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to add checklist item', error);
+    }
+  };
+
+  const handleChecklistUpdate = async (taskId: string, itemId: string, updates: any) => {
+    // Note: List view doesn't show checklist, but Modal needs updated state.
+    // Optimistic update for Selected Task (Modal)
+    if (selectedTask?.id === taskId) {
+      setSelectedTask(prev => prev ? {
+        ...prev,
+        checklistItems: prev.checklistItems?.map(i => i.id === itemId ? { ...i, ...updates } : i)
+      } : null);
+    }
+
+    // Also update main list just in case (though invisible there)
+    setTasks(prev => prev.map(t =>
+      t.id === taskId
+        ? {
+          ...t,
+          checklistItems: t.checklistItems?.map(i => i.id === itemId ? { ...i, ...updates } : i)
+        }
+        : t
+    ));
+
+    try {
+      await fetch(`/api/projects/${teamSlug}/${projectSlug}/tasks/${taskId}/checklist/${itemId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+    } catch (error) {
+      console.error('Failed to update checklist item', error);
+    }
+  };
+
+  const handleChecklistDelete = async (taskId: string, itemId: string) => {
+    if (selectedTask?.id === taskId) {
+      setSelectedTask(prev => prev ? {
+        ...prev,
+        checklistItems: prev.checklistItems?.filter(i => i.id !== itemId)
+      } : null);
+    }
+    setTasks(prev => prev.map(t =>
+      t.id === taskId
+        ? { ...t, checklistItems: t.checklistItems?.filter(i => i.id !== itemId) }
+        : t
+    ));
+
+    try {
+      await fetch(`/api/projects/${teamSlug}/${projectSlug}/tasks/${taskId}/checklist/${itemId}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Failed to delete checklist item', error);
+    }
+  };
+
 
   const filteredTasks = tasks
     .filter((task) => {
@@ -132,13 +294,13 @@ export default function ListPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl font-semibold text-gray-900">Task List</h2>
-        <Button>
+        <Button onClick={() => setShowNewTaskModal(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Task
         </Button>
       </div>
 
-      {/* Filters */}
+      {/* Filters (unchanged) */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -223,7 +385,11 @@ export default function ListPage({
               </tr>
             ) : (
               filteredTasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50 cursor-pointer">
+                <tr
+                  key={task.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setSelectedTask(task)} // Row Click
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       <span>{getTaskTypeIcon(task.taskType)}</span>
@@ -233,6 +399,14 @@ export default function ListPage({
                           <p className="text-sm text-gray-500 truncate max-w-md">
                             {task.description}
                           </p>
+                        )}
+                        {(task.checklistItems?.length ?? 0) > 0 && (
+                          <div className="flex items-center mt-1 space-x-1 text-xs text-gray-400">
+                            <CheckSquare className="w-3 h-3" />
+                            <span>
+                              {task.checklistItems?.filter(i => i.isCompleted).length}/{task.checklistItems?.length} subtasks
+                            </span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -315,6 +489,152 @@ export default function ListPage({
       <div className="text-sm text-gray-500">
         Showing {filteredTasks.length} of {tasks.length} tasks
       </div>
+
+      {/* Task Detail Modal */}
+      <TaskDetailModal
+        task={selectedTask}
+        isOpen={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+        onUpdate={handleUpdateTask as any}
+        onChecklistAdd={handleChecklistAdd}
+        onChecklistUpdate={handleChecklistUpdate}
+        onChecklistDelete={handleChecklistDelete}
+      />
+
+      {/* New Task Modal */}
+      {showNewTaskModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">New Task</h3>
+              <button
+                onClick={() => setShowNewTaskModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateTask} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title *
+                </label>
+                <input
+                  type="text"
+                  value={newTask.title}
+                  onChange={(e) =>
+                    setNewTask((prev) => ({ ...prev, title: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  placeholder="Task title"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={newTask.description}
+                  onChange={(e) =>
+                    setNewTask((prev) => ({ ...prev, description: e.target.value }))
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  placeholder="Describe the task..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newTask.startDate}
+                    onChange={(e) =>
+                      setNewTask((prev) => ({ ...prev, startDate: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Due Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newTask.dueDate}
+                    onChange={(e) =>
+                      setNewTask((prev) => ({ ...prev, dueDate: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Type
+                  </label>
+                  <select
+                    value={newTask.taskType}
+                    onChange={(e) =>
+                      setNewTask((prev) => ({ ...prev, taskType: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  >
+                    <option value="task">Task</option>
+                    <option value="bug">Bug</option>
+                    <option value="feature">Feature</option>
+                    <option value="improvement">Improvement</option>
+                    <option value="research">Research</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Priority
+                  </label>
+                  <select
+                    value={newTask.priority}
+                    onChange={(e) =>
+                      setNewTask((prev) => ({ ...prev, priority: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewTaskModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isCreating}>
+                  {isCreating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Create Task'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

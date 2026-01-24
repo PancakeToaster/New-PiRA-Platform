@@ -1,8 +1,8 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { hasRole } from '@/lib/utils/permissions';
 
 // POST /api/wiki/nodes/[id]/suggestions/[suggestionId]
 // Approve or Reject suggestion
@@ -16,7 +16,7 @@ export async function POST(
     }
 
     // Only Admin can review suggestions
-    const isAdmin = await hasRole(session.user, 'Admin');
+    const isAdmin = (session.user as any).roles?.includes('Admin');
     if (!isAdmin) {
         return new NextResponse('Forbidden', { status: 403 });
     }

@@ -19,7 +19,7 @@ export default async function CourseQuizzesPage({
         redirect('/auth/signin');
     }
 
-    const course = await prisma.course.findUnique({
+    const course = await prisma.lMSCourse.findUnique({
         where: { id },
         include: {
             quizzes: {

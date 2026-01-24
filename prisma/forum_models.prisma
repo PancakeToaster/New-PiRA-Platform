@@ -1,0 +1,39 @@
+// ============================================
+// FORUM SYSTEM (PHASE 20)
+// ============================================
+
+model ForumThread {
+  id          String   @id @default(cuid())
+  courseId    String
+  studentId   String?  // If set, this is a private thread between student and teacher
+  title       String
+  isPublic    Boolean  @default(false) // Public threads visible to all course members
+  isPinned    Boolean  @default(false)
+  isLocked    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course  Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student StudentProfile? @relation(fields: [studentId], references: [id])
+  posts   ForumPost[]
+
+  @@index([courseId])
+  @@index([studentId])
+  @@index([isPublic])
+}
+
+model ForumPost {
+  id        String   @id @default(cuid())
+  threadId  String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  thread ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([authorId])
+  @@index([createdAt])
+}

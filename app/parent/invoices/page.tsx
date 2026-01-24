@@ -5,10 +5,22 @@ import Link from 'next/link';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import InvoiceDownloadButton from '@/components/invoices/InvoiceDownloadButton';
 
+import StudentListActions from '@/components/parent/StudentListActions';
+
+// ...
+
 export default async function ParentInvoicesPage() {
   const user = await getCurrentUser();
+  const typedUser = user as any;
+  let parentId = typedUser?.profiles?.parent;
 
-  if (!user?.profiles?.parent) {
+  // FAILSAFE logic same as dashboard
+  if (!parentId && (typedUser?.isTestMode || typedUser?.roles?.includes('Admin'))) {
+    const demoProfile = await prisma.parentProfile.findFirst();
+    if (demoProfile) parentId = demoProfile.id;
+  }
+
+  if (!parentId) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600">Parent profile not found</p>
@@ -16,8 +28,12 @@ export default async function ParentInvoicesPage() {
     );
   }
 
+  const studentCount = await prisma.parentStudent.count({
+    where: { parentId }
+  });
+
   const invoices = await prisma.invoice.findMany({
-    where: { parentId: user.profiles.parent },
+    where: { parentId },
     orderBy: { createdAt: 'desc' },
     include: {
       items: true,
@@ -39,8 +55,15 @@ export default async function ParentInvoicesPage() {
 
       {invoices.length === 0 ? (
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-gray-600 text-center">No invoices found.</p>
+          <CardContent className="pt-6 text-center">
+            <p className="text-gray-600 mb-4">No invoices found.</p>
+            {studentCount === 0 && (
+              <div className="bg-sky-50 p-4 rounded-lg inline-block text-left max-w-md">
+                <h4 className="font-semibold text-sky-900 mb-1">Get Started</h4>
+                <p className="text-sm text-sky-700 mb-3">You don't have any students linked yet. Create an account for your child to get started.</p>
+                <StudentListActions isEmptyState />
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (

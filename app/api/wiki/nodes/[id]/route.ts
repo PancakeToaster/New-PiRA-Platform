@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasPermission } from '@/lib/permissions';
+import { logActivity } from '@/lib/logging';
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function DELETE(request: NextRequest, { params }: any) {
     const { id } = await params;
     const user = await getCurrentUser();
-    const userIsAdmin = await isAdmin();
+    const canDelete = await hasPermission('knowledge', 'delete');
 
-    if (!user || !userIsAdmin) {
+    if (!user || !canDelete) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -21,6 +22,15 @@ export async function DELETE(request: NextRequest, { params }: any) {
 
         await prisma.knowledgeNode.delete({
             where: { id },
+        });
+
+        await logActivity({
+            userId: user.id,
+            action: 'wiki.page.deleted',
+            entityType: 'KnowledgeNode',
+            entityId: id,
+            ipAddress: request.headers.get('x-forwarded-for') || undefined,
+            userAgent: request.headers.get('user-agent') || undefined,
         });
 
         return NextResponse.json({ success: true });

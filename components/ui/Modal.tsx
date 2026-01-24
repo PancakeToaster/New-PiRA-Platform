@@ -9,9 +9,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
 }
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = 'md', className = '' }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       }}
     >
       <div
-        className={`bg-white rounded-2xl shadow-2xl w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col`}
+        className={`bg-white rounded-2xl shadow-2xl w-full ${sizeClasses[size]} ${className} max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">

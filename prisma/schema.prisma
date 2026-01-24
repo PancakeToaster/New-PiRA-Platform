@@ -14,6 +14,7 @@ datasource db {
 model User {
   id         String    @id @default(cuid())
   email      String    @unique
+  username   String?   @unique
   password   String
   firstName  String
   lastName   String
@@ -45,18 +46,19 @@ model User {
   teacherAssignments   Assignment[]           @relation("TeacherAssignments")
   gradedSubmissions    AssignmentSubmission[] @relation("GradedSubmissions")
   gradedQuizAnswers    QuizQuestionAnswer[]   @relation("QuizGrader")
-  instructorCourses    Course[]
+  lmsInstructorCourses LMSCourse[]            @relation("LMSInstructor")
   knowledgeSuggestions KnowledgeSuggestion[]  @relation("SuggestionAuthor")
   reviewedSuggestions  KnowledgeSuggestion[]  @relation("SuggestionReviewer")
   knowledgeComments    KnowledgeComment[]
   awardedCertificates  StudentCertificate[]   @relation("CertificateAwarder")
 
   // Project Management relationships
-  teamMemberships TeamMember[]
-  taskAssignments TaskAssignee[]
-  taskComments    TaskComment[]
-  taskAttachments TaskAttachment[]
-  taskActivities  TaskActivity[]
+  teamMemberships   TeamMember[]
+  taskAssignments   TaskAssignee[]
+  taskComments      TaskComment[]
+  taskAttachments   TaskAttachment[]
+  taskActivities    TaskActivity[]
+  uploadedTeamFiles TeamFile[]
 
   // Calendar relationships
   createdEvents    CalendarEvent[]
@@ -69,6 +71,18 @@ model User {
   // System Monitoring
   activityLogs ActivityLog[]
   errorLogs    ErrorLog[]
+
+  // Communication
+  authoredAnnouncements    Announcement[]
+  forumPosts               ForumPost[]
+  createdForumThreads      ForumThread[]            @relation("ForumThreadCreator")
+  forumThreadParticipation ForumThreadParticipant[] @relation("ForumParticipant")
+  addedForumParticipants   ForumThreadParticipant[] @relation("ForumParticipantAdder")
+  gradeChanges             GradeAuditLog[]          @relation("GradeChanger")
+
+  // SubTeam relationships
+  subTeamMemberships     SubTeamMember[]
+  assignedSubTeamMembers SubTeamMember[] @relation("SubTeamAssigner")
 
   @@index([email])
 }
@@ -183,6 +197,7 @@ model StudentProfile {
   quizAttempts          QuizAttempt[]
   certificates          StudentCertificate[]
   badges                StudentBadge[]
+  forumThreads          ForumThread[]
 
   @@index([referredById])
 }
@@ -286,24 +301,42 @@ model Course {
   isHidden      Boolean  @default(false)
   hidePrice     Boolean  @default(false)
   isDevelopment Boolean  @default(false) // Shows in "Coming Soon" section
-  instructorId  String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  instructor   User?              @relation(fields: [instructorId], references: [id])
   interests    CourseInterest[]
-  enrollments  CourseEnrollment[]
-  lessons      Lesson[]
   invoiceItems InvoiceItem[]
-  modules      Module[]
-  assignments  Assignment[]
-  quizzes      Quiz[]
-  certificates Certificate[]
 
   @@index([isActive])
   @@index([slug])
   @@index([isDevelopment])
+}
+
+// ============================================
+// LMS COURSE (Internal Teaching)
+// ============================================
+model LMSCourse {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique // e.g., "CS101-2024-FALL"
+  description  String?  @db.Text
+  instructorId String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  instructor   User?              @relation("LMSInstructor", fields: [instructorId], references: [id])
+  enrollments  CourseEnrollment[] @relation("LMSEnrollments")
+  lessons      Lesson[]           @relation("LMSLessons")
+  modules      Module[]           @relation("LMSModules")
+  assignments  Assignment[]       @relation("LMSAssignments")
+  quizzes      Quiz[]             @relation("LMSQuizzes")
+  certificates Certificate[]      @relation("LMSCertificates")
+  forumThreads ForumThread[]      @relation("LMSForumThreads")
+
   @@index([instructorId])
+  @@index([isActive])
+  @@index([code])
 }
 
 model Activity {
@@ -408,6 +441,7 @@ model KnowledgeNode {
   nodeType    String   @default("markdown") // markdown, graph, mindmap, canvas
   authorId    String
   folderId    String?
+  parentId    String? // Parent page for hierarchical structure
   tags        String[]
   attachments String[]
   icon        String? // Custom icon for navigation
@@ -424,6 +458,8 @@ model KnowledgeNode {
 
   author          User                  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   folder          Folder?               @relation(fields: [folderId], references: [id])
+  parent          KnowledgeNode?        @relation("PageHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children        KnowledgeNode[]       @relation("PageHierarchy")
   relationships   NodeRelationship[]    @relation("NodeFrom")
   relatedTo       NodeRelationship[]    @relation("NodeTo")
   studentProgress StudentProgress[]
@@ -435,6 +471,7 @@ model KnowledgeNode {
 
   @@index([authorId])
   @@index([folderId])
+  @@index([parentId])
   @@index([isPublished])
   @@index([slug])
   @@index([nodeType])
@@ -498,17 +535,12 @@ model KnowledgeNodeLink {
 model Folder {
   id        String   @id @default(cuid())
   name      String
-  parentId  String?
   color     String?
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  parent   Folder?         @relation("FolderHierarchy", fields: [parentId], references: [id])
-  children Folder[]        @relation("FolderHierarchy")
-  nodes    KnowledgeNode[]
-
-  @@index([parentId])
+  nodes KnowledgeNode[]
 }
 
 model NodeRelationship {
@@ -529,7 +561,7 @@ model NodeRelationship {
 model Assignment {
   id              String   @id @default(cuid())
   lessonId        String?  @unique // Link to lesson if part of course
-  courseId        String? // Denormalized for easier querying
+  lmsCourseId     String? // Denormalized for easier querying
   title           String
   description     String   @db.Text
   dueDate         DateTime
@@ -543,13 +575,13 @@ model Assignment {
   updatedAt       DateTime @updatedAt
 
   lesson      Lesson?                @relation(fields: [lessonId], references: [id])
-  course      Course?                @relation(fields: [courseId], references: [id])
+  lmsCourse   LMSCourse?             @relation("LMSAssignments", fields: [lmsCourseId], references: [id])
   teacher     User                   @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
   student     StudentProfile?        @relation(fields: [studentId], references: [id])
   submissions AssignmentSubmission[]
 
   @@index([lessonId])
-  @@index([courseId])
+  @@index([lmsCourseId])
   @@index([teacherId])
   @@index([studentId])
   @@index([dueDate])
@@ -601,7 +633,7 @@ model StudentProgress {
 
 model Module {
   id          String   @id @default(cuid())
-  courseId    String
+  lmsCourseId String
   title       String
   description String?  @db.Text
   order       Int      @default(0)
@@ -609,10 +641,10 @@ model Module {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons Lesson[]
+  lmsCourse LMSCourse @relation("LMSModules", fields: [lmsCourseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
 
-  @@index([courseId])
+  @@index([lmsCourseId])
   @@index([order])
 }
 
@@ -686,9 +718,51 @@ model Team {
   members  TeamMember[]
   projects Project[]
   events   CalendarEvent[]
+  files    TeamFile[]
+  folders  TeamFolder[]
+  SubTeam  SubTeam[]
 
   @@index([slug])
   @@index([isActive])
+}
+
+model TeamFile {
+  id         String   @id @default(cuid())
+  teamId     String
+  folderId   String?
+  uploaderId String
+  name       String
+  url        String
+  type       String   @default("file")
+  size       Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  team     Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  folder   TeamFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  uploader User        @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([folderId])
+  @@index([uploaderId])
+}
+
+model TeamFolder {
+  id        String   @id @default(cuid())
+  teamId    String
+  parentId  String?
+  name      String
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team     Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  parent   TeamFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children TeamFolder[] @relation("FolderHierarchy")
+  files    TeamFile[]
+
+  @@index([teamId])
+  @@index([parentId])
 }
 
 model TeamMember {
@@ -706,6 +780,36 @@ model TeamMember {
   @@index([teamId])
   @@index([userId])
   @@index([role])
+}
+
+model SubTeam {
+  id          String   @id @default(cuid())
+  teamId      String
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team    Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  members SubTeamMember[]
+
+  @@index([teamId])
+}
+
+model SubTeamMember {
+  id         String   @id @default(cuid())
+  subTeamId  String
+  userId     String
+  assignedAt DateTime @default(now())
+  assignedBy String? // User who assigned them
+
+  subTeam  SubTeam @relation(fields: [subTeamId], references: [id], onDelete: Cascade)
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assigner User?   @relation("SubTeamAssigner", fields: [assignedBy], references: [id])
+
+  @@unique([subTeamId, userId])
+  @@index([subTeamId])
+  @@index([userId])
 }
 
 model Project {
@@ -773,17 +877,18 @@ model Task {
   updatedAt      DateTime  @updatedAt
   completedAt    DateTime?
 
-  project      Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  milestone    Milestone?          @relation(fields: [milestoneId], references: [id])
-  parent       Task?               @relation("TaskSubtasks", fields: [parentId], references: [id])
-  subtasks     Task[]              @relation("TaskSubtasks")
-  assignees    TaskAssignee[]
-  dependencies TaskDependency[]    @relation("TaskDependencyFrom")
-  dependentOn  TaskDependency[]    @relation("TaskDependencyTo")
-  comments     TaskComment[]
-  attachments  TaskAttachment[]
-  tags         TaskTagAssignment[]
-  activities   TaskActivity[]
+  project        Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone      Milestone?          @relation(fields: [milestoneId], references: [id])
+  parent         Task?               @relation("TaskSubtasks", fields: [parentId], references: [id])
+  subtasks       Task[]              @relation("TaskSubtasks")
+  assignees      TaskAssignee[]
+  dependencies   TaskDependency[]    @relation("TaskDependencyFrom")
+  dependentOn    TaskDependency[]    @relation("TaskDependencyTo")
+  comments       TaskComment[]
+  attachments    TaskAttachment[]
+  tags           TaskTagAssignment[]
+  activities     TaskActivity[]
+  checklistItems TaskChecklistItem[]
 
   @@index([projectId])
   @@index([milestoneId])
@@ -792,6 +897,21 @@ model Task {
   @@index([priority])
   @@index([dueDate])
   @@index([kanbanOrder])
+}
+
+model TaskChecklistItem {
+  id          String   @id @default(cuid())
+  taskId      String
+  content     String
+  isCompleted Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([order])
 }
 
 model TaskAssignee {
@@ -971,7 +1091,7 @@ model CourseInterest {
 
 model Lesson {
   id          String   @id @default(cuid())
-  courseId    String
+  lmsCourseId String
   moduleId    String? // Optional - for modular courses
   title       String
   description String?  @db.Text
@@ -985,13 +1105,13 @@ model Lesson {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lmsCourse       LMSCourse        @relation("LMSLessons", fields: [lmsCourseId], references: [id], onDelete: Cascade)
   module          Module?          @relation(fields: [moduleId], references: [id])
   studentProgress LessonProgress[]
   assignment      Assignment?
   quiz            Quiz?
 
-  @@index([courseId])
+  @@index([lmsCourseId])
   @@index([moduleId])
   @@index([order])
 }
@@ -1019,7 +1139,7 @@ model LessonProgress {
 
 model CourseEnrollment {
   id          String    @id @default(cuid())
-  courseId    String
+  lmsCourseId String
   studentId   String
   status      String    @default("active") // active, completed, dropped
   progress    Int       @default(0) // 0-100
@@ -1027,11 +1147,11 @@ model CourseEnrollment {
   completedAt DateTime?
   updatedAt   DateTime  @updatedAt
 
-  course  Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lmsCourse LMSCourse      @relation("LMSEnrollments", fields: [lmsCourseId], references: [id], onDelete: Cascade)
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  @@unique([courseId, studentId])
-  @@index([courseId])
+  @@unique([lmsCourseId, studentId])
+  @@index([lmsCourseId])
   @@index([studentId])
   @@index([status])
 }
@@ -1075,7 +1195,7 @@ model PublicStaff {
 model Quiz {
   id               String   @id @default(cuid())
   lessonId         String?  @unique // Link to lesson if part of course
-  courseId         String? // Denormalized for easier querying
+  lmsCourseId      String? // Denormalized for easier querying
   title            String
   description      String?  @db.Text
   instructions     String?  @db.Text
@@ -1090,12 +1210,12 @@ model Quiz {
   updatedAt        DateTime @updatedAt
 
   lesson    Lesson?        @relation(fields: [lessonId], references: [id])
-  course    Course?        @relation(fields: [courseId], references: [id])
+  lmsCourse LMSCourse?     @relation("LMSQuizzes", fields: [lmsCourseId], references: [id])
   questions QuizQuestion[]
   attempts  QuizAttempt[]
 
   @@index([lessonId])
-  @@index([courseId])
+  @@index([lmsCourseId])
 }
 
 model QuizQuestion {
@@ -1165,6 +1285,34 @@ model QuizQuestionAnswer {
 }
 
 // ============================================
+// GRADE AUDIT LOG (Admin Only)
+// ============================================
+
+model GradeAuditLog {
+  id           String   @id @default(cuid())
+  submissionId String? // For assignment grades
+  attemptId    String? // For quiz grades
+  studentId    String
+  courseId     String
+  fieldChanged String // "grade", "feedback", "status", etc.
+  oldValue     String? // JSON string of old value
+  newValue     String? // JSON string of new value
+  changedBy    String
+  changedAt    DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+
+  changer User @relation("GradeChanger", fields: [changedBy], references: [id])
+
+  @@index([submissionId])
+  @@index([attemptId])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([changedBy])
+  @@index([changedAt])
+}
+
+// ============================================
 // CERTIFICATES & BADGES (PHASE 16)
 // ============================================
 
@@ -1173,15 +1321,15 @@ model Certificate {
   title       String
   description String?  @db.Text
   imageUrl    String? // PDF template path or Badge image URL
-  courseId    String?
+  lmsCourseId String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course Course?              @relation(fields: [courseId], references: [id])
-  awards StudentCertificate[]
+  lmsCourse LMSCourse?           @relation("LMSCertificates", fields: [lmsCourseId], references: [id])
+  awards    StudentCertificate[]
 
-  @@index([courseId])
+  @@index([lmsCourseId])
 }
 
 model StudentCertificate {
@@ -1350,4 +1498,90 @@ model ErrorLog {
   @@index([createdAt])
   @@index([severity])
   @@index([resolved])
+}
+
+// ============================================
+// COMMUNICATION (Announcements)
+// ============================================
+
+model Announcement {
+  id             String   @id @default(cuid())
+  title          String
+  content        String   @db.Text
+  type           String   @default("system") // system, course, team, role
+  targetId       String? // ID of course, team, etc.
+  isActive       Boolean  @default(true)
+  sendToAll      Boolean  @default(false)
+  sendToStudents Boolean  @default(false)
+  sendToParents  Boolean  @default(false)
+  sendToTeachers Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  authorId       String
+
+  author User @relation(fields: [authorId], references: [id])
+
+  @@index([type])
+  @@index([targetId])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+// ============================================
+// FORUM SYSTEM (PHASE 20)
+// ============================================
+
+model ForumThread {
+  id          String   @id @default(cuid())
+  lmsCourseId String
+  creatorId   String // User who created the thread
+  title       String
+  isPublic    Boolean  @default(false) // Public threads visible to all course members
+  isPinned    Boolean  @default(false)
+  isLocked    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lmsCourse        LMSCourse                @relation("LMSForumThreads", fields: [lmsCourseId], references: [id], onDelete: Cascade)
+  creator          User                     @relation("ForumThreadCreator", fields: [creatorId], references: [id])
+  posts            ForumPost[]
+  participants     ForumThreadParticipant[]
+  StudentProfile   StudentProfile?          @relation(fields: [studentProfileId], references: [id])
+  studentProfileId String?
+
+  @@index([lmsCourseId])
+  @@index([creatorId])
+  @@index([isPublic])
+}
+
+model ForumThreadParticipant {
+  id       String   @id @default(cuid())
+  threadId String
+  userId   String
+  addedAt  DateTime @default(now())
+  addedBy  String? // User who added this participant
+
+  thread ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user   User        @relation("ForumParticipant", fields: [userId], references: [id], onDelete: Cascade)
+  adder  User?       @relation("ForumParticipantAdder", fields: [addedBy], references: [id])
+
+  @@unique([threadId, userId])
+  @@index([threadId])
+  @@index([userId])
+}
+
+model ForumPost {
+  id        String   @id @default(cuid())
+  threadId  String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  thread ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([authorId])
+  @@index([createdAt])
 }

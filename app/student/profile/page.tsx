@@ -17,8 +17,8 @@ export default async function StudentProfilePage() {
     const studentProfile = await prisma.studentProfile.findFirst({
         where: { userId: user.id },
         include: {
-            enrollments: {
-                include: { course: true }
+            courseEnrollments: {
+                include: { lmsCourse: true }
             }
         }
     });
@@ -38,11 +38,11 @@ export default async function StudentProfilePage() {
                         <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
                             <AvatarImage src={user.image || undefined} />
                             <AvatarFallback className="text-4xl bg-sky-100 text-sky-700">
-                                {user.firstName[0]}{user.lastName[0]}
+                                {user.name?.[0] || 'U'}
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 pb-2">
-                            <h1 className="text-3xl font-bold text-gray-900">{user.firstName} {user.lastName}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
                             <p className="text-gray-600">{user.email}</p>
                             {studentProfile.school && (
                                 <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
@@ -71,20 +71,20 @@ export default async function StudentProfilePage() {
 
                 <TabsContent value="courses">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {studentProfile.enrollments.map((enr) => (
+                        {studentProfile.courseEnrollments.map((enr) => (
                             <Card key={enr.id} className="hover:shadow-md transition-shadow">
                                 <CardHeader>
-                                    <CardTitle className="text-lg">{enr.course.name}</CardTitle>
+                                    <CardTitle className="text-lg">{enr.lmsCourse.name}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{enr.course.description}</p>
+                                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{enr.lmsCourse.description}</p>
                                     <div className="text-xs text-gray-400">
                                         Enrolled: {new Date(enr.enrolledAt).toLocaleDateString()}
                                     </div>
                                 </CardContent>
                             </Card>
                         ))}
-                        {studentProfile.enrollments.length === 0 && (
+                        {studentProfile.courseEnrollments.length === 0 && (
                             <div className="col-span-full text-center py-12 text-gray-500">
                                 No active course enrollments.
                             </div>

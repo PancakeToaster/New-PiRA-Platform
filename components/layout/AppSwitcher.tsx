@@ -18,7 +18,12 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export default function AppSwitcher() {
+interface AppSwitcherProps {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    user?: any;
+}
+
+export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
     const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -36,11 +41,15 @@ export default function AppSwitcher() {
         };
     }, [wrapperRef]);
 
-    const userRoles = session?.user?.roles || [];
+    const activeUser = user || session?.user;
+    const userRoles = activeUser?.roles || [];
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const userPermissions = activeUser?.permissions || [];
 
-    const hasRole = (allowedRoles: string[]) => {
-        if (allowedRoles.includes('*')) return true;
-        return userRoles.some(role => allowedRoles.includes(role));
+    const hasPermission = (resource: string, action: string) => {
+        if (userRoles.includes('Admin')) return true;
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        return userPermissions.some((p: any) => p.resource === resource && p.action === action);
     };
 
     const allApps = [
@@ -50,7 +59,7 @@ export default function AppSwitcher() {
             icon: Home,
             color: 'text-gray-600',
             bg: 'bg-gray-100',
-            allowedRoles: ['*']
+            isVisible: () => true
         },
         {
             name: 'Projects',
@@ -58,7 +67,7 @@ export default function AppSwitcher() {
             icon: FolderKanban,
             color: 'text-sky-600',
             bg: 'bg-sky-100',
-            allowedRoles: ['Mentor', 'Team Captain', 'Team Member', 'Admin']
+            isVisible: () => hasPermission('projects', 'view')
         },
         {
             name: 'LMS',
@@ -66,7 +75,7 @@ export default function AppSwitcher() {
             icon: GraduationCap,
             color: 'text-purple-600',
             bg: 'bg-purple-100',
-            allowedRoles: ['Student', 'Teacher', 'Admin']
+            isVisible: () => hasPermission('lms', 'view')
         },
         {
             name: 'Wiki',
@@ -74,7 +83,7 @@ export default function AppSwitcher() {
             icon: BookOpen,
             color: 'text-green-600',
             bg: 'bg-green-100',
-            allowedRoles: ['*'] // Accessible to everyone logged in
+            isVisible: () => hasPermission('knowledge', 'view')
         },
         {
             name: 'Calendar',
@@ -82,7 +91,7 @@ export default function AppSwitcher() {
             icon: Calendar,
             color: 'text-orange-600',
             bg: 'bg-orange-100',
-            allowedRoles: ['*']
+            isVisible: () => hasPermission('calendar', 'view')
         },
         {
             name: 'Parent Portal',
@@ -90,7 +99,7 @@ export default function AppSwitcher() {
             icon: UserCircle,
             color: 'text-pink-600',
             bg: 'bg-pink-100',
-            allowedRoles: ['Parent', 'Admin']
+            isVisible: () => hasPermission('parent_portal', 'view')
         },
         {
             name: 'Admin',
@@ -98,11 +107,11 @@ export default function AppSwitcher() {
             icon: Shield,
             color: 'text-red-600',
             bg: 'bg-red-100',
-            allowedRoles: ['Admin']
+            isVisible: () => userRoles.includes('Admin')
         },
     ];
 
-    const visibleApps = allApps.filter(app => hasRole(app.allowedRoles));
+    const visibleApps = allApps.filter(app => app.isVisible());
 
     if (!session) return null;
 

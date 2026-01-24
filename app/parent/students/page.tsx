@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { User, GraduationCap, School, Calendar, Mail } from 'lucide-react';
 import Link from 'next/link';
+import StudentListActions from '@/components/parent/StudentListActions';
 
 export default async function ParentStudentsPage() {
   const user = await getCurrentUser();
@@ -23,9 +24,9 @@ export default async function ParentStudentsPage() {
           student: {
             include: {
               user: true,
-              enrollments: {
+              courseEnrollments: {
                 include: {
-                  course: true,
+                  lmsCourse: true,
                 },
                 where: {
                   status: 'active',
@@ -50,11 +51,14 @@ export default async function ParentStudentsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Students</h1>
-        <p className="text-gray-600 mt-2">
-          View and manage information about your enrolled students
-        </p>
+      <div className="mb-8 flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">My Students</h1>
+          <p className="text-gray-600 mt-2">
+            View and manage information about your enrolled students
+          </p>
+        </div>
+        <StudentListActions />
       </div>
 
       {students.length === 0 ? (
@@ -64,10 +68,10 @@ export default async function ParentStudentsPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No Students Linked
             </h3>
-            <p className="text-gray-600">
-              No students are currently linked to your account. Please contact
-              the academy if you believe this is an error.
+            <p className="text-gray-600 mb-6">
+              No students are currently linked to your account.
             </p>
+            <StudentListActions isEmptyState />
           </CardContent>
         </Card>
       ) : (
@@ -121,19 +125,19 @@ export default async function ParentStudentsPage() {
                       <p className="text-sm font-medium text-gray-700">
                         Active Enrollments
                       </p>
-                      {student.enrollments.length > 0 ? (
+                      {student.courseEnrollments.length > 0 ? (
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {student.enrollments.slice(0, 3).map((enrollment) => (
+                          {student.courseEnrollments.slice(0, 3).map((enrollment) => (
                             <span
                               key={enrollment.id}
                               className="px-2 py-1 bg-sky-100 text-sky-700 text-xs rounded-full"
                             >
-                              {enrollment.course.title}
+                              {enrollment.lmsCourse.name}
                             </span>
                           ))}
-                          {student.enrollments.length > 3 && (
+                          {student.courseEnrollments.length > 3 && (
                             <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                              +{student.enrollments.length - 3} more
+                              +{student.courseEnrollments.length - 3} more
                             </span>
                           )}
                         </div>

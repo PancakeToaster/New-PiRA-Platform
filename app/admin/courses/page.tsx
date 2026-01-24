@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2, Upload, X } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -40,9 +41,15 @@ export default function AdminCoursesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [createForm, setCreateForm] = useState({
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const [formData, setFormData] = useState({
     name: '',
     slug: '',
     description: '',
@@ -51,6 +58,7 @@ export default function AdminCoursesPage() {
     ageRange: '',
     price: '',
     topics: '',
+    image: '',
     isActive: true,
     isHidden: false,
     hidePrice: false,
@@ -99,12 +107,7 @@ export default function AdminCoursesPage() {
 
       if (response.ok) {
         setCourses(courses.filter(c => c.id !== courseId));
-        setStats(prev => ({
-          ...prev,
-          total: prev.total - 1,
-          active: courses.find(c => c.id === courseId)?.isActive ? prev.active - 1 : prev.active,
-          inactive: !courses.find(c => c.id === courseId)?.isActive ? prev.inactive - 1 : prev.inactive,
-        }));
+        fetchCourses(); // Refresh stats
       } else {
         alert('Failed to delete course');
       }
@@ -123,70 +126,131 @@ export default function AdminCoursesPage() {
       });
 
       if (response.ok) {
-        const { course: updatedCourse } = await response.json();
-        setCourses(courses.map(c => c.id === course.id ? updatedCourse : c));
-        setStats(prev => ({
-          ...prev,
-          active: updatedCourse.isActive ? prev.active + 1 : prev.active - 1,
-          inactive: !updatedCourse.isActive ? prev.inactive + 1 : prev.inactive - 1,
-        }));
+        fetchCourses(); // Refresh list and stats
       }
     } catch (error) {
       console.error('Failed to update course:', error);
     }
   };
 
-  const handleCreateCourse = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsCreating(true);
+  const resetForm = () => {
+    setFormData({
+      name: '', slug: '', description: '', level: '', duration: '',
+      ageRange: '', price: '', topics: '', image: '',
+      isActive: true, isHidden: false, hidePrice: false, isDevelopment: false,
+    });
+    setEditingId(null);
+  };
+
+  const handleOpenCreateModal = () => {
+    resetForm();
+    setModalMode('create');
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (course: Course) => {
+    setFormData({
+      name: course.name,
+      slug: course.slug,
+      description: course.description,
+      level: course.level || '',
+      duration: course.duration || '',
+      ageRange: course.ageRange || '',
+      price: course.price?.toString() || '',
+      topics: course.topics.join(', '),
+      image: course.image || '',
+      isActive: course.isActive,
+      isHidden: course.isHidden,
+      hidePrice: course.hidePrice,
+      isDevelopment: course.isDevelopment,
+    });
+    setEditingId(course.id);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    const file = files[0];
 
     try {
-      const courseData = {
-        name: createForm.name,
-        slug: createForm.slug,
-        description: createForm.description,
-        level: createForm.level || null,
-        duration: createForm.duration || null,
-        ageRange: createForm.ageRange || null,
-        price: createForm.price ? parseFloat(createForm.price) : null,
-        topics: createForm.topics ? createForm.topics.split(',').map(t => t.trim()).filter(t => t) : [],
-        isActive: createForm.isActive,
-        isHidden: createForm.isHidden,
-        hidePrice: createForm.hidePrice,
-        isDevelopment: createForm.isDevelopment,
-      };
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      formDataUpload.append('type', 'image');
 
-      const response = await fetch('/api/admin/courses', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(courseData),
+        body: formDataUpload,
       });
 
       if (response.ok) {
-        const { course } = await response.json();
-        setCourses([course, ...courses]);
-        setStats(prev => ({
-          ...prev,
-          total: prev.total + 1,
-          active: createForm.isActive && !createForm.isDevelopment ? prev.active + 1 : prev.active,
-          inactive: !createForm.isActive ? prev.inactive + 1 : prev.inactive,
-          inDevelopment: createForm.isDevelopment ? prev.inDevelopment + 1 : prev.inDevelopment,
-        }));
-        setIsCreateModalOpen(false);
-        setCreateForm({
-          name: '', slug: '', description: '', level: '', duration: '',
-          ageRange: '', price: '', topics: '', isActive: true, isHidden: false,
-          hidePrice: false, isDevelopment: false,
-        });
-      } else {
         const data = await response.json();
-        alert(data.error || 'Failed to create course');
+        setFormData(prev => ({ ...prev, image: data.url }));
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to upload file');
       }
     } catch (error) {
-      console.error('Failed to create course:', error);
-      alert('Failed to create course');
+      console.error('Upload failed:', error);
+      alert('Failed to upload file');
     } finally {
-      setIsCreating(false);
+      setIsUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const courseData = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        level: formData.level || null,
+        duration: formData.duration || null,
+        ageRange: formData.ageRange || null,
+        price: formData.price ? parseFloat(formData.price) : null,
+        topics: formData.topics ? formData.topics.split(',').map(t => t.trim()).filter(t => t) : [],
+        image: formData.image || null,
+        isActive: formData.isActive,
+        isHidden: formData.isHidden,
+        hidePrice: formData.hidePrice,
+        isDevelopment: formData.isDevelopment,
+      };
+
+      let response;
+      if (modalMode === 'create') {
+        response = await fetch('/api/admin/courses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(courseData),
+        });
+      } else {
+        response = await fetch(`/api/admin/courses/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(courseData),
+        });
+      }
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        resetForm();
+        fetchCourses();
+      } else {
+        const data = await response.json();
+        alert(data.error || `Failed to ${modalMode} course`);
+      }
+    } catch (error) {
+      console.error(`Failed to ${modalMode} course:`, error);
+      alert(`Failed to ${modalMode} course`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -209,7 +273,7 @@ export default function AdminCoursesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Courses</h1>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={handleOpenCreateModal}>
           <Plus className="w-4 h-4 mr-2" />
           Create New Course
         </Button>
@@ -322,8 +386,22 @@ export default function AdminCoursesPage() {
                   filteredCourses.map((course) => (
                     <tr key={course.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{course.name}</div>
-                        <div className="text-sm text-gray-500 line-clamp-1">{course.description}</div>
+                        <div className="flex items-center gap-3">
+                          {course.image && (
+                            <div className="w-10 h-10 relative rounded overflow-hidden flex-shrink-0">
+                              <Image
+                                src={course.image}
+                                alt={course.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{course.name}</div>
+                            <div className="text-sm text-gray-500 line-clamp-1">{course.description}</div>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {course.level ? (
@@ -371,16 +449,13 @@ export default function AdminCoursesPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <Link href={`/admin/courses/${course.id}/builder`}>
-                          <Button variant="primary" size="sm">
-                            Builder
-                          </Button>
-                        </Link>
-                        <Link href={`/admin/courses/${course.id}`}>
-                          <Button variant="outline" size="sm">
-                            Edit
-                          </Button>
-                        </Link>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handleEditClick(course)}
+                        >
+                          Edit
+                        </Button>
                         <Link href={`/courses/${course.slug}`} target="_blank">
                           <Button variant="outline" size="sm">
                             View
@@ -403,15 +478,59 @@ export default function AdminCoursesPage() {
         </CardContent>
       </Card>
 
-      {/* Create Course Modal */}
+      {/* Create/Edit Course Modal */}
       <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        title="Create New Course"
-        size="xl"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalMode === 'create' ? 'Create New Course' : 'Edit Course'}
+        className="max-w-3xl"
       >
-        <form onSubmit={handleCreateCourse} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Course Image
+              </label>
+              <div className="flex items-start gap-4">
+                {formData.image && (
+                  <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                    <Image
+                      src={formData.image}
+                      alt="Course preview"
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600 transition-colors"
+                      title="Remove image"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                    {isUploading ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin text-gray-400" />
+                    ) : (
+                      <Upload className="w-5 h-5 mr-2 text-gray-400" />
+                    )}
+                    <span>{isUploading ? 'Uploading...' : 'Upload Image'}</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      disabled={isUploading}
+                    />
+                  </label>
+                  <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Course Name *
@@ -419,13 +538,18 @@ export default function AdminCoursesPage() {
               <input
                 type="text"
                 id="name"
-                value={createForm.name}
+                value={formData.name}
                 onChange={(e) => {
-                  setCreateForm({
-                    ...createForm,
-                    name: e.target.value,
-                    slug: generateSlug(e.target.value),
-                  });
+                  const name = e.target.value;
+                  if (modalMode === 'create') {
+                    setFormData({
+                      ...formData,
+                      name,
+                      slug: generateSlug(name),
+                    });
+                  } else {
+                    setFormData({ ...formData, name });
+                  }
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="Course name"
@@ -440,39 +564,37 @@ export default function AdminCoursesPage() {
               <input
                 type="text"
                 id="slug"
-                value={createForm.slug}
-                onChange={(e) => setCreateForm({ ...createForm, slug: e.target.value })}
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="course-slug"
                 required
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Description *
-            </label>
-            <textarea
-              id="description"
-              value={createForm.description}
-              onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
-              placeholder="Course description"
-              required
-            />
-          </div>
+            <div className="col-span-1 md:col-span-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description *
+              </label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
+                placeholder="Course description"
+                required
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-1">
                 Level
               </label>
               <select
                 id="level"
-                value={createForm.level}
-                onChange={(e) => setCreateForm({ ...createForm, level: e.target.value })}
+                value={formData.level}
+                onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
               >
                 <option value="">Select level</option>
@@ -489,8 +611,8 @@ export default function AdminCoursesPage() {
               <input
                 type="text"
                 id="duration"
-                value={createForm.duration}
-                onChange={(e) => setCreateForm({ ...createForm, duration: e.target.value })}
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="e.g., 8 weeks"
               />
@@ -503,15 +625,13 @@ export default function AdminCoursesPage() {
               <input
                 type="text"
                 id="ageRange"
-                value={createForm.ageRange}
-                onChange={(e) => setCreateForm({ ...createForm, ageRange: e.target.value })}
+                value={formData.ageRange}
+                onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="e.g., 8-12 years"
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
                 Price ($)
@@ -519,8 +639,8 @@ export default function AdminCoursesPage() {
               <input
                 type="number"
                 id="price"
-                value={createForm.price}
-                onChange={(e) => setCreateForm({ ...createForm, price: e.target.value })}
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="0.00"
                 step="0.01"
@@ -528,32 +648,32 @@ export default function AdminCoursesPage() {
               />
             </div>
 
-            <div>
+            <div className="col-span-1 md:col-span-2">
               <label htmlFor="topics" className="block text-sm font-medium text-gray-700 mb-1">
                 Topics (comma-separated)
               </label>
               <input
                 type="text"
                 id="topics"
-                value={createForm.topics}
-                onChange={(e) => setCreateForm({ ...createForm, topics: e.target.value })}
+                value={formData.topics}
+                onChange={(e) => setFormData({ ...formData, topics: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
                 placeholder="Programming, Robotics, STEM"
               />
             </div>
           </div>
 
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-wrap items-center gap-6 pt-2">
             <div className="flex items-center">
               <input
                 type="checkbox"
                 id="isActive"
-                checked={createForm.isActive}
-                onChange={(e) => setCreateForm({ ...createForm, isActive: e.target.checked })}
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
               />
               <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
-                Active (visible on site)
+                Active (visible)
               </label>
             </div>
 
@@ -561,12 +681,12 @@ export default function AdminCoursesPage() {
               <input
                 type="checkbox"
                 id="isHidden"
-                checked={createForm.isHidden}
-                onChange={(e) => setCreateForm({ ...createForm, isHidden: e.target.checked })}
+                checked={formData.isHidden}
+                onChange={(e) => setFormData({ ...formData, isHidden: e.target.checked })}
                 className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
               />
               <label htmlFor="isHidden" className="ml-2 block text-sm text-gray-700">
-                Hidden (Accessible via Link only)
+                Hidden (link only)
               </label>
             </div>
 
@@ -574,12 +694,12 @@ export default function AdminCoursesPage() {
               <input
                 type="checkbox"
                 id="hidePrice"
-                checked={createForm.hidePrice}
-                onChange={(e) => setCreateForm({ ...createForm, hidePrice: e.target.checked })}
+                checked={formData.hidePrice}
+                onChange={(e) => setFormData({ ...formData, hidePrice: e.target.checked })}
                 className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
               />
               <label htmlFor="hidePrice" className="ml-2 block text-sm text-gray-700">
-                Hide Price (Contact for Pricing)
+                Hide Price
               </label>
             </div>
 
@@ -587,12 +707,12 @@ export default function AdminCoursesPage() {
               <input
                 type="checkbox"
                 id="isDevelopment"
-                checked={createForm.isDevelopment}
-                onChange={(e) => setCreateForm({ ...createForm, isDevelopment: e.target.checked })}
+                checked={formData.isDevelopment}
+                onChange={(e) => setFormData({ ...formData, isDevelopment: e.target.checked })}
                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
               <label htmlFor="isDevelopment" className="ml-2 block text-sm text-gray-700">
-                In Development (Coming Soon)
+                In Development
               </label>
             </div>
           </div>
@@ -601,18 +721,19 @@ export default function AdminCoursesPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsCreateModalOpen(false)}
+              onClick={() => setIsModalOpen(false)}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isCreating}>
-              {isCreating ? (
+            <Button type="submit" disabled={isSubmitting || isUploading}>
+              {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating...
+                  {modalMode === 'create' ? 'Creating...' : 'Saving...'}
                 </>
               ) : (
-                'Create Course'
+                modalMode === 'create' ? 'Create Course' : 'Save Changes'
               )}
             </Button>
           </div>

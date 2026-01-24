@@ -17,7 +17,7 @@ export async function GET(
 
     try {
         const modules = await prisma.module.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             include: {
                 lessons: {
                     orderBy: { order: 'asc' },
@@ -54,7 +54,7 @@ export async function POST(
         let moduleOrder = order;
         if (moduleOrder === undefined) {
             const lastModule = await prisma.module.findFirst({
-                where: { courseId: id },
+                where: { lmsCourseId: id },
                 orderBy: { order: 'desc' },
             });
             moduleOrder = lastModule ? lastModule.order + 1 : 0;
@@ -62,7 +62,7 @@ export async function POST(
 
         const module = await prisma.module.create({
             data: {
-                courseId: id,
+                lmsCourseId: id,
                 title,
                 description,
                 order: moduleOrder,

@@ -4,50 +4,40 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg'];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: NextRequest) {
   const currentUser = await getCurrentUser();
-  const userIsAdmin = await isAdmin();
 
-  if (!currentUser || !userIsAdmin) {
+  if (!currentUser) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    const type = formData.get('type') as string | null; // 'image' or 'video'
+    const type = formData.get('type') as string | null;
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const isImage = type === 'image' || ALLOWED_IMAGE_TYPES.includes(file.type);
-    const isVideo = type === 'video' || ALLOWED_VIDEO_TYPES.includes(file.type);
+    // Determine category folder
+    let uploadSubdir = 'misc';
+    const mime = file.type;
 
-    if (!isImage && !isVideo) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Allowed: JPEG, PNG, GIF, WebP, MP4, WebM, OGG' },
-        { status: 400 }
-      );
-    }
+    if (mime.startsWith('image/')) uploadSubdir = 'images';
+    else if (mime.startsWith('video/')) uploadSubdir = 'videos';
+    else if (mime.startsWith('audio/')) uploadSubdir = 'audio';
+    else if (mime.includes('pdf') || mime.includes('document') || mime.includes('text')) uploadSubdir = 'documents';
 
-    // Check file size
-    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
-    if (file.size > maxSize) {
-      const maxMB = maxSize / (1024 * 1024);
-      return NextResponse.json(
-        { error: `File too large. Maximum size is ${maxMB}MB` },
-        { status: 400 }
-      );
+    // Simple size check
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'File too large (Max 50MB)' }, { status: 400 });
     }
 
     // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', isVideo ? 'videos' : 'images');
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', uploadSubdir);
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
@@ -55,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
-    const extension = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
+    const extension = file.name.split('.').pop() || 'bin';
     const filename = `${timestamp}-${randomStr}.${extension}`;
     const filepath = path.join(uploadDir, filename);
 
@@ -65,12 +55,12 @@ export async function POST(request: NextRequest) {
     await writeFile(filepath, buffer);
 
     // Return the public URL
-    const publicUrl = `/uploads/${isVideo ? 'videos' : 'images'}/${filename}`;
+    const publicUrl = `/uploads/${uploadSubdir}/${filename}`;
 
     return NextResponse.json({
       url: publicUrl,
       filename,
-      type: isVideo ? 'video' : 'image',
+      type: file.type,
       size: file.size,
     });
   } catch (error) {

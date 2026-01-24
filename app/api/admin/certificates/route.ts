@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         const certificates = await prisma.certificate.findMany({
             orderBy: { createdAt: 'desc' },
             include: {
-                course: { select: { id: true, name: true } },
+                lmsCourse: { select: { id: true, name: true } },
                 _count: {
                     select: { awards: true },
                 },
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
                 title,
                 description,
                 imageUrl,
-                courseId: courseId || null,
+                lmsCourseId: courseId || null,
                 isActive: isActive ?? true,
             },
         });

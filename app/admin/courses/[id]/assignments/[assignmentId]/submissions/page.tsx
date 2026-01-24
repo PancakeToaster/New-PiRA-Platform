@@ -33,7 +33,7 @@ export default async function AssignmentSubmissionsPage({
     const assignment = await prisma.assignment.findUnique({
         where: { id: assignmentId },
         include: {
-            course: true,
+            lmsCourse: true,
             submissions: {
                 include: {
                     student: {
@@ -51,11 +51,11 @@ export default async function AssignmentSubmissionsPage({
         notFound();
     }
 
-    if (assignment.courseId !== id) {
+    if (assignment.lmsCourseId !== id) {
         notFound();
     }
 
-    if (!userIsAdmin && assignment.course.instructorId !== user.id) {
+    if (!userIsAdmin && assignment.lmsCourse?.instructorId !== user.id) {
         // Only instructor or admin can view
         redirect('/admin/courses');
     }
@@ -98,10 +98,10 @@ export default async function AssignmentSubmissionsPage({
                                         <TableCell className="font-medium">
                                             <div className="flex items-center gap-3">
                                                 <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={submission.student.user.image || undefined} />
+                                                    <AvatarImage src={submission.student.user.avatar || undefined} />
                                                     <AvatarFallback>
-                                                        {submission.student.user.firstName[0]}
-                                                        {submission.student.user.lastName[0]}
+                                                        {submission.student.user.firstName?.[0] || ''}
+                                                        {submission.student.user.lastName?.[0] || ''}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div>
@@ -122,8 +122,8 @@ export default async function AssignmentSubmissionsPage({
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {new Date(submission.submittedAt).toLocaleString()}
-                                            {assignment.dueDate && new Date(submission.submittedAt) > new Date(assignment.dueDate) && (
+                                            {submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : '-'}
+                                            {assignment.dueDate && submission.submittedAt && new Date(submission.submittedAt) > new Date(assignment.dueDate) && (
                                                 <span className="ml-2 text-xs text-red-600 font-medium">Late</span>
                                             )}
                                         </TableCell>

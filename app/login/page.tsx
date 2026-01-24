@@ -76,14 +76,14 @@ export default function LoginPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              Email or Username
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
-              {...register('email', { required: 'Email is required' })}
+              {...register('email', { required: 'Email or Username is required' })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-gray-900 bg-white"
-              placeholder="your@email.com"
+              placeholder="email@example.com or username"
             />
             {errors.email && (
               <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
@@ -129,7 +129,13 @@ export default function LoginPage() {
               Join now
             </Link>
           </p>
-          <Link href="/" className="text-gray-500 hover:text-sky-500 text-sm font-medium block">
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-gray-500 text-xs">
+              Forgot your password or account details?<br />
+              <span className="text-sky-600 font-medium">Please contact an administrator.</span>
+            </p>
+          </div>
+          <Link href="/" className="text-gray-500 hover:text-sky-500 text-sm font-medium block pt-2">
             Back to homepage
           </Link>
         </div>

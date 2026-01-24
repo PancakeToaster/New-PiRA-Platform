@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
@@ -8,8 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { ArrowLeft, Save, Loader2, LayoutTemplate, FileText } from 'lucide-react';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 
-export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function EditBlogPage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
@@ -167,8 +167,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                         type="button"
                                         onClick={() => handleEditorTypeChange('html')}
                                         className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${formData.editorType === 'html'
-                                                ? 'bg-sky-100 text-sky-700'
-                                                : 'text-gray-500 hover:text-gray-900'
+                                            ? 'bg-sky-100 text-sky-700'
+                                            : 'text-gray-500 hover:text-gray-900'
                                             }`}
                                     >
                                         <FileText className="w-4 h-4 mr-2" />
@@ -178,8 +178,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                         type="button"
                                         onClick={() => handleEditorTypeChange('builder')}
                                         className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${formData.editorType === 'builder'
-                                                ? 'bg-sky-100 text-sky-700'
-                                                : 'text-gray-500 hover:text-gray-900'
+                                            ? 'bg-sky-100 text-sky-700'
+                                            : 'text-gray-500 hover:text-gray-900'
                                             }`}
                                     >
                                         <LayoutTemplate className="w-4 h-4 mr-2" />

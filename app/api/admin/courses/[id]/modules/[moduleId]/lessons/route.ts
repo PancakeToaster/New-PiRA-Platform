@@ -57,7 +57,7 @@ export async function POST(
 
         const lesson = await prisma.lesson.create({
             data: {
-                courseId: id,
+                lmsCourseId: id,
                 moduleId,
                 title,
                 description,

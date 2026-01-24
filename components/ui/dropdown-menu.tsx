@@ -19,11 +19,11 @@ export const DropdownMenuTrigger = ({ asChild, children, ...props }: any) => {
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const DropdownMenuContent = ({ children, className, align = 'start' }: any) => {
+export const DropdownMenuContent = ({ children, className, align = 'start', side = 'bottom' }: any) => {
     return (
         <MenuItems
             transition
-            anchor={align === 'end' ? 'bottom end' : 'bottom start'}
+            anchor={`${side} ${align}` as any}
             className={cn(
                 "mt-1 w-52 origin-top-right rounded-md border border-gray-200 bg-white p-1 text-sm text-gray-700 shadow-lg ring-1 ring-black/5 focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 transition duration-100 ease-in-out z-50",
                 className
@@ -53,4 +53,12 @@ export const DropdownMenuItem = ({ children, onClick, className }: any) => {
             )}
         </MenuItem>
     );
+};
+
+export const DropdownMenuLabel = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+    return <div className={cn("px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider", className)}>{children}</div>;
+};
+
+export const DropdownMenuSeparator = ({ className }: { className?: string }) => {
+    return <div className={cn("-mx-1 my-1 h-px bg-gray-100", className)} />;
 };

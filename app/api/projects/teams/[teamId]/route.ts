@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/permissions';
+import { getCurrentUser, isAdmin } from '@/lib/permissions';
 
 async function getTeamMembership(teamId: string, userId: string) {
   return prisma.teamMember.findUnique({
@@ -25,43 +25,48 @@ export async function GET(
   }
 
   try {
-    // Try to find by ID first, then by slug
-    let team = await prisma.team.findUnique({
-      where: { id: teamId },
-      include: {
-        _count: {
-          select: {
-            members: true,
-            projects: true,
+    // Try to find by ID first
+    let team = null;
+    try {
+      team = await prisma.team.findUnique({
+        where: { id: teamId },
+        include: {
+          _count: {
+            select: {
+              members: true,
+              projects: true,
+            },
           },
-        },
-        members: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                email: true,
-                avatar: true,
+          members: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  avatar: true,
+                },
               },
             },
           },
-        },
-        projects: {
-          include: {
-            _count: {
-              select: {
-                tasks: true,
+          projects: {
+            include: {
+              _count: {
+                select: {
+                  tasks: true,
+                },
               },
             },
-          },
-          orderBy: {
-            updatedAt: 'desc',
+            orderBy: {
+              updatedAt: 'desc',
+            },
           },
         },
-      },
-    });
+      });
+    } catch (e) {
+      // Ignore error if ID format is invalid, proceed to slug check
+    }
 
     if (!team) {
       // Try finding by slug
@@ -107,13 +112,15 @@ export async function GET(
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }
 
-    // Check if user is a member
+    // Check if user is a member or admin
+    const userIsAdmin = await isAdmin();
     const membership = team.members.find((m) => m.userId === user.id);
-    if (!membership) {
+
+    if (!membership && !userIsAdmin) {
       return NextResponse.json({ error: 'Not a team member' }, { status: 403 });
     }
 
-    return NextResponse.json({ team, userRole: membership.role });
+    return NextResponse.json({ team, userRole: membership?.role });
   } catch (error) {
     console.error('Failed to fetch team:', error);
     return NextResponse.json({ error: 'Failed to fetch team' }, { status: 500 });

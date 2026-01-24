@@ -30,7 +30,7 @@ export const ButtonComponent = ({
 
     return (
         <a
-            ref={(ref) => ref && connect(drag(ref))}
+            ref={(ref) => { if (ref) connect(drag(ref)); }}
             href={href}
             style={{
                 display: 'inline-block',

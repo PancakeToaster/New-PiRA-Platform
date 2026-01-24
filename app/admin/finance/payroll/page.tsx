@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { Plus, Users, Calendar, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 

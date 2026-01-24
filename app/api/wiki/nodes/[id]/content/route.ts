@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/permissions';
-import { hasRole } from '@/lib/permissions';
+import { getCurrentUser, hasRole, hasPermission } from '@/lib/permissions';
+import { logActivity } from '@/lib/logging';
 
 export async function PATCH(
     request: NextRequest,
@@ -13,8 +13,9 @@ export async function PATCH(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Only Admins can edit content directly
-        if (!hasRole(user, 'Admin')) {
+        // Only users with edit permission can update content
+        const canEdit = await hasPermission('knowledge', 'edit');
+        if (!canEdit) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -36,6 +37,15 @@ export async function PATCH(
                 id: true,
                 updatedAt: true,
             },
+        });
+
+        await logActivity({
+            userId: user.id,
+            action: 'wiki.content.updated',
+            entityType: 'KnowledgeNode',
+            entityId: id,
+            ipAddress: request.headers.get('x-forwarded-for') || undefined,
+            userAgent: request.headers.get('user-agent') || undefined,
         });
 
         return NextResponse.json({

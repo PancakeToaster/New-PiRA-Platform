@@ -29,7 +29,7 @@ export const Image = ({
 
     return (
         <div
-            ref={(ref) => ref && connect(drag(ref))}
+            ref={(ref) => { if (ref) connect(drag(ref)); }}
             style={{
                 border: selected ? '2px solid #0891b2' : '2px solid transparent',
                 cursor: 'move',

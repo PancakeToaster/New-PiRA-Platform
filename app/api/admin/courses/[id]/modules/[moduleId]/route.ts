@@ -125,7 +125,7 @@ export async function PATCH(
 
         // Reorder other modules if needed
         const modules = await prisma.module.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             orderBy: { order: 'asc' },
         });
 

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasPermission } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import WikiAppShell from '@/components/wiki/WikiAppShell';
@@ -15,8 +15,12 @@ export default async function WikiLayout({
         redirect('/login?callbackUrl=/wiki');
     }
 
-    const userIsAdmin = await isAdmin();
-    const whereClause = userIsAdmin ? {} : { isPublished: true };
+    const canManage = await hasPermission('knowledge', 'create'); // or edit
+    const userIsAdmin = await isAdmin(); // Keep for passing to child components
+
+    // Students/Teachers/Everyone else sees only published
+    // Users with manage permissions see everything
+    const whereClause = canManage ? {} : { isPublished: true };
 
     // Fetch ALL folders flat
     const allFolders = await prisma.folder.findMany({
@@ -26,7 +30,7 @@ export default async function WikiLayout({
     // Fetch ALL nodes flat (filtered by permissions)
     const allNodes = await prisma.knowledgeNode.findMany({
         where: whereClause,
-        select: { id: true, title: true, nodeType: true, isPublished: true, folderId: true, order: true },
+        select: { id: true, title: true, nodeType: true, isPublished: true, folderId: true, parentId: true, order: true },
         orderBy: { order: 'asc' },
     });
 
@@ -41,8 +45,15 @@ export default async function WikiLayout({
         select: { id: true, title: true, content: true, nodeType: true, isPublished: true },
     });
 
+    console.log(`[WikiLayout] Found ${allFolders.length} folders, ${allNodes.length} sidebar nodes, ${searchNodes.length} search nodes`);
+    if (allNodes.length === 0 && !userIsAdmin) {
+        console.log('[WikiLayout] DEBUG: Student view has 0 nodes. Checking count of ALL published nodes in DB...');
+        const debugCount = await prisma.knowledgeNode.count({ where: { isPublished: true } });
+        console.log(`[WikiLayout] DEBUG: Exact DB count of published nodes: ${debugCount}`);
+    }
+
     return (
-        <WikiAppShell folders={allFolders} nodes={allNodes} searchNodes={searchNodes} isAdmin={userIsAdmin}>
+        <WikiAppShell folders={allFolders} nodes={allNodes} searchNodes={searchNodes} isAdmin={userIsAdmin} user={user}>
             {children}
         </WikiAppShell>
     );

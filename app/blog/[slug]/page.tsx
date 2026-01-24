@@ -4,17 +4,19 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PageBanner from '@/components/layout/PageBanner';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LayoutTemplate } from 'lucide-react';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import PageBuilder from '@/components/admin/PageBuilder';
 import AdminContentEditor from '@/components/admin/AdminContentEditor';
 import PageViewer from '@/components/admin/PageViewer';
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
+  searchParams: { mode?: string };
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   const post = await prisma.blog.findUnique({
     where: { slug },
   });
@@ -29,25 +31,34 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
+export default async function BlogPostPage({ params, searchParams }: Props) {
+  const { slug } = params;
 
   const post = await prisma.blog.findUnique({
     where: { slug },
   });
 
+  // Check if user is admin
+  const user = await getCurrentUser();
+  const userIsAdmin = await isAdmin();
+
   if (!post || post.isDraft) {
     // Admins can see drafts
-    const currentUser = await getCurrentUser();
-    const userIsAdmin = await isAdmin();
     if (!post || (!userIsAdmin && post.isDraft)) {
       notFound();
     }
   }
 
-  // Check if user is admin
-  const user = await getCurrentUser();
-  const userIsAdmin = await isAdmin();
+  // Handle Builder Mode (Editing)
+  if (searchParams.mode === 'builder' && userIsAdmin && post) {
+    return (
+      <PageBuilder
+        initialData={post.builderData || undefined}
+        id={post.id}
+        apiEndpoint="/api/admin/blog"
+      />
+    );
+  }
 
   // Handle Page Builder Content
   if (post?.editorType === 'builder' && post.builderData) {
@@ -58,9 +69,15 @@ export default async function BlogPostPage({ params }: Props) {
           {/* If admin, we can link back to edit page or show a small edit bar if desired */}
           {userIsAdmin && (
             <div className="fixed bottom-4 right-4 z-50">
-              <Link href={`/admin/blog/${post.id}`}>
-                <div className="bg-sky-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-sky-700 transition cursor-pointer">
+              <Link href="?mode=builder">
+                <div className="bg-sky-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-sky-700 transition cursor-pointer flex items-center gap-2">
+                  <LayoutTemplate className="w-4 h-4" />
                   Edit Page
+                </div>
+              </Link>
+              <Link href={`/admin/blog/${post.id}`}>
+                <div className="bg-white text-gray-700 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 transition cursor-pointer border border-gray-200 text-sm font-medium">
+                  Settings
                 </div>
               </Link>
             </div>

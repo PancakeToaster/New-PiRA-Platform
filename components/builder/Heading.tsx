@@ -28,7 +28,7 @@ export const Heading = ({
 
     return (
         <Tag
-            ref={(ref) => ref && connect(drag(ref))}
+            ref={(ref) => { if (ref) connect(drag(ref)); }}
             style={{
                 color,
                 textAlign,

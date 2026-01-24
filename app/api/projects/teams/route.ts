@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/permissions';
+import { getCurrentUser, isAdmin } from '@/lib/permissions';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -56,6 +56,15 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check if user is Admin
+  const userIsAdmin = await isAdmin();
+  if (!userIsAdmin) {
+    return NextResponse.json(
+      { error: 'Only Admins can create teams' },
+      { status: 403 }
+    );
   }
 
   try {

@@ -8,15 +8,22 @@ export async function GET() {
   const userIsAdmin = await isAdmin();
 
   if (!user || !userIsAdmin) {
+    console.log('[API_ADMIN_USERS] Unauthorized access attempt:', { user: !!user, isAdmin: userIsAdmin });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    console.log('[API_ADMIN_USERS] Fetching users...');
     const [users, totalStudents, totalParents, totalTeachers] = await Promise.all([
       prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
           roles: {
+            where: {
+              role: {
+                name: { notIn: ['Mentor', 'Team Captain'] }
+              }
+            },
             include: {
               role: true,
             },

@@ -13,7 +13,7 @@ export default async function TeacherProgressPage() {
     }
 
     // Get teacher's courses
-    const courses = await prisma.course.findMany({
+    const courses = await prisma.lMSCourse.findMany({
         where: { instructorId: user.id },
         include: {
             _count: {

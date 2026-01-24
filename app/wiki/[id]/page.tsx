@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, hasRole } from '@/lib/permissions';
+import { getCurrentUser, hasRole, hasPermission } from '@/lib/permissions';
 import WikiBreadcrumbs from '@/components/wiki/WikiBreadcrumbs';
 import WikiTableOfContents from '@/components/wiki/WikiTableOfContents';
 import WikiPageContainer from '@/components/wiki/WikiPageContainer';
@@ -100,6 +100,7 @@ export default async function WikiNodePage({ params }: Props) {
     const isTeacher = await hasRole('Teacher');
     const isMentor = await hasRole('Mentor');
     const isTeacherOrMentor = isTeacher || isMentor;
+    const canComment = await hasPermission('knowledge', 'comment');
 
     // Build breadcrumbs
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -119,6 +120,7 @@ export default async function WikiNodePage({ params }: Props) {
                     node={node}
                     isAdmin={isAdminUser}
                     isTeacherOrMentor={isTeacherOrMentor}
+                    canComment={canComment}
                     currentUserId={user.id}
                 />
             </div>

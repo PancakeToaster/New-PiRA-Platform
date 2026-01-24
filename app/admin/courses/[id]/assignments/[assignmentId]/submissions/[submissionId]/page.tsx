@@ -24,7 +24,7 @@ export default async function GradingPage({
                 include: { user: true }
             },
             assignment: {
-                include: { course: true }
+                include: { lmsCourse: true }
             }
         }
     });
@@ -37,7 +37,7 @@ export default async function GradingPage({
         notFound();
     }
 
-    if (!userIsAdmin && submission.assignment.course.instructorId !== user.id) {
+    if (!userIsAdmin && submission.assignment.lmsCourse?.instructorId !== user.id) {
         redirect('/admin/courses');
     }
 

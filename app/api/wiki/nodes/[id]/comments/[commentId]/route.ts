@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { hasRole } from '@/lib/utils/permissions';
 
 // PATCH /api/wiki/nodes/[id]/comments/[commentId]
 // Resolve/Unresolve comment
@@ -29,7 +28,7 @@ export async function PATCH(
         }
 
         // Only Admin or the comment author can resolve/unresolve
-        const isAdmin = await hasRole(session.user, 'Admin');
+        const isAdmin = (session.user as any).roles?.includes('Admin');
         const isAuthor = comment.userId === session.user.id;
 
         if (!isAdmin && !isAuthor) {
@@ -68,7 +67,7 @@ export async function DELETE(
         }
 
         // Only Admin or the comment author can delete
-        const isAdmin = await hasRole(session.user, 'Admin');
+        const isAdmin = (session.user as any).roles?.includes('Admin');
         const isAuthor = comment.userId === session.user.id;
 
         if (!isAdmin && !isAuthor) {

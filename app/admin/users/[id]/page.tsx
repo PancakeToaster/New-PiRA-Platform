@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 import React from 'react';
@@ -39,6 +40,7 @@ export default function EditUserPage() {
     // Form state
     const [formData, setFormData] = useState({
         email: '',
+        username: '',
         password: '', // Optional on edit
         firstName: '',
         lastName: '',
@@ -59,6 +61,19 @@ export default function EditUserPage() {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [showResendConfirm, setShowResendConfirm] = useState(false);
+
+    const handleResendInvite = async () => {
+        try {
+            const res = await fetch('/api/admin/users/resend-invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: id })
+            });
+            if (res.ok) alert('Email sent successfully');
+            else alert('Failed to send email');
+        } catch (e) { alert('Error sending email'); }
+    };
 
     useEffect(() => {
         Promise.all([fetchRoles(), fetchUser(), fetchAllUsers()]).finally(() => setLoading(false));
@@ -92,6 +107,7 @@ export default function EditUserPage() {
                 const { user } = await response.json();
                 setFormData({
                     email: user.email,
+                    username: user.username || '',
                     password: '',
                     firstName: user.firstName,
                     lastName: user.lastName,
@@ -219,34 +235,59 @@ export default function EditUserPage() {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                            <input
-                                type="email"
-                                required
-                                value={formData.email}
-                                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={formData.email}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Username (Optional)</label>
+                                <input
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    placeholder="e.g. john.doe"
+                                />
+                            </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Password (Leave blank to keep current)</label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    minLength={8}
-                                    value={formData.password}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg pr-10"
-                                />
-                                <button
+                            <div className="flex gap-2 items-center">
+                                <div className="relative flex-1">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        minLength={8}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
+
+                                <Button
                                     type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    variant="outline"
+                                    size="sm"
+                                    className="whitespace-nowrap"
+                                    onClick={() => setShowResendConfirm(true)}
                                 >
-                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                </button>
+                                    <Loader2 className="w-4 h-4 mr-2" />
+                                    Resend Invite
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
@@ -392,8 +433,8 @@ export default function EditUserPage() {
                                         <label
                                             key={student.studentProfile?.id || student.id}
                                             className={`flex items-center p-2 rounded cursor-pointer border transition-all ${formData.studentIds.includes(student.studentProfile?.id)
-                                                    ? 'bg-sky-100 border-sky-300 text-sky-900'
-                                                    : 'bg-white border-gray-200 hover:border-gray-300'
+                                                ? 'bg-sky-100 border-sky-300 text-sky-900'
+                                                : 'bg-white border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <input
@@ -463,6 +504,15 @@ export default function EditUserPage() {
                     </Link>
                 </div>
             </form>
+            <ConfirmDialog
+                isOpen={showResendConfirm}
+                onClose={() => setShowResendConfirm(false)}
+                onConfirm={handleResendInvite}
+                title="Resend Invite?"
+                message="Send a new welcome email to this user? This will contain a new temporary password and reset their current one."
+                confirmText="Send Email"
+                variant="info"
+            />
         </div>
     );
 }

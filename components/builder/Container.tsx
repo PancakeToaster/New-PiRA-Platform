@@ -31,7 +31,7 @@ export const Container = ({
 
     return (
         <div
-            ref={(ref) => ref && connect(drag(ref))}
+            ref={(ref) => { if (ref) connect(drag(ref)); }}
             style={{
                 background,
                 padding,

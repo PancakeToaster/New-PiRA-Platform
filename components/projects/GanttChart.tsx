@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export interface GanttTask {
@@ -23,6 +23,9 @@ export interface GanttTask {
       lastName: string;
     };
   }[];
+  checklistItems?: { id: string; content: string; isCompleted: boolean; order: number }[];
+  projectName?: string;
+  projectColor?: string;
 }
 
 interface GanttChartProps {
@@ -253,31 +256,28 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
           <div className="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
               onClick={() => setZoomLevel('day')}
-              className={`px-3 py-1 text-sm ${
-                zoomLevel === 'day'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1 text-sm ${zoomLevel === 'day'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Day
             </button>
             <button
               onClick={() => setZoomLevel('week')}
-              className={`px-3 py-1 text-sm border-x border-gray-300 ${
-                zoomLevel === 'week'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1 text-sm border-x border-gray-300 ${zoomLevel === 'week'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Week
             </button>
             <button
               onClick={() => setZoomLevel('month')}
-              className={`px-3 py-1 text-sm ${
-                zoomLevel === 'month'
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-3 py-1 text-sm ${zoomLevel === 'month'
+                ? 'bg-sky-500 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Month
             </button>
@@ -302,7 +302,25 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
                   task.priority
                 )}`}
               >
-                <span className="text-sm text-gray-900 truncate">{task.title}</span>
+                <div className="flex flex-col justify-center w-full overflow-hidden">
+                  {task.projectName && (
+                    <span
+                      className="text-xs font-semibold mb-0.5"
+                      style={{ color: task.projectColor || '#6b7280' }}
+                    >
+                      {task.projectName}
+                    </span>
+                  )}
+                  <span className="text-sm text-gray-900 truncate">{task.title}</span>
+                  {(task.checklistItems?.length ?? 0) > 0 && (
+                    <div className="flex items-center mt-0.5 space-x-1 text-xs text-gray-400">
+                      <CheckSquare className="w-3 h-3" />
+                      <span>
+                        {task.checklistItems?.filter(i => i.isCompleted).length}/{task.checklistItems?.length}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
             {tasks.length === 0 && (
@@ -323,9 +341,8 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
               return (
                 <div
                   key={index}
-                  className={`flex-shrink-0 flex items-center justify-center border-r border-gray-100 text-xs ${
-                    isWeekend ? 'bg-gray-100' : ''
-                  } ${isToday ? 'bg-sky-100' : ''}`}
+                  className={`flex-shrink-0 flex items-center justify-center border-r border-gray-100 text-xs ${isWeekend ? 'bg-gray-100' : ''
+                    } ${isToday ? 'bg-sky-100' : ''}`}
                   style={{ width: columnWidth / (zoomLevel === 'day' ? 1 : zoomLevel === 'week' ? 7 : 30) }}
                 >
                   {zoomLevel === 'day' && (
@@ -358,9 +375,8 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
                 return (
                   <div
                     key={index}
-                    className={`flex-shrink-0 border-r border-gray-100 ${
-                      isWeekend ? 'bg-gray-50/50' : ''
-                    }`}
+                    className={`flex-shrink-0 border-r border-gray-100 ${isWeekend ? 'bg-gray-50/50' : ''
+                      }`}
                     style={{ width: columnWidth / (zoomLevel === 'day' ? 1 : zoomLevel === 'week' ? 7 : 30) }}
                   />
                 );

@@ -9,8 +9,12 @@ import AppSwitcher from '@/components/layout/AppSwitcher';
 
 export default function ParentAppShell({
     children,
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    user,
 }: {
     children: React.ReactNode;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    user?: any;
 }) {
     const { data: session } = useSession();
     const pathname = usePathname();
@@ -94,7 +98,7 @@ export default function ParentAppShell({
                                         {session.user.name?.split(' ').slice(1).join(' ')}
                                     </p>
                                 </div>
-                                <AppSwitcher />
+                                <AppSwitcher user={user} />
                                 <Link
                                     href="/api/auth/signout"
                                     className="text-gray-400 hover:text-gray-600"

@@ -1,8 +1,6 @@
-'use client';
-
-import { useSession } from 'next-auth/react';
+import { getCurrentUser } from '@/lib/permissions';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import {
     FolderKanban,
     GraduationCap,
@@ -17,20 +15,13 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
-export default function PortalPage() {
-    const { data: session, status } = useSession();
-    const router = useRouter();
+export default async function PortalPage() {
+    const user = await getCurrentUser();
 
-    if (status === 'loading') {
-        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    if (!user) {
+        redirect('/login');
     }
 
-    if (status === 'unauthenticated') {
-        router.push('/login');
-        return null;
-    }
-
-    const { user } = session!;
     const userRoles = user?.roles || [];
 
     const hasRole = (allowedRoles: string[]) => {

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasPermission } from '@/lib/permissions';
 import { slugify } from '@/lib/utils';
 
 export async function GET() {
   const user = await getCurrentUser();
-  const userIsAdmin = await isAdmin();
+  const canView = await hasPermission('knowledge', 'view');
 
-  if (!user || !userIsAdmin) {
+  if (!user || !canView) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,7 +28,11 @@ export async function GET() {
           },
         },
       },
+      // If user can manage knowledge, show all. Otherwise only show published
+      where: await hasPermission('knowledge', 'edit') ? {} : { isPublished: true },
     });
+    // ...
+
 
     // Calculate stats
     const published = nodes.filter(n => n.isPublished).length;
@@ -53,9 +57,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const currentUser = await getCurrentUser();
-  const userIsAdmin = await isAdmin();
+  const canCreate = await hasPermission('knowledge', 'create');
 
-  if (!currentUser || !userIsAdmin) {
+  if (!currentUser || !canCreate) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

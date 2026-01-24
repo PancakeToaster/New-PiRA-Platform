@@ -62,8 +62,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 function MindmapFlow({ currentId }: MindmapViewProps) {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -116,8 +116,8 @@ function MindmapFlow({ currentId }: MindmapViewProps) {
                         styledEdges
                     );
 
-                    setNodes(layoutedNodes);
-                    setEdges(layoutedEdges);
+                    setNodes(layoutedNodes as Node[]);
+                    setEdges(layoutedEdges as Edge[]);
                 }
             } catch (error) {
                 console.error('Failed to fetch mindmap data:', error);

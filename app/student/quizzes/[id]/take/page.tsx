@@ -26,7 +26,7 @@ export default async function QuizTakePage({
             title: true,
             description: true,
             timeLimit: true,
-            courseId: true,
+            lmsCourseId: true,
             questions: {
                 select: { id: true } // Just verifying it has questions
             }
@@ -38,19 +38,19 @@ export default async function QuizTakePage({
     }
 
     // Verify enrollment
-    if (quiz.courseId) {
+    if (quiz.lmsCourseId) {
         const enrollment = await prisma.courseEnrollment.findUnique({
             where: {
-                courseId_studentId: {
-                    courseId: quiz.courseId,
+                lmsCourseId_studentId: {
+                    lmsCourseId: quiz.lmsCourseId,
                     studentId: user.profiles.student || ''
                 }
             }
         });
 
         // Allow admins/teachers to preview too
-        const isInstructor = await prisma.course.findFirst({
-            where: { id: quiz.courseId, instructorId: user.id }
+        const isInstructor = await prisma.lMSCourse.findFirst({
+            where: { id: quiz.lmsCourseId, instructorId: user.id }
         });
 
         if (!enrollment && !user.roles.includes('Admin') && !isInstructor) {
@@ -59,6 +59,6 @@ export default async function QuizTakePage({
     }
 
     return (
-        <QuizPlayer quizId={id} courseId={quiz.courseId || ''} />
+        <QuizPlayer quizId={id} courseId={quiz.lmsCourseId || ''} />
     );
 }

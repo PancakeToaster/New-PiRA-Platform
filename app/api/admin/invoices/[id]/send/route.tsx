@@ -7,13 +7,13 @@ import React from 'react';
 import { renderToBuffer } from '@react-pdf/renderer';
 import InvoicePDF from '@/components/invoices/InvoicePDF';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface Props {
     params: Promise<{ id: string }>;
 }
 
 export async function POST(req: NextRequest, { params }: Props) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { id } = await params;
     const user = await getCurrentUser();
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, { params }: Props) {
         }
 
         // Generate PDF Buffer
-        const pdfBuffer = await renderToBuffer(<InvoicePDF invoice={ invoice } />);
+        const pdfBuffer = await renderToBuffer(<InvoicePDF invoice={invoice} />);
 
         // Send Email
         const { data, error } = await resend.emails.send({

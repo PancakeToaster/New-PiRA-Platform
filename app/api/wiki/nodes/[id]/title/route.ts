@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasPermission } from '@/lib/permissions';
 import { slugify } from '@/lib/utils';
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function PATCH(request: NextRequest, { params }: any) {
     const { id } = await params;
     const user = await getCurrentUser();
-    const userIsAdmin = await isAdmin();
+    const canEdit = await hasPermission('knowledge', 'edit');
 
-    if (!user || !userIsAdmin) {
+    if (!user || !canEdit) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

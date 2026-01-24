@@ -17,13 +17,13 @@ export async function GET(request: NextRequest) {
 
         const where: any = {};
         if (courseId) {
-            where.courseId = courseId;
+            where.lmsCourseId = courseId;
         }
 
         const quizzes = await prisma.quiz.findMany({
             where,
             include: {
-                course: {
+                lmsCourse: {
                     select: {
                         id: true,
                         name: true,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
                 description,
                 instructions,
                 lessonId: lessonId || null,
-                courseId: courseId || null,
+                lmsCourseId: courseId || null,
                 timeLimit: timeLimit ? parseInt(timeLimit) : null,
                 passingScore: passingScore ? parseFloat(passingScore) : 70,
                 maxAttempts: maxAttempts ? parseInt(maxAttempts) : null,
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
                 isPublished: isPublished ?? false,
             },
             include: {
-                course: {
+                lmsCourse: {
                     select: {
                         name: true,
                     },

@@ -8,8 +8,6 @@ const TEST_ROLES = [
   { name: 'Parent', description: 'View parent portal, children, and invoices', portal: '/parent' },
   { name: 'Student', description: 'Access LMS, courses, and assignments', portal: '/lms' },
   { name: 'Teacher', description: 'Manage LMS, create courses, grade assignments', portal: '/lms' },
-  { name: 'Mentor', description: 'Manage projects, teams, and tasks', portal: '/projects' },
-  { name: 'Team Captain', description: 'Lead team, manage members and tasks', portal: '/projects' },
   { name: 'Team Member', description: 'View projects and create tasks', portal: '/projects' },
 ];
 

@@ -32,7 +32,7 @@ export default async function AssignmentStatusPage({
     const assignment = await prisma.assignment.findUnique({
         where: { id },
         include: {
-            course: {
+            lmsCourse: {
                 select: {
                     id: true,
                     name: true,

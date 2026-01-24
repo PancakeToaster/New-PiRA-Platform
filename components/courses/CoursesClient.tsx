@@ -124,7 +124,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                                         )}
 
                                         <Link
-                                            href="/contact"
+                                            href={`/courses/${course.slug}`}
                                             className="inline-flex items-center text-sky-500 hover:text-sky-600 font-semibold text-sm"
                                         >
                                             Learn More

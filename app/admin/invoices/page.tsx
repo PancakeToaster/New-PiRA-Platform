@@ -79,27 +79,34 @@ export default function AdminInvoicesPage() {
     return matchesSearch && invoice.status === statusFilter;
   });
 
-  const handleMarkPaid = async (invoiceId: string) => {
+  const handleUpdateStatus = async (invoiceId: string, status: string) => {
+    if (!confirm(`Are you sure you want to mark this invoice as ${status}?`)) return;
+
     try {
+      const body: any = { status };
+      if (status === 'paid') {
+        body.paidDate = new Date().toISOString();
+      } else if (status === 'unpaid') {
+        body.paidDate = null;
+      }
+
       const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'paid', paidDate: new Date().toISOString() }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
         const { invoice: updatedInvoice } = await response.json();
         setInvoices(invoices.map(inv => inv.id === invoiceId ? updatedInvoice : inv));
-        // Refresh stats
-        const totalRevenue = invoices.filter(inv =>
-          inv.id === invoiceId || inv.status === 'paid'
-        ).reduce((sum, inv) => sum + inv.total, 0);
-        setStats(prev => ({
-          ...prev,
-          totalRevenue,
-          unpaidAmount: prev.unpaidAmount - updatedInvoice.total,
-          pending: prev.pending - 1,
-        }));
+        // Refresh stats (simple approximation, ideally re-fetch stats)
+        // For simplicity, let's just update the local invoices state and maybe trigger a soft-refresh or just leave stats slightly stale until reload
+        // Or re-fetch everything? Re-fetching is safer for stats consistency.
+        const statsRes = await fetch('/api/admin/invoices');
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          setStats(data.stats);
+        }
       } else {
         alert('Failed to update invoice');
       }
@@ -299,12 +306,24 @@ export default function AdminInvoicesPage() {
                             Edit
                           </Button>
                         </Link>
+
                         {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
                           <Button
                             size="sm"
-                            onClick={() => handleMarkPaid(invoice.id)}
+                            onClick={() => handleUpdateStatus(invoice.id, 'paid')}
+                            className="bg-green-600 hover:bg-green-700 text-white"
                           >
                             Mark Paid
+                          </Button>
+                        )}
+                        {invoice.status === 'paid' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleUpdateStatus(invoice.id, 'unpaid')}
+                            title="Undo Mark Paid"
+                          >
+                            Undo
                           </Button>
                         )}
                       </td>
@@ -316,6 +335,6 @@ export default function AdminInvoicesPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

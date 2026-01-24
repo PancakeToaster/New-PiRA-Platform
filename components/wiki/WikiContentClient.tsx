@@ -14,6 +14,7 @@ interface WikiContentClientProps {
     nodeType: string;
     isAdmin: boolean;
     isTeacherOrMentor: boolean;
+    canComment: boolean;
     graphData: string | null;
     mindmapData: string | null;
     canvasData: string | null;
@@ -26,6 +27,7 @@ export default function WikiContentClient({
     nodeType,
     isAdmin,
     isTeacherOrMentor,
+    canComment,
     graphData,
     mindmapData,
     canvasData,
@@ -147,11 +149,13 @@ export default function WikiContentClient({
                 )}
 
                 {/* Comments Section */}
-                <WikiComments
-                    nodeId={nodeId}
-                    currentUserId={currentUserId}
-                    isAdmin={isAdmin}
-                />
+                {canComment && (
+                    <WikiComments
+                        nodeId={nodeId}
+                        currentUserId={currentUserId}
+                        isAdmin={isAdmin}
+                    />
+                )}
 
                 {/* Suggestion Modal */}
                 <WikiSuggestionModal
@@ -176,11 +180,13 @@ export default function WikiContentClient({
 
             {/* Comments for non-markdown types too */}
             <div className="text-left">
-                <WikiComments
-                    nodeId={nodeId}
-                    currentUserId={currentUserId}
-                    isAdmin={isAdmin}
-                />
+                {canComment && (
+                    <WikiComments
+                        nodeId={nodeId}
+                        currentUserId={currentUserId}
+                        isAdmin={isAdmin}
+                    />
+                )}
             </div>
         </div>
     );

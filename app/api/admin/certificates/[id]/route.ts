@@ -19,7 +19,7 @@ export async function GET(
         const certificate = await prisma.certificate.findUnique({
             where: { id },
             include: {
-                course: { select: { id: true, name: true } },
+                lmsCourse: { select: { id: true, name: true } },
                 _count: {
                     select: { awards: true },
                 },
@@ -60,7 +60,7 @@ export async function PUT(
                 title,
                 description,
                 imageUrl,
-                courseId: courseId || null, // Allow unlinking
+                lmsCourseId: courseId || null, // Allow unlinking
                 isActive,
             },
         });

@@ -22,7 +22,7 @@ export default async function ParentLayout({
   }
 
   return (
-    <ParentAppShell>
+    <ParentAppShell user={user}>
       {children}
     </ParentAppShell>
   );

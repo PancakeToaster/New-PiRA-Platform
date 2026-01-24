@@ -14,7 +14,7 @@ export async function PATCH(
         }
 
         // Only Admins can edit canvas data
-        if (!hasRole(user, 'Admin')) {
+        if (!await hasRole('Admin')) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 

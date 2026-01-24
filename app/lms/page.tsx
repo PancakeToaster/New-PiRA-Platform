@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Link from 'next/link';
 import { ClipboardList, TrendingUp, Award, Calendar, GraduationCap } from 'lucide-react';
+import DueSoonWidget from '@/components/lms/DueSoonWidget';
+import RecentGradesWidget from '@/components/lms/RecentGradesWidget';
 
 export default async function LMSDashboard() {
   const user = await getCurrentUser();
@@ -13,6 +15,10 @@ export default async function LMSDashboard() {
 
   const isStudent = user.roles?.includes('Student');
   const isTeacher = user.roles?.includes('Teacher');
+
+  console.log('LMS Dashboard - User roles:', user.roles);
+  console.log('LMS Dashboard - isStudent:', isStudent);
+  console.log('LMS Dashboard - student profile:', user.profiles?.student);
 
   let stats = {
     enrolledCourses: 0,
@@ -58,7 +64,7 @@ export default async function LMSDashboard() {
   }
 
   if (isTeacher && user.profiles?.teacher) {
-    const teacherCourses = await prisma.course.count({
+    const teacherCourses = await prisma.lMSCourse.count({
       where: { instructorId: user.id },
     });
 
@@ -179,6 +185,37 @@ export default async function LMSDashboard() {
           </>
         )}
       </div>
+
+      {/* Due Soon & Recent Grades Widgets - Students Only */}
+      {isStudent && user.profiles?.student && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Due Soon Widget */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <ClipboardList className="w-5 h-5 text-orange-500" />
+                <span>Due Soon</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DueSoonWidget studentId={user.profiles.student} />
+            </CardContent>
+          </Card>
+
+          {/* Recent Grades Widget */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-green-500" />
+                <span>Recent Grades & Feedback</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RecentGradesWidget studentId={user.profiles.student} />
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Upcoming Events Calendar Widget */}
@@ -314,13 +351,6 @@ export default async function LMSDashboard() {
             >
               <h3 className="font-semibold text-purple-900">My Courses</h3>
               <p className="text-sm text-purple-700">View enrolled courses</p>
-            </Link>
-            <Link
-              href="/lms/grades"
-              className="block p-4 bg-orange-50 border-2 border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
-            >
-              <h3 className="font-semibold text-orange-900">View Grades</h3>
-              <p className="text-sm text-orange-700">Check your assignment grades</p>
             </Link>
           </div>
         </CardContent>

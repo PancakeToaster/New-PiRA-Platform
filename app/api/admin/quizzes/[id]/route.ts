@@ -19,7 +19,7 @@ export async function GET(
         const quiz = await prisma.quiz.findUnique({
             where: { id },
             include: {
-                course: {
+                lmsCourse: {
                     select: {
                         id: true,
                         name: true,

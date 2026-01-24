@@ -61,7 +61,28 @@ export async function GET(
         tasks: {
           select: {
             id: true,
+            title: true,
             status: true,
+            priority: true,
+            startDate: true,
+            dueDate: true,
+            dependencies: true,
+            checklistItems: {
+              orderBy: {
+                order: 'asc',
+              },
+            },
+            assignees: {
+              select: {
+                user: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
           },
         },
         milestones: {

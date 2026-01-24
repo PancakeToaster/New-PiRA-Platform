@@ -63,8 +63,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 function GraphFlow({ currentId }: GraphViewProps) {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -92,8 +92,8 @@ function GraphFlow({ currentId }: GraphViewProps) {
                         data.edges
                     );
 
-                    setNodes(layoutedNodes);
-                    setEdges(layoutedEdges);
+                    setNodes(layoutedNodes as Node[]);
+                    setEdges(layoutedEdges as Edge[]);
                 }
             } catch (error) {
                 console.error('Failed to fetch graph data:', error);

@@ -1,0 +1,40 @@
+
+> robotics-academy-platform@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ ΓÜá Compiled with warnings
+
+./node_modules/systeminformation/lib/cpu.js
+Module not found: Can't resolve 'osx-temperature-sensor' in 'C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\systeminformation\lib'
+
+Import trace for requested module:
+./node_modules/systeminformation/lib/cpu.js
+./node_modules/systeminformation/lib/index.js
+./app/api/admin/system/health/route.ts
+
+./node_modules/systeminformation/lib/cpu.js
+Module not found: Can't resolve 'macos-temperature-sensor' in 'C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\systeminformation\lib'
+
+Import trace for requested module:
+./node_modules/systeminformation/lib/cpu.js
+./node_modules/systeminformation/lib/index.js
+./app/api/admin/system/health/route.ts
+
+   Linting and checking validity of types ...
+Failed to compile.
+
+./components/admin/CourseEnrollments.tsx:112:56
+Type error: Property 'isApproved' does not exist on type '{ id: string; firstName: string; lastName: string; email: string; }'.
+
+  110 |     const enrolledStudentIds = new Set(enrollments.map((e) => e.studentId));
+  111 |     const availableStudents = allStudents.filter(
+> 112 |         (s) => !enrolledStudentIds.has(s.id) && s.user.isApproved
+      |                                                        ^
+  113 |     );
+  114 |
+  115 |     const filteredStudents = availableStudents.filter((s) =>
+Next.js build worker exited with code: 1 and signal: null

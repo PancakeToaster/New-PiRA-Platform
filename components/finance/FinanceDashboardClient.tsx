@@ -74,7 +74,7 @@ export default function FinanceDashboardClient({ data }: FinanceDashboardClientP
         <Card className="h-full flex flex-col">
             <CardContent className="flex-1 min-h-0 p-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-4">Cash Flow History</h3>
-                <div className="relative w-full h-full min-h-[100px]">
+                <div className="relative w-full h-72">
                     {data.length > 0 ? (
                         <Bar options={options} data={chartData} />
                     ) : (

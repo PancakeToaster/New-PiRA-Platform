@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
         const where: any = {};
         if (courseId) {
-            where.courseId = courseId;
+            where.lmsCourseId = courseId;
         }
 
         const assignments = await prisma.assignment.findMany({
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
                         email: true,
                     },
                 },
-                course: {
+                lmsCourse: {
                     select: {
                         id: true,
                         name: true,
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         const assignment = await prisma.assignment.create({
             data: {
                 lessonId: lessonId || null,
-                courseId: courseId || null,
+                lmsCourseId: courseId || null,
                 title,
                 description,
                 dueDate: new Date(dueDate),
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
                         lastName: true,
                     },
                 },
-                course: {
+                lmsCourse: {
                     select: {
                         name: true,
                     },

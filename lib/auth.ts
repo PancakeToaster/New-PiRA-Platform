@@ -3,14 +3,14 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { cookies } from 'next/headers';
-import { TEST_ROLE_CONFIGS } from './permissions';
+import { TEST_ROLE_CONFIGS } from './test-roles';
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email: { label: 'Email or Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -18,8 +18,15 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const identifier = credentials.email.toLowerCase(); // Normalized input
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: identifier },
+              { username: identifier } // Assumes usernames are stored lowercase
+            ]
+          },
           include: {
             roles: {
               include: {
@@ -123,8 +130,11 @@ export const authOptions: NextAuthOptions = {
             session.user.testRole = testModeRole;
           }
         } catch (e) {
+          console.error('Session callback cookie error:', e);
           // Ignore cookie errors
         }
+
+        console.log('Session Callback - Final Roles:', session.user.roles, 'Is Test Mode:', (session.user as any).isTestMode);
       }
       return session;
     },

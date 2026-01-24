@@ -17,7 +17,7 @@ export async function GET(
 
     try {
         // 1. Fetch Course with enrolled students
-        const course = await prisma.course.findUnique({
+        const course = await prisma.lMSCourse.findUnique({
             where: { id },
             include: {
                 enrollments: {
@@ -30,7 +30,7 @@ export async function GET(
                                         firstName: true,
                                         lastName: true,
                                         email: true,
-                                        image: true,
+                                        avatar: true,
                                     },
                                 },
                             },
@@ -46,7 +46,7 @@ export async function GET(
 
         // 2. Fetch Assignments
         const assignments = await prisma.assignment.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             orderBy: { dueDate: 'asc' },
             include: {
                 submissions: true, // Fetch all submissions for these assignments
@@ -55,7 +55,7 @@ export async function GET(
 
         // 3. Fetch Quizzes
         const quizzes = await prisma.quiz.findMany({
-            where: { courseId: id },
+            where: { lmsCourseId: id },
             orderBy: { createdAt: 'asc' },
             include: {
                 attempts: {
@@ -66,7 +66,7 @@ export async function GET(
         });
 
         const quizAttemptsRaw = await prisma.quizAttempt.findMany({
-            where: { quiz: { courseId: id } },
+            where: { quiz: { lmsCourseId: id } },
             orderBy: { score: 'desc' }, // Order by score to easily pick best
         });
 
@@ -154,7 +154,7 @@ export async function GET(
                     userId: student.user.id,
                     name: `${student.user.firstName} ${student.user.lastName}`,
                     email: student.user.email,
-                    image: student.user.image,
+                    avatar: student.user.avatar,
                 },
                 grades,
                 summary: {

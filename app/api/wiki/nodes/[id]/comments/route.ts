@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { hasPermission } from '@/lib/permissions';
 
 // GET /api/wiki/nodes/[id]/comments
 export async function GET(
@@ -9,7 +10,9 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    const canComment = await hasPermission('knowledge', 'comment');
+
+    if (!session || !canComment) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
 
@@ -46,7 +49,9 @@ export async function POST(
     { params }: { params: { id: string } }
 ) {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    const canComment = await hasPermission('knowledge', 'comment');
+
+    if (!session || !canComment) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
 

@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import GanttChart, { GanttTask } from '@/components/projects/GanttChart';
 
 export default function GanttPage({
   params,
 }: {
-  params: Promise<{ teamSlug: string; projectSlug: string }>;
+  params: { teamSlug: string; projectSlug: string };
 }) {
-  const { teamSlug, projectSlug } = use(params);
+  const { teamSlug, projectSlug } = params;
   const [tasks, setTasks] = useState<GanttTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -1,0 +1,40 @@
+
+> robotics-academy-platform@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ ΓÜá Compiled with warnings
+
+./node_modules/systeminformation/lib/cpu.js
+Module not found: Can't resolve 'osx-temperature-sensor' in 'C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\systeminformation\lib'
+
+Import trace for requested module:
+./node_modules/systeminformation/lib/cpu.js
+./node_modules/systeminformation/lib/index.js
+./app/api/admin/system/health/route.ts
+
+./node_modules/systeminformation/lib/cpu.js
+Module not found: Can't resolve 'macos-temperature-sensor' in 'C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\systeminformation\lib'
+
+Import trace for requested module:
+./node_modules/systeminformation/lib/cpu.js
+./node_modules/systeminformation/lib/index.js
+./app/api/admin/system/health/route.ts
+
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/admin/assignments/[id]/route.ts:30:17
+Type error: Object literal may only specify known properties, and 'course' does not exist in type 'AssignmentInclude<DefaultArgs>'.
+
+  28 |                     },
+  29 |                 },
+> 30 |                 course: {
+     |                 ^
+  31 |                     select: {
+  32 |                         id: true,
+  33 |                         name: true,
+Next.js build worker exited with code: 1 and signal: null

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
+import { logActivity } from '@/lib/logging';
 
 export async function GET(
   request: NextRequest,
@@ -60,6 +61,33 @@ export async function GET(
                 lastName: true,
               },
             },
+          },
+        },
+        checklistItem: false, // Disabling/Ignoring checklist for now or removing if causing issues
+        subtasks: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            priority: true,
+            dueDate: true,
+            assignees: {
+              select: {
+                user: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        parent: {
+          select: {
+            id: true,
+            title: true,
           },
         },
       },
@@ -133,6 +161,7 @@ export async function POST(
       startDate,
       estimatedHours,
       assigneeIds,
+      parentId,
     } = body;
 
     if (!title) {
@@ -159,12 +188,13 @@ export async function POST(
         dueDate: dueDate ? new Date(dueDate) : null,
         startDate: startDate ? new Date(startDate) : null,
         estimatedHours,
+        parentId,
         assignees: assigneeIds?.length
           ? {
-              create: assigneeIds.map((userId: string) => ({
-                userId,
-              })),
-            }
+            create: assigneeIds.map((userId: string) => ({
+              userId,
+            })),
+          }
           : undefined,
       },
       include: {
@@ -189,6 +219,17 @@ export async function POST(
         userId: user.id,
         action: 'created',
       },
+    });
+
+    // Log to centralized activity log
+    await logActivity({
+      userId: user.id,
+      action: 'project.task.created',
+      entityType: 'Task',
+      entityId: task.id,
+      details: { projectId: project.id, teamId: team.id, title },
+      ipAddress: request.headers.get('x-forwarded-for') || undefined,
+      userAgent: request.headers.get('user-agent') || undefined,
     });
 
     return NextResponse.json({ task }, { status: 201 });

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { Plus, Edit, AlertCircle, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
@@ -149,7 +149,7 @@ export default async function AdminInventoryPage() {
                                         </div>
                                     </div>
                                     <Link href={`/admin/finance/inventory/${item.id}/edit`}>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8">
                                             <Edit className="w-4 h-4 text-gray-400 hover:text-sky-600" />
                                         </Button>
                                     </Link>

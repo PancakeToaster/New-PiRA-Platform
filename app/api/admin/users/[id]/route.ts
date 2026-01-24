@@ -72,6 +72,7 @@ export async function PUT(
     const body = await request.json();
     const {
       email,
+      username,
       password,
       firstName,
       lastName,
@@ -102,11 +103,28 @@ export async function PUT(
       }
     }
 
+    // Check if username is taken
+    if (username) {
+      const existingUsername = await prisma.user.findFirst({
+        where: {
+          username,
+          NOT: { id }
+        }
+      });
+      if (existingUsername) {
+        return NextResponse.json(
+          { error: 'This username is already in use' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Update user in a transaction
     const updatedUser = await prisma.$transaction(async (tx) => {
       // Build update data
       const updateData: Record<string, unknown> = {};
       if (email) updateData.email = email;
+      if (username) updateData.username = username;
       if (firstName) updateData.firstName = firstName;
       if (lastName) updateData.lastName = lastName;
       if (password) {

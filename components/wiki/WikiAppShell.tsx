@@ -8,7 +8,8 @@ import {
     BookOpen,
     Menu,
     X,
-    LayoutDashboard
+    LayoutDashboard,
+    LogOut,
 } from 'lucide-react';
 import WikiSidebar from '@/components/wiki/WikiSidebar';
 import WikiSearch from '@/components/wiki/WikiSearch';
@@ -20,7 +21,8 @@ export default function WikiAppShell({
     folders,
     nodes,
     searchNodes,
-    isAdmin
+    isAdmin,
+    user,
 }: {
     children: React.ReactNode;
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -29,6 +31,8 @@ export default function WikiAppShell({
     nodes: any[];
     searchNodes: Array<{ id: string; title: string; content: string; nodeType: string }>;
     isAdmin: boolean;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    user?: any;
 }) {
     const { data: session } = useSession();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -87,21 +91,28 @@ export default function WikiAppShell({
                     {/* User Info */}
                     {session?.user && (
                         <div className="p-4 border-t border-gray-200">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                                    <span className="text-sm font-medium text-sky-700">
-                                        {session.user.name?.charAt(0).toUpperCase()}
-                                    </span>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
+                                        <span className="text-sm font-medium text-sky-700">
+                                            {session.user.name?.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                            {session.user.name?.split(' ')[0]}
+                                        </p>
+                                        <p className="text-sm font-medium text-gray-700 truncate">
+                                            {session.user.name?.split(' ').slice(1).join(' ')}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate">
-                                        {session.user.name?.split(' ')[0]}
-                                    </p>
-                                    <p className="text-sm font-medium text-gray-700 truncate">
-                                        {session.user.name?.split(' ').slice(1).join(' ')}
-                                    </p>
+                                <div className="flex items-center space-x-2">
+                                    <AppSwitcher user={user} />
+                                    <Link href="/api/auth/signout" className="text-gray-400 hover:text-gray-600">
+                                        <LogOut className="w-5 h-5" />
+                                    </Link>
                                 </div>
-                                <AppSwitcher />
                             </div>
                         </div>
                     )}

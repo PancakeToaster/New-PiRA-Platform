@@ -19,7 +19,7 @@ export default async function NewAssignmentPage({
     }
 
     // Fetch course and its modules/lessons for binding
-    const course = await prisma.course.findUnique({
+    const course = await prisma.lMSCourse.findUnique({
         where: { id },
         include: {
             modules: {
@@ -55,7 +55,7 @@ export default async function NewAssignmentPage({
             </div>
 
             <AssignmentForm
-                courseId={id}
+                lmsCourseId={id}
                 lessons={lessons}
             />
         </div>

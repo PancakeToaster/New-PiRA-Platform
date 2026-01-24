@@ -54,6 +54,7 @@ export default function ProjectsDashboard() {
   const [recentTasks, setRecentTasks] = useState<RecentTask[]>([]);
   const [teams, setTeams] = useState<TeamSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -61,10 +62,11 @@ export default function ProjectsDashboard() {
 
   async function fetchDashboardData() {
     try {
-      const [statsRes, tasksRes, teamsRes] = await Promise.all([
+      const [statsRes, tasksRes, teamsRes, userRes] = await Promise.all([
         fetch('/api/projects/dashboard/stats'),
         fetch('/api/projects/dashboard/tasks?limit=5'),
         fetch('/api/projects/teams'),
+        fetch('/api/auth/session'),
       ]);
 
       if (statsRes.ok) {
@@ -80,6 +82,14 @@ export default function ProjectsDashboard() {
       if (teamsRes.ok) {
         const teamsData = await teamsRes.json();
         setTeams(teamsData.teams);
+      }
+
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        const hasAdminRole = userData.user?.roles?.some(
+          (r: any) => (typeof r === 'string' ? r === 'Admin' : r.role?.name === 'Admin')
+        );
+        setIsAdmin(hasAdminRole || false);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -246,11 +256,13 @@ export default function ProjectsDashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>My Teams</CardTitle>
-              <Link href="/projects/teams/new">
-                <Button variant="outline" size="sm">
-                  Create Team
-                </Button>
-              </Link>
+              {isAdmin && (
+                <Link href="/projects/teams/new">
+                  <Button variant="outline" size="sm">
+                    Create Team
+                  </Button>
+                </Link>
+              )}
             </div>
           </CardHeader>
           <CardContent>

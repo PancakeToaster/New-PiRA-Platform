@@ -15,13 +15,13 @@ interface Lesson {
 }
 
 interface AssignmentFormProps {
-    courseId: string;
+    lmsCourseId: string;
     initialData?: any;
     lessons: Lesson[];
 }
 
 export default function AssignmentForm({
-    courseId,
+    lmsCourseId,
     initialData,
     lessons,
 }: AssignmentFormProps) {
@@ -53,14 +53,14 @@ export default function AssignmentForm({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
-                    courseId,
+                    lmsCourseId,
                     maxPoints: Number(formData.maxPoints),
                 }),
             });
 
             if (!res.ok) throw new Error('Failed to save assignment');
 
-            router.push(`/admin/courses/${courseId}/assignments`);
+            router.push(`/admin/courses/${lmsCourseId}/assignments`);
             router.refresh();
         } catch (error) {
             console.error(error);
@@ -165,12 +165,12 @@ export default function AssignmentForm({
                     </div>
 
                     <div className="flex items-center justify-end gap-3 pt-6 border-t">
-                        <Link href={`/admin/courses/${courseId}/assignments`}>
+                        <Link href={`/admin/courses/${lmsCourseId}/assignments`}>
                             <Button type="button" variant="outline">
                                 Cancel
                             </Button>
                         </Link>
-                        <Button type="submit" variant="primary" isLoading={loading}>
+                        <Button type="submit" variant="primary" disabled={loading}>
                             <Save className="w-4 h-4 mr-2" />
                             {initialData ? 'Update Assignment' : 'Create Assignment'}
                         </Button>

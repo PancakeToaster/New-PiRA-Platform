@@ -20,7 +20,7 @@ interface Assignment {
     description: string;
     dueDate: string;
     maxPoints: number;
-    course: { name: string } | null;
+    lmsCourse: { name: string } | null;
     lesson: { title: string } | null;
     submissions: Array<{
         id: string;
@@ -60,7 +60,7 @@ export default function StudentAssignmentsPage() {
         try {
             const res = await fetch('/api/student/assignments');
             if (res.ok) {
-                const data = await response.json();
+                const data = await res.json();
                 setAssignments(data.assignments);
                 setUpcoming(data.upcoming);
                 setOverdue(data.overdue);
@@ -223,10 +223,10 @@ export default function StudentAssignmentsPage() {
                                                     {assignment.description}
                                                 </p>
                                                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                                                    {assignment.course && (
+                                                    {assignment.lmsCourse && (
                                                         <span className="flex items-center gap-1">
                                                             <FileText className="w-4 h-4" />
-                                                            {assignment.course.name}
+                                                            {assignment.lmsCourse.name}
                                                         </span>
                                                     )}
                                                     <span className="flex items-center gap-1">

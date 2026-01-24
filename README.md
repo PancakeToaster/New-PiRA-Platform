@@ -42,6 +42,24 @@ A comprehensive web platform for robotics academy business with 4 layers and 5 u
 4. **Teacher** - Create content, manage students, grade assignments
 5. **Admin** - Full system access and management
 
+## 📘 Documentation
+
+- **[User Guide](USER_GUIDE.md)**: Comprehensive manual for all roles (Admin, Teacher, Student, Parent).
+- **[Deployment Guide](DEPLOYMENT.md)**: Detailed production setup for Docker/Linux.
+- **[Product Spec](PRODUCT_SPEC.md)**: Technical specifications and feature list.
+
+## ✅ Project Status: Complete (Phase 19)
+
+The platform is fully built and feature-complete as of **January 2026**.
+
+**Key Capabilities:**
+- **User Management**: 6 roles, approval workflows, parent-student linking
+- **LMS**: Full course builder, grading system, quizzes
+- **Finance**: Invoices, expenses, payroll, inventory
+- **Wiki**: Knowledge base with graph visualizations
+- **Projects**: Team management and Kanban boards
+- **Analytics**: System health (App+DB size), activity logging, error tracking
+
 ## Tech Stack
 
 - **Frontend**: Next.js 14 (App Router), React, TailwindCSS

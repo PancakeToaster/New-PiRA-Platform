@@ -30,7 +30,7 @@ export default async function QuizBuilderPage({
     }
 
     // Permission check
-    const course = await prisma.course.findUnique({ where: { id } });
+    const course = await prisma.lMSCourse.findUnique({ where: { id } });
     if (!course || (!userIsAdmin && course.instructorId !== user.id)) {
         redirect('/admin/courses');
     }

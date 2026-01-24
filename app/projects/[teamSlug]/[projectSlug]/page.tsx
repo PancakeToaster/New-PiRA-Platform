@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,7 @@ import {
   AlertCircle,
   BarChart3,
 } from 'lucide-react';
+import GanttChart, { GanttTask } from '@/components/projects/GanttChart';
 
 interface Project {
   id: string;
@@ -34,18 +35,15 @@ interface Project {
   _count: {
     tasks: number;
   };
-  tasks: {
-    id: string;
-    status: string;
-  }[];
+  tasks: GanttTask[];
 }
 
 export default function ProjectOverviewPage({
   params,
 }: {
-  params: Promise<{ teamSlug: string; projectSlug: string }>;
+  params: { teamSlug: string; projectSlug: string };
 }) {
-  const { teamSlug, projectSlug } = use(params);
+  const { teamSlug, projectSlug } = params;
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -214,6 +212,21 @@ export default function ProjectOverviewPage({
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Gantt Chart */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Project Timeline</h2>
+          <Link href={`/projects/${teamSlug}/${projectSlug}/gantt`}>
+            {/* Keeping the link optionally or removing if tab is gone. User said "just have the gantt chart show up on the overview tab", implies removing the other page. 
+                 But I'll keep the section header clean. */}
+          </Link>
+        </div>
+        <GanttChart
+          tasks={project.tasks.map(t => ({ ...t, dependencies: t.dependencies || [] }))}
+          onTaskClick={(task) => console.log('Task clicked', task)}
+        />
       </div>
 
       {/* Progress */}

@@ -10,11 +10,12 @@ import remarkGfm from 'remark-gfm';
 
 interface MarkdownEditorProps {
     content: string;
-    onSave: (content: string) => Promise<void>;
-    nodeId: string;
+    onSave?: (content: string) => Promise<void>;
+    onChange?: (content: string) => void;
+    nodeId?: string;
 }
 
-export default function MarkdownEditor({ content, onSave, nodeId }: MarkdownEditorProps) {
+export default function MarkdownEditor({ content, onSave, onChange, nodeId }: MarkdownEditorProps) {
     const [markdown, setMarkdown] = useState(content);
     const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -23,6 +24,7 @@ export default function MarkdownEditor({ content, onSave, nodeId }: MarkdownEdit
     // Debounced auto-save
     const handleAutoSave = useCallback(
         debounce(async (newContent: string) => {
+            if (!onSave) return;
             setSaveStatus('saving');
             try {
                 await onSave(newContent);
@@ -39,7 +41,8 @@ export default function MarkdownEditor({ content, onSave, nodeId }: MarkdownEdit
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newContent = e.target.value;
         setMarkdown(newContent);
-        handleAutoSave(newContent);
+        if (onChange) onChange(newContent);
+        if (onSave) handleAutoSave(newContent);
     };
 
     // Insert markdown syntax at cursor
@@ -58,7 +61,8 @@ export default function MarkdownEditor({ content, onSave, nodeId }: MarkdownEdit
             markdown.substring(end);
 
         setMarkdown(newText);
-        handleAutoSave(newText);
+        if (onChange) onChange(newText);
+        if (onSave) handleAutoSave(newText);
 
         // Restore focus and selection
         setTimeout(() => {

@@ -15,10 +15,11 @@ interface WikiPageContainerProps {
     node: any; // Using any for simplicity with complex Prisma types + stale client
     isAdmin: boolean;
     isTeacherOrMentor: boolean;
+    canComment: boolean;
     currentUserId: string;
 }
 
-export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, currentUserId }: WikiPageContainerProps) {
+export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, canComment, currentUserId }: WikiPageContainerProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState<'content' | 'mindmap'>('content');
 
@@ -137,6 +138,7 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, cu
                         nodeType={node.nodeType}
                         isAdmin={isEditing} // Only allow editing if in Edit Mode
                         isTeacherOrMentor={isTeacherOrMentor}
+                        canComment={canComment}
                         graphData={node.graphData}
                         mindmapData={node.mindmapData}
                         canvasData={node.canvasData}

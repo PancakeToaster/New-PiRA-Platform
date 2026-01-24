@@ -47,16 +47,11 @@ export default async function StudentDetailPage({ params }: Props) {
     where: { id: params.studentId },
     include: {
       user: true,
-      enrollments: {
+      courseEnrollments: {
         include: {
-          course: true,
+          lmsCourse: true,
         },
         orderBy: { enrolledAt: 'desc' },
-      },
-      teamMemberships: {
-        include: {
-          team: true,
-        },
       },
     },
   });
@@ -65,10 +60,10 @@ export default async function StudentDetailPage({ params }: Props) {
     notFound();
   }
 
-  const activeEnrollments = student.enrollments.filter(
+  const activeEnrollments = student.courseEnrollments.filter(
     (e) => e.status === 'active'
   );
-  const completedEnrollments = student.enrollments.filter(
+  const completedEnrollments = student.courseEnrollments.filter(
     (e) => e.status === 'completed'
   );
 
@@ -109,12 +104,7 @@ export default async function StudentDetailPage({ params }: Props) {
                 <Mail className="w-5 h-5 mr-3 text-gray-400" />
                 <span className="text-sm">{student.user.email}</span>
               </div>
-              {student.user.phone && (
-                <div className="flex items-center text-gray-600">
-                  <Phone className="w-5 h-5 mr-3 text-gray-400" />
-                  <span className="text-sm">{student.user.phone}</span>
-                </div>
-              )}
+
               {student.grade && (
                 <div className="flex items-center text-gray-600">
                   <GraduationCap className="w-5 h-5 mr-3 text-gray-400" />
@@ -137,21 +127,14 @@ export default async function StudentDetailPage({ params }: Props) {
               )}
             </div>
 
-            {student.medicalNotes && (
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <h3 className="text-sm font-semibold text-yellow-800 mb-2">
-                  Medical Notes
-                </h3>
-                <p className="text-sm text-yellow-700">{student.medicalNotes}</p>
-              </div>
-            )}
+
           </CardContent>
         </Card>
 
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <Card>
               <CardContent className="pt-6 text-center">
                 <BookOpen className="w-8 h-8 text-sky-500 mx-auto mb-2" />
@@ -166,15 +149,6 @@ export default async function StudentDetailPage({ params }: Props) {
                   {completedEnrollments.length}
                 </p>
                 <p className="text-sm text-gray-500">Completed</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <User className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">
-                  {student.teamMemberships.length}
-                </p>
-                <p className="text-sm text-gray-500">Teams</p>
               </CardContent>
             </Card>
           </div>
@@ -201,7 +175,7 @@ export default async function StudentDetailPage({ params }: Props) {
                     >
                       <div>
                         <h4 className="font-medium text-gray-900">
-                          {enrollment.course.title}
+                          {enrollment.lmsCourse.name}
                         </h4>
                         <p className="text-sm text-gray-500">
                           Enrolled:{' '}
@@ -225,51 +199,6 @@ export default async function StudentDetailPage({ params }: Props) {
             </CardContent>
           </Card>
 
-          {/* Teams */}
-          {student.teamMemberships.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="w-5 h-5 mr-2 text-purple-500" />
-                  Team Memberships
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {student.teamMemberships.map((membership) => (
-                    <div
-                      key={membership.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-                          style={{
-                            backgroundColor: membership.team.color || '#0ea5e9',
-                          }}
-                        >
-                          {membership.team.name.charAt(0)}
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">
-                            {membership.team.name}
-                          </h4>
-                          <p className="text-sm text-gray-500 capitalize">
-                            {membership.role}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Joined:{' '}
-                        {new Date(membership.joinedAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Completed Courses */}
           {completedEnrollments.length > 0 && (
             <Card>
@@ -288,14 +217,14 @@ export default async function StudentDetailPage({ params }: Props) {
                     >
                       <div>
                         <h4 className="font-medium text-gray-900">
-                          {enrollment.course.title}
+                          {enrollment.lmsCourse.name}
                         </h4>
                         <p className="text-sm text-gray-500">
                           Completed:{' '}
                           {enrollment.completedAt
                             ? new Date(
-                                enrollment.completedAt
-                              ).toLocaleDateString()
+                              enrollment.completedAt
+                            ).toLocaleDateString()
                             : 'N/A'}
                         </p>
                       </div>

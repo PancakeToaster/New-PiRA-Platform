@@ -1,10 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { Users, FileText, DollarSign, BookOpen, TrendingUp, Activity, TrendingDown, Wallet, Package, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
 import TestUserSelector from '@/components/admin/TestUserSelector';
 import FinanceDashboardClient from '@/components/finance/FinanceDashboardClient';
+import SystemHealthWidget from '@/components/admin/SystemHealthWidget';
 
 export const revalidate = 0; // Disable caching for admin dashboard
 
@@ -116,23 +118,18 @@ export default async function AdminDashboard() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
 
-  const recentUsers = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    include: {
-      roles: {
-        include: {
-          role: true,
-        },
-      },
-    },
-  });
+
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2 text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600">Overview of your platform's key metrics</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-600">Overview of your platform's key metrics</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <TestUserSelector />
+        </div>
       </div>
 
       {/* Financial Health & Cash Flow */}
@@ -326,99 +323,11 @@ export default async function AdminDashboard() {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Recent Users</CardTitle>
-              <Link
-                href="/admin/users"
-                className="text-sm text-sky-500 hover:text-sky-600"
-              >
-                View All
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {recentUsers.length === 0 ? (
-              <p className="text-gray-600">No users yet.</p>
-            ) : (
-              <div className="space-y-3 text-gray-600">
-                {recentUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-semibold">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex flex-wrap gap-1 justify-end">
-                        {user.roles.map((ur) => (
-                          <span
-                            key={ur.roleId}
-                            className="text-xs px-2 py-1 bg-sky-100 text-sky-700 rounded-full"
-                          >
-                            {ur.role.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <SystemHealthWidget />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Link
-                href="/admin/users/new"
-                className="block p-4 bg-sky-50 border-2 border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
-              >
-                <h3 className="font-semibold text-sky-800">Create New User</h3>
-                <p className="text-sm text-sky-600">Add a student, parent, or teacher</p>
-              </Link>
-              <Link
-                href="/admin/users/approvals"
-                className="block p-4 bg-orange-50 border-2 border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-orange-900">Pending Approvals</h3>
-                  {pendingUserCount > 0 && (
-                    <span className="bg-orange-200 text-orange-800 text-xs font-bold px-2 py-1 rounded-full">
-                      {pendingUserCount}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-orange-700">Review new account requests</p>
-              </Link>
-              <Link
-                href="/admin/invoices/new"
-                className="block p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors"
-              >
-                <h3 className="font-semibold text-green-900">Create Invoice</h3>
-                <p className="text-sm text-green-700">Generate a new invoice for a parent</p>
-              </Link>
-              <Link
-                href="/admin/blog/new"
-                className="block p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <h3 className="font-semibold text-blue-900">Write Blog Post</h3>
-                <p className="text-sm text-blue-700">Share news and updates</p>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
 
-        <TestUserSelector />
+
+
       </div>
     </div>
   );

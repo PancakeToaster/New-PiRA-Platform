@@ -23,20 +23,20 @@ export async function GET(request: NextRequest) {
         // Get all assignments for courses the student is enrolled in
         const enrollments = await prisma.courseEnrollment.findMany({
             where: { studentId: studentProfile.id },
-            select: { courseId: true },
+            select: { lmsCourseId: true },
         });
 
-        const courseIds = enrollments.map(e => e.courseId);
+        const courseIds = enrollments.map(e => e.lmsCourseId);
 
         const assignments = await prisma.assignment.findMany({
             where: {
                 OR: [
-                    { courseId: { in: courseIds }, studentId: null }, // Course-wide assignments
+                    { lmsCourseId: { in: courseIds }, studentId: null }, // Course-wide assignments
                     { studentId: studentProfile.id }, // Individual assignments
                 ],
             },
             include: {
-                course: {
+                lmsCourse: {
                     select: {
                         name: true,
                     },

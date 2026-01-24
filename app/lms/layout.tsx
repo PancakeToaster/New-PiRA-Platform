@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/permissions';
+import { prisma } from '@/lib/prisma';
 import LMSAppShell from '@/components/lms/LMSAppShell';
 
 export default async function LMSLayout({
@@ -14,18 +15,45 @@ export default async function LMSLayout({
   }
 
   // Ensure user has appropriate role for LMS
-  // Assuming 'Student', 'Teacher', or 'Admin' can access.
-  // 'Parent' currently accesses '/parent'.
   const allowedRoles = ['Student', 'Teacher', 'Admin'];
   const hasAccess = user.roles.some((role: string) => allowedRoles.includes(role));
 
   if (!hasAccess) {
-    // Optionally redirect to a forbidden page or back to home
     redirect('/');
   }
 
+  // Fetch user's courses
+  const isStudent = user.roles?.includes('Student');
+  const isTeacher = user.roles?.includes('Teacher');
+  let courses: any[] = [];
+
+  if (isStudent && user.profiles?.student) {
+    const enrollments = await prisma.courseEnrollment.findMany({
+      where: { studentId: user.profiles.student },
+      include: {
+        lmsCourse: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+      },
+    });
+    courses = enrollments.map((e) => e.lmsCourse);
+  } else if (isTeacher) {
+    courses = await prisma.lMSCourse.findMany({
+      where: { instructorId: user.id },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+      },
+    });
+  }
+
   return (
-    <LMSAppShell>
+    <LMSAppShell user={user} courses={courses}>
       {children}
     </LMSAppShell>
   );

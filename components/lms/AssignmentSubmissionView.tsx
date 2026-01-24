@@ -285,7 +285,7 @@ export default function AssignmentSubmissionView({
                                     variant="primary"
                                     onClick={() => handleSubmit('submitted')}
                                     disabled={isSubmitting || isUploading || (!content && attachments.length === 0)}
-                                    isLoading={isSubmitting}
+
                                 >
                                     Submit Assignment
                                 </Button>

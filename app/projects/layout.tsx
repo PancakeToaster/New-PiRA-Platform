@@ -26,7 +26,7 @@ export default async function ProjectsLayout({
   // We can add stricter role checks later if needed (e.g. only Team members).
 
   return (
-    <ProjectsAppShell>
+    <ProjectsAppShell user={user}>
       {children}
     </ProjectsAppShell>
   );
