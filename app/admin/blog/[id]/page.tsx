@@ -94,7 +94,7 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
     if (isFetching) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -109,7 +109,7 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                             Back
                         </Button>
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Edit Post</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Edit Post</h1>
                 </div>
                 <div className="flex space-x-2">
                     <Link href={`/blog/${formData.slug}?mode=builder`} target="_blank">
@@ -130,45 +130,45 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                         <Card>
                             <CardContent className="pt-6 space-y-4">
                                 {error && (
-                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                                    <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg">
                                         {error}
                                     </div>
                                 )}
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
                                         Title *
                                     </label>
                                     <input
                                         type="text"
                                         value={formData.title}
                                         onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                         placeholder="Post Title"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
                                         Excerpt
                                     </label>
                                     <textarea
                                         value={formData.excerpt}
                                         onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                                         rows={3}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
+                                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground resize-none"
                                         placeholder="Brief summary for search results and cards..."
                                     />
                                 </div>
 
-                                <div className="flex items-center space-x-4 mb-4 border-b border-gray-200 pb-4">
+                                <div className="flex items-center space-x-4 mb-4 border-b border-border pb-4">
                                     <button
                                         type="button"
                                         onClick={() => handleEditorTypeChange('html')}
                                         className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${formData.editorType === 'html'
-                                            ? 'bg-sky-100 text-sky-700'
-                                            : 'text-gray-500 hover:text-gray-900'
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         <FileText className="w-4 h-4 mr-2" />
@@ -178,8 +178,8 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                                         type="button"
                                         onClick={() => handleEditorTypeChange('builder')}
                                         className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${formData.editorType === 'builder'
-                                            ? 'bg-sky-100 text-sky-700'
-                                            : 'text-gray-500 hover:text-gray-900'
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         <LayoutTemplate className="w-4 h-4 mr-2" />
@@ -196,10 +196,10 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                                        <LayoutTemplate className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                        <h3 className="text-lg font-medium text-gray-900">Page Builder Mode Active</h3>
-                                        <p className="text-gray-500 mb-6">
+                                    <div className="bg-muted/30 border-2 border-dashed border-border rounded-lg p-12 text-center">
+                                        <LayoutTemplate className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                        <h3 className="text-lg font-medium text-foreground">Page Builder Mode Active</h3>
+                                        <p className="text-muted-foreground mb-6">
                                             Content is managed via the visual drag-and-drop builder.
                                         </p>
                                         <Link href={`/blog/${formData.slug}?mode=builder`} target="_blank">
@@ -221,17 +221,17 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
                                         URL Slug
                                     </label>
                                     <input
                                         type="text"
                                         value={formData.slug}
                                         onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                         required
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">/blog/{formData.slug}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">/blog/{formData.slug}</p>
                                 </div>
 
                                 <div className="flex items-center pt-2">
@@ -240,9 +240,9 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                                         id="isDraft"
                                         checked={formData.isDraft}
                                         onChange={(e) => setFormData(prev => ({ ...prev, isDraft: e.target.checked }))}
-                                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-input rounded bg-background"
                                     />
-                                    <label htmlFor="isDraft" className="ml-2 text-sm text-gray-700">
+                                    <label htmlFor="isDraft" className="ml-2 text-sm text-foreground">
                                         Save as Draft
                                     </label>
                                 </div>
@@ -273,11 +273,11 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                                         type="text"
                                         value={formData.coverImage}
                                         onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 text-sm"
+                                        className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground text-sm"
                                         placeholder="Image URL"
                                     />
                                     {formData.coverImage && (
-                                        <div className="relative aspect-video rounded-lg overflow-hidden border border-gray-200">
+                                        <div className="relative aspect-video rounded-lg overflow-hidden border border-border">
                                             <img
                                                 src={formData.coverImage}
                                                 alt="Preview"

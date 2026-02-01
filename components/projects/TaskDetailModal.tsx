@@ -57,7 +57,7 @@ export function TaskDetailModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-2xl bg-white">
+            <DialogContent className="max-w-2xl bg-card">
                 <DialogHeader>
                     <DialogTitle className="flex justify-between items-center">
                         {isEditing ? (
@@ -83,13 +83,13 @@ export function TaskDetailModal({
                                     rows={4}
                                 />
                             ) : (
-                                <p className="text-gray-700 mt-1 whitespace-pre-wrap">{task.description || 'No description provided.'}</p>
+                                <p className="text-muted-foreground mt-1 whitespace-pre-wrap">{task.description || 'No description provided.'}</p>
                             )}
                         </div>
 
                         {/* Parent Task Link */}
                         {task.parent && (
-                            <div className="mb-4 p-2 bg-blue-50 text-blue-700 rounded text-sm flex items-center">
+                            <div className="mb-4 p-2 bg-primary/10 text-primary rounded text-sm flex items-center">
                                 <span className="font-semibold mr-1">Parent Task:</span>
                                 <span>{task.parent.title}</span>
                             </div>
@@ -98,9 +98,9 @@ export function TaskDetailModal({
                         {/* Subtasks (Real Tasks) */}
                         <div>
                             <div className="flex items-center justify-between mb-3">
-                                <Label className="text-gray-500 uppercase text-xs font-bold tracking-wider">Subtasks</Label>
+                                <Label className="text-muted-foreground uppercase text-xs font-bold tracking-wider">Subtasks</Label>
                                 {(task.checklistItems?.length ?? 0) > 0 && (
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-muted-foreground">
                                         {Math.round(((task.checklistItems?.filter(i => i.isCompleted).length ?? 0) / (task.checklistItems?.length ?? 1)) * 100)}% done
                                     </span>
                                 )}
@@ -117,16 +117,16 @@ export function TaskDetailModal({
                                                 // Optimistic or direct call
                                                 if (onChecklistUpdate) onChecklistUpdate(task.id, item.id, { isCompleted: newStatus });
                                             }}
-                                            className="mt-1 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                                            className="mt-1 rounded border-border text-sky-600 focus:ring-sky-500"
                                         />
-                                        <span className={`text-sm flex-1 ${item.isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                                        <span className={`text-sm flex-1 ${item.isCompleted ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                                             {item.content}
                                         </span>
                                         <button
                                             onClick={() => {
                                                 if (onChecklistDelete) onChecklistDelete(task.id, item.id);
                                             }}
-                                            className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                                         >
                                             <AlertCircle className="w-4 h-4 rotate-45" /> {/* Using X icon concept */}
                                         </button>
@@ -167,7 +167,7 @@ export function TaskDetailModal({
 
                         <div className="flex space-x-4">
                             <div>
-                                <Label className="text-xs text-gray-500">Start Date</Label>
+                                <Label className="text-xs text-muted-foreground">Start Date</Label>
                                 {isEditing ? (
                                     <Input
                                         type="date"
@@ -176,13 +176,13 @@ export function TaskDetailModal({
                                     />
                                 ) : (
                                     <div className="flex items-center mt-1 text-sm">
-                                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                                        <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
                                         {task.startDate ? new Date(task.startDate).toLocaleDateString() : 'Not set'}
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <Label className="text-xs text-gray-500">Due Date</Label>
+                                <Label className="text-xs text-muted-foreground">Due Date</Label>
                                 {isEditing ? (
                                     <Input
                                         type="date"
@@ -191,7 +191,7 @@ export function TaskDetailModal({
                                     />
                                 ) : (
                                     <div className="flex items-center mt-1 text-sm">
-                                        <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                                        <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
                                         {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'Not set'}
                                     </div>
                                 )}
@@ -199,11 +199,11 @@ export function TaskDetailModal({
                         </div>
                     </div>
 
-                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                    <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
                         <div>
                             <Label>Status</Label>
                             <select
-                                className="w-full mt-1 p-2 border rounded-md text-sm"
+                                className="w-full mt-1 p-2 border border-border rounded-md text-sm bg-background text-foreground"
                                 value={formData.status}
                                 onChange={e => {
                                     setFormData({ ...formData, status: e.target.value });
@@ -221,7 +221,7 @@ export function TaskDetailModal({
                         <div>
                             <Label>Priority</Label>
                             <select
-                                className="w-full mt-1 p-2 border rounded-md text-sm"
+                                className="w-full mt-1 p-2 border border-border rounded-md text-sm bg-background text-foreground"
                                 value={formData.priority}
                                 onChange={e => {
                                     setFormData({ ...formData, priority: e.target.value });

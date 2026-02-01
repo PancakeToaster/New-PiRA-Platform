@@ -2,11 +2,11 @@ import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/Table';
-import { Plus, Edit, AlertCircle, ShoppingCart } from 'lucide-react';
+import { Plus, Edit, AlertCircle, ShoppingCart, Search } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminInventoryPage() {
@@ -36,10 +36,8 @@ export default async function AdminInventoryPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
-                </div>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold text-foreground">Inventory Management</h1>
                 <Link href="/admin/finance/inventory/new">
                     <Button>
                         <Plus className="w-4 h-4 mr-2" />
@@ -48,115 +46,158 @@ export default async function AdminInventoryPage() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Stats - matching Invoices layout */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="text-sm font-medium text-gray-500">Total Asset Value</div>
-                        <div className="text-2xl font-bold text-gray-900 mt-2">
-                            ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        <div className="text-center">
+                            <p className="text-3xl font-bold text-foreground">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                            <p className="text-sm text-muted-foreground">Total Asset Value</p>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="text-sm font-medium text-gray-500">Total Items</div>
-                        <div className="text-2xl font-bold text-gray-900 mt-2">
-                            {items.length}
+                        <div className="text-center">
+                            <p className="text-3xl font-bold text-foreground">{items.length}</p>
+                            <p className="text-sm text-muted-foreground">Total Items</p>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className={lowStockItems.length > 0 ? "border-amber-200 bg-amber-50" : ""}>
+                <Card className={lowStockItems.length > 0 ? "border-amber-500/20 bg-amber-500/10" : ""}>
                     <CardContent className="pt-6">
-                        <div className="text-sm font-medium text-amber-700">Low Stock Alerts</div>
-                        <div className="text-2xl font-bold text-amber-900 mt-2 flex items-center gap-2">
-                            {lowStockItems.length}
-                            {lowStockItems.length > 0 && <AlertCircle className="w-5 h-5 text-amber-600" />}
+                        <div className="text-center">
+                            <div className="flex items-center justify-center gap-2">
+                                <p className={`text-3xl font-bold ${lowStockItems.length > 0 ? "text-amber-600 dark:text-amber-400" : "text-foreground"}`}>
+                                    {lowStockItems.length}
+                                </p>
+                                {lowStockItems.length > 0 && <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
+                            </div>
+                            <p className={`text-sm ${lowStockItems.length > 0 ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"}`}>
+                                Low Stock Alerts
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="text-center">
+                            <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{hotCommodities.length}</p>
+                            <p className="text-sm text-muted-foreground">Hot Items</p>
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
+            {/* Search and Filter */}
+            <Card>
+                <CardContent className="py-4">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                            <input
+                                type="text"
+                                placeholder="Search inventory..."
+                                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                                disabled
+                            />
+                        </div>
+                        <select
+                            className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                            disabled
+                        >
+                            <option value="all">All Locations</option>
+                        </select>
+                    </div>
+                </CardContent>
+            </Card>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <CardTitle>Inventory Items ({items.length})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Item Name</TableHead>
-                                    <TableHead>SKU</TableHead>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead>Cost</TableHead>
-                                    <TableHead>In Stock</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {items.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell className="font-medium">
-                                            <div>{item.name}</div>
-                                            <div className="text-xs text-gray-500 lowercase">{item.category}</div>
-                                        </TableCell>
-                                        <TableCell>{item.sku || '-'}</TableCell>
-                                        <TableCell>{item.location || '-'}</TableCell>
-                                        <TableCell>${item.unitCost?.toFixed(2) || '0.00'}</TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                {item.quantity}
-                                                {item.quantity <= item.reorderLevel && (
-                                                    <span className="w-2 h-2 rounded-full bg-red-500" title="Low Stock" />
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Link href={`/admin/finance/inventory/${item.id}/edit`}>
-                                                <Button variant="ghost" size="sm">
-                                                    <Edit className="w-4 h-4" />
-                                                </Button>
-                                            </Link>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {items.length === 0 && (
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader className="bg-muted/50">
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                                            No inventory items tracked yet.
-                                        </TableCell>
+                                        <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Item Name</TableHead>
+                                        <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">SKU</TableHead>
+                                        <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Location</TableHead>
+                                        <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Cost</TableHead>
+                                        <TableHead className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">In Stock</TableHead>
+                                        <TableHead className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</TableHead>
                                     </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody className="bg-card divide-y divide-border">
+                                    {items.map((item) => (
+                                        <TableRow key={item.id} className="hover:bg-muted/50">
+                                            <TableCell className="px-6 py-4 font-medium">
+                                                <div className="text-foreground">{item.name}</div>
+                                                <div className="text-xs text-muted-foreground lowercase">{item.category}</div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-sm text-foreground">{item.sku || '-'}</TableCell>
+                                            <TableCell className="px-6 py-4 text-sm text-foreground">{item.location || '-'}</TableCell>
+                                            <TableCell className="px-6 py-4 text-sm text-foreground">${item.unitCost?.toFixed(2) || '0.00'}</TableCell>
+                                            <TableCell className="px-6 py-4 text-sm text-foreground">
+                                                <div className="flex items-center gap-2">
+                                                    {item.quantity}
+                                                    {item.quantity <= item.reorderLevel && (
+                                                        <span className="w-2 h-2 rounded-full bg-destructive" title="Low Stock" />
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 text-right">
+                                                <Link href={`/admin/finance/inventory/${item.id}/edit`}>
+                                                    <Button variant="ghost" size="sm">
+                                                        <Edit className="w-4 h-4" />
+                                                    </Button>
+                                                </Link>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {items.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                                                No inventory items tracked yet.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                 </Card>
 
                 {/* Hot Commodities Sidebar */}
                 <Card className="h-fit">
-                    <div className="p-6 border-b border-gray-100">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <ShoppingCart className="w-5 h-5 text-purple-600" />
+                    <CardHeader className="border-b border-border">
+                        <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                            <ShoppingCart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                             Hot Commodities
-                        </h3>
-                    </div>
+                        </CardTitle>
+                    </CardHeader>
                     <CardContent className="p-0">
-                        <div className="divide-y">
+                        <div className="divide-y divide-border">
                             {hotCommodities.map((item, idx) => (
-                                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
                                     <div className="flex items-center gap-3">
-                                        <div className="font-mono text-gray-400 text-sm">#{idx + 1}</div>
+                                        <div className="font-mono text-muted-foreground text-sm">#{idx + 1}</div>
                                         <div>
-                                            <div className="font-medium text-gray-900">{item.name}</div>
-                                            <div className="text-xs text-gray-500">Purchased {item._count.expenses} times</div>
+                                            <div className="font-medium text-foreground">{item.name}</div>
+                                            <div className="text-xs text-muted-foreground">Purchased {item._count.expenses} times</div>
                                         </div>
                                     </div>
                                     <Link href={`/admin/finance/inventory/${item.id}/edit`}>
                                         <Button variant="ghost" size="sm" className="h-8 w-8">
-                                            <Edit className="w-4 h-4 text-gray-400 hover:text-sky-600" />
+                                            <Edit className="w-4 h-4 text-muted-foreground hover:text-primary" />
                                         </Button>
                                     </Link>
                                 </div>
                             ))}
                             {hotCommodities.length === 0 && (
-                                <div className="p-6 text-center text-gray-400 text-sm">No inventory activity yet.</div>
+                                <div className="p-6 text-center text-muted-foreground text-sm">No inventory activity yet.</div>
                             )}
                         </div>
                     </CardContent>

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
-import { Search, Plus, Loader2, Upload, X } from 'lucide-react';
+import { Search, Plus, Loader2, Upload, X, GripVertical } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -24,6 +24,7 @@ interface Course {
   hidePrice: boolean;
   isDevelopment: boolean;
   interestCount: number;
+  displayOrder: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -48,6 +49,10 @@ export default function AdminCoursesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
+  const [dragOverCourse, setDragOverCourse] = useState<string | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
+  const dragLeaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -261,10 +266,100 @@ export default function AdminCoursesPage() {
       .replace(/(^-|-$)/g, '');
   };
 
+  const handleDragStart = (e: React.DragEvent, courseId: string) => {
+    setDraggedCourse(courseId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, courseId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    if (dragLeaveTimer.current) {
+      clearTimeout(dragLeaveTimer.current);
+      dragLeaveTimer.current = null;
+    }
+
+    setDragOverCourse(courseId);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetCourseId: string) => {
+    e.preventDefault();
+
+    if (dragLeaveTimer.current) {
+      clearTimeout(dragLeaveTimer.current);
+      dragLeaveTimer.current = null;
+    }
+
+    if (!draggedCourse || draggedCourse === targetCourseId) {
+      setDraggedCourse(null);
+      return;
+    }
+
+    const draggedIndex = filteredCourses.findIndex(c => c.id === draggedCourse);
+    const targetIndex = filteredCourses.findIndex(c => c.id === targetCourseId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedCourse(null);
+      return;
+    }
+
+    // Reorder locally
+    const newCourses = [...filteredCourses];
+    const [removed] = newCourses.splice(draggedIndex, 1);
+    newCourses.splice(targetIndex, 0, removed);
+
+    // Update display order
+    const courseOrders = newCourses.map((course, index) => ({
+      id: course.id,
+      displayOrder: index,
+    }));
+
+    // Optimistically update UI
+    setCourses(newCourses);
+    setDraggedCourse(null);
+    setIsReordering(true);
+
+    try {
+      const response = await fetch('/api/admin/courses/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseOrders }),
+      });
+
+      if (!response.ok) {
+        // Revert on error
+        fetchCourses();
+        alert('Failed to reorder courses');
+      }
+    } catch (error) {
+      console.error('Failed to reorder courses:', error);
+      fetchCourses();
+      alert('Failed to reorder courses');
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleDragEnd = () => {
+    if (dragLeaveTimer.current) {
+      clearTimeout(dragLeaveTimer.current);
+      dragLeaveTimer.current = null;
+    }
+    setDraggedCourse(null);
+    setDragOverCourse(null);
+  };
+
+  const handleDragLeave = () => {
+    dragLeaveTimer.current = setTimeout(() => {
+      setDragOverCourse(null);
+    }, 50);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -272,7 +367,7 @@ export default function AdminCoursesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Courses</h1>
+        <h1 className="text-3xl font-bold text-foreground">Courses</h1>
         <Button onClick={handleOpenCreateModal}>
           <Plus className="w-4 h-4 mr-2" />
           Create New Course
@@ -284,8 +379,8 @@ export default function AdminCoursesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-500">Total Courses</p>
+              <p className="text-3xl font-bold text-foreground">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Courses</p>
             </div>
           </CardContent>
         </Card>
@@ -293,7 +388,7 @@ export default function AdminCoursesPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600">{stats.active}</p>
-              <p className="text-sm text-gray-500">Active</p>
+              <p className="text-sm text-muted-foreground">Active</p>
             </div>
           </CardContent>
         </Card>
@@ -301,15 +396,15 @@ export default function AdminCoursesPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-purple-600">{stats.inDevelopment}</p>
-              <p className="text-sm text-gray-500">In Development</p>
+              <p className="text-sm text-muted-foreground">In Development</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-400">{stats.inactive}</p>
-              <p className="text-sm text-gray-500">Inactive</p>
+              <p className="text-3xl font-bold text-muted-foreground">{stats.inactive}</p>
+              <p className="text-sm text-muted-foreground">Inactive</p>
             </div>
           </CardContent>
         </Card>
@@ -320,19 +415,19 @@ export default function AdminCoursesPage() {
         <CardContent className="py-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search courses..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -348,129 +443,189 @@ export default function AdminCoursesPage() {
           <CardTitle>All Courses ({filteredCourses.length})</CardTitle>
         </CardHeader>
         <CardContent>
+          {(statusFilter !== 'all' || searchQuery) && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 dark:bg-amber-900/30 dark:border-amber-800 rounded-lg flex items-start gap-2">
+              <span className="text-amber-600 dark:text-amber-400 text-sm">
+                ℹ️ <strong>Note:</strong> Clear all filters to enable drag-and-drop course reordering.
+              </span>
+            </div>
+          )}
+          {isReordering && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800 rounded-lg flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+              <span className="text-blue-600 dark:text-blue-400 text-sm">Saving new order...</span>
+            </div>
+          )}
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-12">
+                    {/* Drag Handle */}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Course
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Level
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Age Range
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Price
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Interest
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredCourses.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                       {courses.length === 0 ? 'No courses yet. Create your first course!' : 'No courses found matching your search.'}
                     </td>
                   </tr>
                 ) : (
-                  filteredCourses.map((course) => (
-                    <tr key={course.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {course.image && (
-                            <div className="w-10 h-10 relative rounded overflow-hidden flex-shrink-0">
-                              <Image
-                                src={course.image}
-                                alt={course.name}
-                                fill
-                                className="object-cover"
-                              />
+                  filteredCourses.map((course) => {
+                    const isDragging = draggedCourse === course.id;
+                    const isDropTarget = dragOverCourse === course.id && draggedCourse !== course.id;
+
+                    return (
+                      <Fragment key={course.id}>
+                        {/* Animated Spacer Row */}
+                        <tr
+                          className="border-none"
+                          onDragOver={(e) => handleDragOver(e, course.id)}
+                          onDrop={(e) => handleDrop(e, course.id)}
+                          onDragLeave={handleDragLeave}
+                        >
+                          <td colSpan={7} className="p-0 border-none transition-all duration-200 ease-in-out">
+                            <div
+                              className={`transition-all duration-200 ease-in-out overflow-hidden ${isDropTarget ? 'h-14 py-2 opacity-100' : 'h-0 py-0 opacity-0'}`}
+                            >
+                              <div className="w-[98%] mx-auto h-full bg-muted/30 border-2 border-dashed border-border rounded-lg" style={{ width: 'calc(100% - 1rem)' }} />
                             </div>
-                          )}
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{course.name}</div>
-                            <div className="text-sm text-gray-500 line-clamp-1">{course.description}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {course.level ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-sky-100 text-sky-800">
-                            {course.level}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {course.ageRange || '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {course.price ? `$${course.price}` : '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => handleToggleStatus(course)}
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${course.isActive
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                              }`}
-                          >
-                            {course.isActive ? 'Active' : 'Inactive'}
-                          </button>
-                          {course.isDevelopment && (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                              In Development
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {course.isDevelopment ? (
-                          <div className="flex items-center space-x-1">
-                            <span className="text-lg">❤️</span>
-                            <span className="text-sm font-semibold text-gray-900">
-                              {course.interestCount || 0}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400 text-sm">—</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleEditClick(course)}
+                          </td>
+                        </tr>
+                        <tr
+                          className={`
+                          transition-all duration-200 ease-in-out
+                          ${isDragging ? 'opacity-40' : 'opacity-100'}
+                          ${!draggedCourse ? 'hover:bg-muted/50' : ''}
+                          ${statusFilter !== 'all' || searchQuery ? 'cursor-not-allowed' : 'cursor-move'}
+                        `}
+                          draggable={statusFilter === 'all' && !searchQuery}
+                          onDragStart={(e) => handleDragStart(e, course.id)}
+                          onDragOver={(e) => handleDragOver(e, course.id)}
+                          onDrop={(e) => handleDrop(e, course.id)}
+                          onDragEnd={handleDragEnd}
+                          onDragLeave={handleDragLeave}
                         >
-                          Edit
-                        </Button>
-                        <Link href={`/courses/${course.slug}`} target="_blank">
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteCourse(course.id)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {statusFilter === 'all' && !searchQuery ? (
+                              <GripVertical className="w-5 h-5 text-muted-foreground cursor-grab active:cursor-grabbing" />
+                            ) : (
+                              <span className="text-muted-foreground/50" title="Disable filters to reorder">
+                                <GripVertical className="w-5 h-5" />
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              {course.image && (
+                                <div className="w-10 h-10 relative rounded overflow-hidden flex-shrink-0">
+                                  <Image
+                                    src={course.image}
+                                    alt={course.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div>
+                                <div className="text-sm font-medium text-foreground">{course.name}</div>
+                                <div className="text-sm text-muted-foreground line-clamp-1">{course.description}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {course.level ? (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary/10 text-primary">
+                                {course.level}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                            {course.ageRange || '—'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                            {course.price ? `$${course.price}` : '—'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col gap-1">
+                              <button
+                                onClick={() => handleToggleStatus(course)}
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${course.isActive
+                                  ? 'bg-green-500/10 text-green-600 hover:bg-green-500/20'
+                                  : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                                  }`}
+                              >
+                                {course.isActive ? 'Active' : 'Inactive'}
+                              </button>
+                              {course.isDevelopment && (
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                                  In Development
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {course.isDevelopment ? (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-lg">❤️</span>
+                                <span className="text-sm font-semibold text-foreground">
+                                  {course.interestCount || 0}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">—</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => handleEditClick(course)}
+                            >
+                              Edit
+                            </Button>
+                            <Link href={`/courses/${course.slug}`} target="_blank">
+                              <Button variant="outline" size="sm">
+                                View
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleDeleteCourse(course.id)}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      </Fragment>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -488,12 +643,12 @@ export default function AdminCoursesPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Course Image
               </label>
               <div className="flex items-start gap-4">
                 {formData.image && (
-                  <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                  <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-border flex-shrink-0">
                     <Image
                       src={formData.image}
                       alt="Course preview"
@@ -511,7 +666,7 @@ export default function AdminCoursesPage() {
                   </div>
                 )}
                 <div className="flex-1">
-                  <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                  <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-input rounded-md shadow-sm text-sm font-medium text-foreground bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                     {isUploading ? (
                       <Loader2 className="w-5 h-5 mr-2 animate-spin text-gray-400" />
                     ) : (
@@ -532,7 +687,7 @@ export default function AdminCoursesPage() {
             </div>
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
                 Course Name *
               </label>
               <input
@@ -551,14 +706,14 @@ export default function AdminCoursesPage() {
                     setFormData({ ...formData, name });
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Course name"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
                 Slug *
               </label>
               <input
@@ -566,14 +721,14 @@ export default function AdminCoursesPage() {
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="course-slug"
                 required
               />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
                 Description *
               </label>
               <textarea
@@ -581,21 +736,21 @@ export default function AdminCoursesPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground resize-none"
                 placeholder="Course description"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="level" className="block text-sm font-medium text-foreground mb-1">
                 Level
               </label>
               <select
                 id="level"
                 value={formData.level}
                 onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               >
                 <option value="">Select level</option>
                 <option value="Beginner">Beginner</option>
@@ -605,7 +760,7 @@ export default function AdminCoursesPage() {
             </div>
 
             <div>
-              <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="duration" className="block text-sm font-medium text-foreground mb-1">
                 Duration
               </label>
               <input
@@ -613,13 +768,13 @@ export default function AdminCoursesPage() {
                 id="duration"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="e.g., 8 weeks"
               />
             </div>
 
             <div>
-              <label htmlFor="ageRange" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="ageRange" className="block text-sm font-medium text-foreground mb-1">
                 Age Range
               </label>
               <input
@@ -627,13 +782,13 @@ export default function AdminCoursesPage() {
                 id="ageRange"
                 value={formData.ageRange}
                 onChange={(e) => setFormData({ ...formData, ageRange: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="e.g., 8-12 years"
               />
             </div>
 
             <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="price" className="block text-sm font-medium text-foreground mb-1">
                 Price ($)
               </label>
               <input
@@ -641,7 +796,7 @@ export default function AdminCoursesPage() {
                 id="price"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -657,7 +812,7 @@ export default function AdminCoursesPage() {
                 id="topics"
                 value={formData.topics}
                 onChange={(e) => setFormData({ ...formData, topics: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Programming, Robotics, STEM"
               />
             </div>
@@ -739,6 +894,6 @@ export default function AdminCoursesPage() {
           </div>
         </form>
       </Modal>
-    </div>
+    </div >
   );
 }

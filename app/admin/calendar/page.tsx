@@ -59,12 +59,12 @@ interface EventStats {
 }
 
 const EVENT_TYPES = [
-  { value: 'competition', label: 'Competition', color: 'bg-red-100 text-red-700' },
-  { value: 'meeting', label: 'Meeting', color: 'bg-blue-100 text-blue-700' },
-  { value: 'deadline', label: 'Deadline', color: 'bg-orange-100 text-orange-700' },
-  { value: 'class', label: 'Class', color: 'bg-green-100 text-green-700' },
-  { value: 'practice', label: 'Practice', color: 'bg-purple-100 text-purple-700' },
-  { value: 'other', label: 'Other', color: 'bg-gray-100 text-gray-700' },
+  { value: 'competition', label: 'Competition', color: 'bg-red-500/10 text-red-600' },
+  { value: 'meeting', label: 'Meeting', color: 'bg-blue-500/10 text-blue-600' },
+  { value: 'deadline', label: 'Deadline', color: 'bg-orange-500/10 text-orange-600' },
+  { value: 'class', label: 'Class', color: 'bg-green-500/10 text-green-600' },
+  { value: 'practice', label: 'Practice', color: 'bg-purple-500/10 text-purple-600' },
+  { value: 'other', label: 'Other', color: 'bg-muted text-muted-foreground' },
 ];
 
 export default function AdminCalendarPage() {
@@ -211,7 +211,7 @@ export default function AdminCalendarPage() {
 
   const getEventTypeStyle = (eventType: string) => {
     const type = EVENT_TYPES.find((t) => t.value === eventType);
-    return type?.color || 'bg-gray-100 text-gray-700';
+    return type?.color || 'bg-muted text-muted-foreground';
   };
 
   const formatDateTime = (dateStr: string, allDay: boolean) => {
@@ -225,7 +225,7 @@ export default function AdminCalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -233,7 +233,7 @@ export default function AdminCalendarPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Calendar Events</h1>
+        <h1 className="text-3xl font-bold text-foreground">Calendar Events</h1>
         <Button onClick={() => setShowNewEventModal(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create Event
@@ -245,8 +245,8 @@ export default function AdminCalendarPage() {
         <Card>
           <CardContent className="pt-4 pb-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-500">Total</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total</p>
             </div>
           </CardContent>
         </Card>
@@ -254,7 +254,7 @@ export default function AdminCalendarPage() {
           <CardContent className="pt-4 pb-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">{stats.upcoming}</p>
-              <p className="text-xs text-gray-500">Upcoming</p>
+              <p className="text-xs text-muted-foreground">Upcoming</p>
             </div>
           </CardContent>
         </Card>
@@ -262,10 +262,10 @@ export default function AdminCalendarPage() {
           <Card key={type.value}>
             <CardContent className="pt-4 pb-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-foreground">
                   {stats.byType[type.value as keyof typeof stats.byType]}
                 </p>
-                <p className="text-xs text-gray-500">{type.label}</p>
+                <p className="text-xs text-muted-foreground">{type.label}</p>
               </div>
             </CardContent>
           </Card>
@@ -277,19 +277,19 @@ export default function AdminCalendarPage() {
         <CardContent className="py-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               />
             </div>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="all">All Types</option>
               {EVENT_TYPES.map((type) => (
@@ -301,7 +301,7 @@ export default function AdminCalendarPage() {
             <select
               value={teamFilter}
               onChange={(e) => setTeamFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="all">All Teams</option>
               <option value="none">No Team (Global)</option>
@@ -322,33 +322,33 @@ export default function AdminCalendarPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Event
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Date/Time
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Team
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Attendees
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredEvents.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                       {events.length === 0
                         ? 'No events yet. Create your first event!'
                         : 'No events found matching your filters.'}
@@ -356,12 +356,12 @@ export default function AdminCalendarPage() {
                   </tr>
                 ) : (
                   filteredEvents.map((event) => (
-                    <tr key={event.id} className="hover:bg-gray-50">
+                    <tr key={event.id} className="hover:bg-muted/50">
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-gray-900">{event.title}</p>
+                          <p className="font-medium text-foreground">{event.title}</p>
                           {event.location && (
-                            <p className="text-sm text-gray-500 flex items-center mt-1">
+                            <p className="text-sm text-muted-foreground flex items-center mt-1">
                               <MapPin className="w-3 h-3 mr-1" />
                               {event.location}
                             </p>
@@ -377,18 +377,18 @@ export default function AdminCalendarPage() {
                           {event.eventType}
                         </span>
                         {event.isPublic && (
-                          <span className="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-sky-100 text-sky-700">
+                          <span className="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-sky-500/10 text-sky-600">
                             Public
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
                           <span>{formatDateTime(event.startTime, event.allDay)}</span>
                         </div>
                         {event.allDay && (
-                          <span className="text-xs text-gray-400">All day</span>
+                          <span className="text-xs text-muted-foreground/60">All day</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -398,14 +398,14 @@ export default function AdminCalendarPage() {
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: event.team.color || '#0ea5e9' }}
                             />
-                            <span className="text-sm text-gray-900">{event.team.name}</span>
+                            <span className="text-sm text-foreground">{event.team.name}</span>
                           </div>
                         ) : (
-                          <span className="text-sm text-gray-400">Global</span>
+                          <span className="text-sm text-muted-foreground">Global</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center space-x-1 text-sm text-gray-500">
+                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Users className="w-4 h-4" />
                           <span>{event._count.attendees}</span>
                         </div>
@@ -432,13 +432,13 @@ export default function AdminCalendarPage() {
 
       {/* New Event Modal */}
       {showNewEventModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white">
-              <h3 className="text-lg font-semibold text-gray-900">Create New Event</h3>
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-card">
+              <h3 className="text-lg font-semibold text-foreground">Create New Event</h3>
               <button
                 onClick={() => setShowNewEventModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -446,7 +446,7 @@ export default function AdminCalendarPage() {
 
             <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Event Title *
                 </label>
                 <input
@@ -455,14 +455,14 @@ export default function AdminCalendarPage() {
                   onChange={(e) =>
                     setNewEvent((prev) => ({ ...prev, title: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="Team Meeting"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Description
                 </label>
                 <textarea
@@ -471,14 +471,14 @@ export default function AdminCalendarPage() {
                     setNewEvent((prev) => ({ ...prev, description: e.target.value }))
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="Event details..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Event Type *
                   </label>
                   <select
@@ -486,7 +486,7 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, eventType: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     {EVENT_TYPES.map((type) => (
                       <option key={type.value} value={type.value}>
@@ -497,7 +497,7 @@ export default function AdminCalendarPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Team
                   </label>
                   <select
@@ -505,7 +505,7 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, teamId: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     <option value="">Global (No team)</option>
                     {teams.map((team) => (
@@ -519,7 +519,7 @@ export default function AdminCalendarPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Start Time *
                   </label>
                   <input
@@ -528,13 +528,13 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, startTime: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     End Time
                   </label>
                   <input
@@ -543,13 +543,13 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, endTime: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Location
                 </label>
                 <input
@@ -558,7 +558,7 @@ export default function AdminCalendarPage() {
                   onChange={(e) =>
                     setNewEvent((prev) => ({ ...prev, location: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="Room 101 or Online"
                 />
               </div>
@@ -572,9 +572,9 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, allDay: e.target.checked }))
                     }
-                    className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                   />
-                  <label htmlFor="allDay" className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="allDay" className="ml-2 text-sm text-foreground">
                     All day event
                   </label>
                 </div>
@@ -587,9 +587,9 @@ export default function AdminCalendarPage() {
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, isPublic: e.target.checked }))
                     }
-                    className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                   />
-                  <label htmlFor="isPublic" className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="isPublic" className="ml-2 text-sm text-foreground">
                     Public event (visible to everyone)
                   </label>
                 </div>

@@ -47,15 +47,15 @@ const SettingsPanel = () => {
     });
 
     return (
-        <div className="bg-white border-l border-gray-200 w-80 p-4 overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4 text-gray-900 flex items-center gap-2">
+        <div className="bg-card border-l border-border w-80 p-4 overflow-y-auto">
+            <h3 className="text-lg font-bold mb-4 text-foreground flex items-center gap-2">
                 <SettingsIcon className="w-5 h-5" />
                 Settings
             </h3>
             {selected ? (
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-semibold text-gray-700">
+                        <h4 className="text-sm font-semibold text-muted-foreground">
                             {selected.name}
                         </h4>
                         {selected.isDeletable && (
@@ -65,7 +65,7 @@ const SettingsPanel = () => {
                                         actions.delete(selected.id);
                                     }
                                 }}
-                                className="px-2 py-1 bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 rounded transition-colors font-medium text-xs"
+                                className="px-2 py-1 bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/30 rounded transition-colors font-medium text-xs"
                                 title="Delete component"
                             >
                                 Delete
@@ -75,7 +75,7 @@ const SettingsPanel = () => {
                     {selected.settings && React.createElement(selected.settings)}
                 </div>
             ) : (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                     Select a component to edit its properties
                 </p>
             )}
@@ -93,10 +93,10 @@ const EditorToolbar = ({
     isSaving: boolean;
 }) => {
     return (
-        <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
             <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-foreground">
                         Page Builder Mode
                     </span>
                 </div>
@@ -171,7 +171,7 @@ export default function PageBuilder({
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/30">
             <Editor
                 resolver={{
                     Text,
@@ -223,12 +223,12 @@ function EditorContent({
             />
 
             {saveStatus === 'success' && (
-                <div className="bg-green-50 border-b border-green-200 px-4 py-2 text-sm text-green-800">
+                <div className="bg-green-500/10 border-b border-green-500/20 px-4 py-2 text-sm text-green-600">
                     ✓ Saved successfully! Reloading...
                 </div>
             )}
             {saveStatus === 'error' && (
-                <div className="bg-red-50 border-b border-red-200 px-4 py-2 text-sm text-red-800">
+                <div className="bg-destructive/10 border-b border-destructive/20 px-4 py-2 text-sm text-destructive">
                     ✗ Failed to save. Please try again.
                 </div>
             )}
@@ -236,8 +236,8 @@ function EditorContent({
             <div className="flex h-[calc(100vh-140px)]">
                 <Toolbox />
 
-                <div className="flex-1 overflow-y-auto p-8 bg-gray-100">
-                    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8 min-h-[600px]">
+                <div className="flex-1 overflow-y-auto p-8 bg-muted/50">
+                    <div className="max-w-4xl mx-auto bg-card shadow-lg rounded-lg p-8 min-h-[600px]">
                         <Frame data={initialData}>
                             <Element
                                 is={Container}

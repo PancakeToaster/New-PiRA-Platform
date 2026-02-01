@@ -84,6 +84,10 @@ model User {
   subTeamMemberships     SubTeamMember[]
   assignedSubTeamMembers SubTeamMember[] @relation("SubTeamAssigner")
 
+  // Messaging & notifications
+  announcementReads          AnnouncementRead[]
+  createdRubrics             Rubric[]                   @relation("CreatedRubrics")
+
   @@index([email])
 }
 
@@ -178,6 +182,7 @@ model StudentProfile {
   dateOfBirth DateTime?
   grade       String?
   school      String?
+  phoneNumber String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -198,6 +203,8 @@ model StudentProfile {
   certificates          StudentCertificate[]
   badges                StudentBadge[]
   forumThreads          ForumThread[]
+  attendanceRecords     AttendanceRecord[]
+  portfolioItems        PortfolioItem[]
 
   @@index([referredById])
 }
@@ -301,6 +308,7 @@ model Course {
   isHidden      Boolean  @default(false)
   hidePrice     Boolean  @default(false)
   isDevelopment Boolean  @default(false) // Shows in "Coming Soon" section
+  displayOrder  Int      @default(0) // Custom display order
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -310,6 +318,7 @@ model Course {
   @@index([isActive])
   @@index([slug])
   @@index([isDevelopment])
+  @@index([displayOrder])
 }
 
 // ============================================
@@ -332,7 +341,9 @@ model LMSCourse {
   assignments  Assignment[]       @relation("LMSAssignments")
   quizzes      Quiz[]             @relation("LMSQuizzes")
   certificates Certificate[]      @relation("LMSCertificates")
-  forumThreads ForumThread[]      @relation("LMSForumThreads")
+  forumThreads   ForumThread[]      @relation("LMSForumThreads")
+  classSessions  ClassSession[]     @relation("LMSClassSessions")
+  pathSteps      LearningPathStep[] @relation("LMSPathSteps")
 
   @@index([instructorId])
   @@index([isActive])
@@ -579,12 +590,15 @@ model Assignment {
   teacher     User                   @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
   student     StudentProfile?        @relation(fields: [studentId], references: [id])
   submissions AssignmentSubmission[]
+  rubricId    String?
+  rubric      Rubric?                @relation("AssignmentRubric", fields: [rubricId], references: [id])
 
   @@index([lessonId])
   @@index([lmsCourseId])
   @@index([teacherId])
   @@index([studentId])
   @@index([dueDate])
+  @@index([rubricId])
 }
 
 model AssignmentSubmission {
@@ -604,7 +618,8 @@ model AssignmentSubmission {
 
   assignment Assignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  grader     User?          @relation("GradedSubmissions", fields: [gradedBy], references: [id])
+  grader       User?          @relation("GradedSubmissions", fields: [gradedBy], references: [id])
+  rubricScores RubricScore[]
 
   @@unique([assignmentId, studentId])
   @@index([assignmentId])
@@ -655,11 +670,16 @@ model Module {
 model PageView {
   id              String   @id @default(cuid())
   path            String
+  pageTitle       String?  // Page title for better display in analytics
   userId          String?
   userRole        String?
   pageId          String?
   blogId          String?
   knowledgeNodeId String?
+  referrer        String?  // Full referrer URL
+  referrerDomain  String?  // Extracted domain for grouping
+  userAgent       String?  // Browser/device info
+  ipAddress       String?  // For unique visitor tracking
   viewedAt        DateTime @default(now())
   sessionId       String?
 
@@ -672,6 +692,7 @@ model PageView {
   @@index([userId])
   @@index([viewedAt])
   @@index([knowledgeNodeId])
+  @@index([referrerDomain])
 }
 
 model SystemMetric {
@@ -1095,9 +1116,14 @@ model Lesson {
   moduleId    String? // Optional - for modular courses
   title       String
   description String?  @db.Text
-  content     String   @db.Text
+  content     String?  @db.Text
+  contentType String   @default("text") // text, video, code, document
   lessonType  String   @default("reading") // reading, video, assignment, quiz
   videoUrl    String?
+  attachmentUrl String? // File attachment URL
+  attachmentName String? // Original filename
+  attachmentType String? // MIME type
+  wikiPageId  String? // Optional link to wiki page
   order       Int      @default(0)
   duration    Int? // in minutes
   isPublished Boolean  @default(false)
@@ -1114,7 +1140,9 @@ model Lesson {
   @@index([lmsCourseId])
   @@index([moduleId])
   @@index([order])
+  @@index([wikiPageId])
 }
+
 
 model LessonProgress {
   id          String    @id @default(cuid())
@@ -1519,7 +1547,8 @@ model Announcement {
   updatedAt      DateTime @updatedAt
   authorId       String
 
-  author User @relation(fields: [authorId], references: [id])
+  author User               @relation(fields: [authorId], references: [id])
+  reads  AnnouncementRead[]
 
   @@index([type])
   @@index([targetId])
@@ -1584,4 +1613,169 @@ model ForumPost {
   @@index([threadId])
   @@index([authorId])
   @@index([createdAt])
+}
+
+// ============================================
+// ATTENDANCE TRACKING
+// ============================================
+
+model ClassSession {
+  id          String   @id @default(cuid())
+  lmsCourseId String
+  date        DateTime
+  topic       String?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lmsCourse  LMSCourse          @relation("LMSClassSessions", fields: [lmsCourseId], references: [id], onDelete: Cascade)
+  attendance AttendanceRecord[]
+
+  @@index([lmsCourseId])
+  @@index([date])
+}
+
+model AttendanceRecord {
+  id        String   @id @default(cuid())
+  sessionId String
+  studentId String
+  status    String   @default("present") // present, absent, late, excused
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  session ClassSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@index([sessionId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// ============================================
+// ANNOUNCEMENT READ TRACKING
+// ============================================
+
+model AnnouncementRead {
+  id             String   @id @default(cuid())
+  announcementId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, userId])
+  @@index([announcementId])
+  @@index([userId])
+}
+
+// ============================================
+// STUDENT PORTFOLIO
+// ============================================
+
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  studentId   String
+  title       String
+  description String?  @db.Text
+  content     String?  @db.Text
+  media       String[]
+  tags        String[]
+  isPublic    Boolean  @default(false)
+  projectUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([isPublic])
+  @@index([createdAt])
+}
+
+// ============================================
+// LEARNING PATHS
+// ============================================
+
+model LearningPath {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  image       String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  steps LearningPathStep[]
+
+  @@index([isPublished])
+  @@index([slug])
+}
+
+model LearningPathStep {
+  id             String  @id @default(cuid())
+  learningPathId String
+  lmsCourseId    String
+  order          Int     @default(0)
+  isRequired     Boolean @default(true)
+
+  learningPath LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  lmsCourse    LMSCourse    @relation("LMSPathSteps", fields: [lmsCourseId], references: [id], onDelete: Cascade)
+
+  @@unique([learningPathId, lmsCourseId])
+  @@index([learningPathId])
+  @@index([lmsCourseId])
+  @@index([order])
+}
+
+// ============================================
+// RUBRIC-BASED GRADING
+// ============================================
+
+model Rubric {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User              @relation("CreatedRubrics", fields: [createdById], references: [id])
+  criteria    RubricCriterion[]
+  assignments Assignment[]      @relation("AssignmentRubric")
+
+  @@index([createdById])
+}
+
+model RubricCriterion {
+  id          String  @id @default(cuid())
+  rubricId    String
+  title       String
+  description String? @db.Text
+  maxPoints   Float
+  order       Int     @default(0)
+
+  rubric Rubric        @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+  scores RubricScore[]
+
+  @@index([rubricId])
+  @@index([order])
+}
+
+model RubricScore {
+  id           String  @id @default(cuid())
+  criterionId  String
+  submissionId String
+  score        Float
+  comment      String? @db.Text
+
+  criterion  RubricCriterion      @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+  submission AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([criterionId, submissionId])
+  @@index([criterionId])
+  @@index([submissionId])
 }

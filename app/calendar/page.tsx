@@ -240,7 +240,7 @@ function CalendarContent() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
       </div>
     );
@@ -267,13 +267,13 @@ function CalendarContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
-            <p className="mt-1 text-gray-500">
+            <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
+            <p className="mt-1 text-muted-foreground">
               {teamFilter
                 ? `Showing events for team`
                 : 'View and manage your events'}
@@ -291,12 +291,12 @@ function CalendarContent() {
         {!isPublicView && teams.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center space-x-2 overflow-x-auto pb-2">
-              <span className="text-sm text-gray-500 flex-shrink-0">Filter by team:</span>
+              <span className="text-sm text-muted-foreground flex-shrink-0">Filter by team:</span>
               <a
                 href="/calendar"
-                className={`px-3 py-1.5 text-sm rounded-full ${!teamFilter
+                className={`px-3 py-1.5 text-sm rounded-full transition-colors ${!teamFilter
                   ? 'bg-sky-500 text-white'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  : 'bg-card text-muted-foreground border border-border hover:bg-accent hover:text-foreground'
                   }`}
               >
                 All
@@ -305,9 +305,9 @@ function CalendarContent() {
                 <a
                   key={team.id}
                   href={`/calendar?team=${team.slug}`}
-                  className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap ${teamFilter === team.slug
+                  className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap transition-colors ${teamFilter === team.slug
                     ? 'bg-sky-500 text-white'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    : 'bg-card text-muted-foreground border border-border hover:bg-accent hover:text-foreground'
                     }`}
                 >
                   {team.name}
@@ -329,9 +329,9 @@ function CalendarContent() {
         {/* Event Modal */}
         {showEventModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold text-gray-900">
+            <div className="bg-card rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto border border-border">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                <h3 className="text-lg font-semibold text-foreground">
                   {selectedEvent ? 'Event Details' : 'New Event'}
                 </h3>
                 <button
@@ -339,7 +339,7 @@ function CalendarContent() {
                     setShowEventModal(false);
                     resetForm();
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -348,18 +348,18 @@ function CalendarContent() {
               {selectedEvent ? (
                 <div className="p-6 space-y-4">
                   <div>
-                    <h4 className="text-xl font-semibold text-gray-900">
+                    <h4 className="text-xl font-semibold text-foreground">
                       {selectedEvent.title}
                     </h4>
                     {selectedEvent.team && !isPublicView && (
-                      <p className="text-sm text-gray-500">{selectedEvent.team.name}</p>
+                      <p className="text-sm text-muted-foreground">{selectedEvent.team.name}</p>
                     )}
                   </div>
                   {selectedEvent.description && (
-                    <p className="text-gray-600">{selectedEvent.description}</p>
+                    <p className="text-muted-foreground">{selectedEvent.description}</p>
                   )}
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center space-x-2 text-gray-600">
+                    <div className="flex items-center space-x-2 text-muted-foreground">
                       <span className="font-medium">When:</span>
                       <span>
                         {selectedEvent.allDay
@@ -368,17 +368,17 @@ function CalendarContent() {
                       </span>
                     </div>
                     {selectedEvent.location && (
-                      <div className="flex items-center space-x-2 text-gray-600">
+                      <div className="flex items-center space-x-2 text-muted-foreground">
                         <span className="font-medium">Where:</span>
                         <span>{selectedEvent.location}</span>
                       </div>
                     )}
-                    <div className="flex items-center space-x-2 text-gray-600">
+                    <div className="flex items-center space-x-2 text-muted-foreground">
                       <span className="font-medium">Type:</span>
                       <span className="capitalize">{getDisplayEventType(selectedEvent.eventType)}</span>
                     </div>
                   </div>
-                  <div className="flex space-x-2 pt-4 border-t justify-between">
+                  <div className="flex space-x-2 pt-4 border-t border-border justify-between">
                     <Button variant="outline" onClick={handleAddToGoogleCalendar}>
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Add to Google Calendar
@@ -395,7 +395,7 @@ function CalendarContent() {
                 canCreate && (
                   <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Title *
                       </label>
                       <input
@@ -404,14 +404,14 @@ function CalendarContent() {
                         onChange={(e) =>
                           setEventForm((prev) => ({ ...prev, title: e.target.value }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                         placeholder="Event title"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Description
                       </label>
                       <textarea
@@ -420,14 +420,14 @@ function CalendarContent() {
                           setEventForm((prev) => ({ ...prev, description: e.target.value }))
                         }
                         rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                         placeholder="Event description"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Event Type
                         </label>
                         <select
@@ -435,7 +435,7 @@ function CalendarContent() {
                           onChange={(e) =>
                             setEventForm((prev) => ({ ...prev, eventType: e.target.value }))
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                          className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                         >
                           <option value="meeting">Meeting</option>
                           <option value="competition">Competition</option>
@@ -449,7 +449,7 @@ function CalendarContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Team
                         </label>
                         <select
@@ -457,7 +457,7 @@ function CalendarContent() {
                           onChange={(e) =>
                             setEventForm((prev) => ({ ...prev, teamId: e.target.value }))
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                          className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                         >
                           <option value="">No team (personal)</option>
                           {teams.map((team) => (
@@ -477,9 +477,9 @@ function CalendarContent() {
                         onChange={(e) =>
                           setEventForm((prev) => ({ ...prev, allDay: e.target.checked }))
                         }
-                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-input rounded bg-background"
                       />
-                      <label htmlFor="allDay" className="text-sm text-gray-700">
+                      <label htmlFor="allDay" className="text-sm text-foreground">
                         All day event
                       </label>
                     </div>
@@ -491,16 +491,16 @@ function CalendarContent() {
                         id="isPublic"
                         checked={eventForm.isPublic}
                         onChange={(e) => setEventForm(prev => ({ ...prev, isPublic: e.target.checked }))}
-                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-input rounded bg-background"
                       />
-                      <label htmlFor="isPublic" className="text-sm text-gray-700">
+                      <label htmlFor="isPublic" className="text-sm text-foreground">
                         Visible to Public (Login not required)
                       </label>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                           Start
                         </label>
                         <input
@@ -509,14 +509,14 @@ function CalendarContent() {
                           onChange={(e) =>
                             setEventForm((prev) => ({ ...prev, startTime: e.target.value }))
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                          className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                           required
                         />
                       </div>
 
                       {!eventForm.allDay && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-foreground mb-1">
                             End
                           </label>
                           <input
@@ -525,14 +525,14 @@ function CalendarContent() {
                             onChange={(e) =>
                               setEventForm((prev) => ({ ...prev, endTime: e.target.value }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                           />
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Location
                       </label>
                       <input
@@ -541,12 +541,12 @@ function CalendarContent() {
                         onChange={(e) =>
                           setEventForm((prev) => ({ ...prev, location: e.target.value }))
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                        className="w-full px-3 py-2 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
                         placeholder="Event location"
                       />
                     </div>
 
-                    <div className="flex justify-end space-x-3 pt-4 border-t">
+                    <div className="flex justify-end space-x-3 pt-4 border-t border-border">
                       <Button
                         type="button"
                         variant="outline"
@@ -571,18 +571,18 @@ function CalendarContent() {
         {/* Export Modal */}
         {showExportModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-              <div className="flex items-center justify-between px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold text-gray-900">Export Calendar</h3>
+            <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4 border border-border">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                <h3 className="text-lg font-semibold text-foreground">Export Calendar</h3>
                 <button
                   onClick={() => setShowExportModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="p-6 space-y-4">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Export your calendar events to use in other calendar applications.
                 </p>
                 <div className="space-y-3">
@@ -590,7 +590,7 @@ function CalendarContent() {
                     <Download className="w-4 h-4 mr-2" />
                     Download .ics file
                   </Button>
-                  <p className="text-sm text-gray-500 text-center">
+                  <p className="text-sm text-muted-foreground text-center">
                     Compatible with Google Calendar, Apple Calendar, Outlook, and more.
                   </p>
                 </div>
@@ -605,7 +605,7 @@ function CalendarContent() {
 
 export default function CalendarPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-sky-600" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-sky-600" /></div>}>
       <CalendarContent />
     </Suspense>
   );

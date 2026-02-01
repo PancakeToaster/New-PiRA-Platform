@@ -23,8 +23,8 @@ export default async function AdminAnnouncementsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Announcements</h1>
-                    <p className="text-gray-600">Manage system-wide and targeted notifications.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Announcements</h1>
+                    <p className="text-muted-foreground">Manage system-wide and targeted notifications.</p>
                 </div>
                 <Link href="/admin/announcements/create">
                     <Button>
@@ -37,34 +37,34 @@ export default async function AdminAnnouncementsPage() {
             <Card>
                 <CardContent className="pt-6">
                     <div className="relative overflow-x-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table className="w-full text-sm text-left text-muted-foreground">
+                            <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
                                 <tr>
-                                    <th className="px-6 py-3">Title</th>
-                                    <th className="px-6 py-3">Type</th>
-                                    <th className="px-6 py-3">Author</th>
-                                    <th className="px-6 py-3">Date</th>
-                                    <th className="px-6 py-3">Status</th>
-                                    <th className="px-6 py-3 text-right">Actions</th>
+                                    <th className="px-6 py-3 font-medium">Title</th>
+                                    <th className="px-6 py-3 font-medium">Type</th>
+                                    <th className="px-6 py-3 font-medium">Author</th>
+                                    <th className="px-6 py-3 font-medium">Date</th>
+                                    <th className="px-6 py-3 font-medium">Status</th>
+                                    <th className="px-6 py-3 text-right font-medium">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {announcements.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                                             No announcements found. Create one to get started.
                                         </td>
                                     </tr>
                                 ) : (
                                     announcements.map((announcement) => (
-                                        <tr key={announcement.id} className="bg-white border-b hover:bg-gray-50">
-                                            <td className="px-6 py-4 font-medium text-gray-900">
+                                        <tr key={announcement.id} className="bg-card border-b border-border hover:bg-muted/50">
+                                            <td className="px-6 py-4 font-medium text-foreground">
                                                 {announcement.title}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${announcement.type === 'system' ? 'bg-rose-100 text-rose-800' :
-                                                    announcement.type === 'course' ? 'bg-sky-100 text-sky-800' :
-                                                        'bg-amber-100 text-amber-800'
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${announcement.type === 'system' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' :
+                                                    announcement.type === 'course' ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400' :
+                                                        'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                                                     }`}>
                                                     {announcement.type.toUpperCase()}
                                                 </span>
@@ -77,13 +77,13 @@ export default async function AdminAnnouncementsPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 {announcement.isActive ? (
-                                                    <span className="text-green-600 font-medium">Active</span>
+                                                    <span className="text-green-600 dark:text-green-400 font-medium">Active</span>
                                                 ) : (
-                                                    <span className="text-gray-400">Archived</span>
+                                                    <span className="text-muted-foreground">Archived</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700 hover:bg-rose-50">
+                                                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
                                             </td>

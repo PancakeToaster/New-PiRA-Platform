@@ -24,9 +24,9 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
     const [activeTab, setActiveTab] = useState<'content' | 'mindmap'>('content');
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col min-h-[calc(100vh-100px)]">
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden flex flex-col min-h-[calc(100vh-100px)]">
             {/* Header */}
-            <div className="border-b border-gray-100 bg-gray-50 px-8 py-6">
+            <div className="border-b border-border bg-muted/30 px-8 py-6">
 
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 mr-4">
@@ -39,7 +39,7 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <UserIcon className="w-4 h-4 mr-1.5" />
                         {node.author.firstName} {node.author.lastName}
@@ -55,12 +55,12 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
 
                     <div className="ml-auto flex gap-2 items-center">
                         {/* View Toggles */}
-                        <div className="flex bg-gray-200/50 rounded-lg p-1 mr-2">
+                        <div className="flex bg-muted rounded-lg p-1 mr-2">
                             <button
                                 onClick={() => setActiveTab('content')}
                                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'content'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <LayoutTemplate className="w-4 h-4" />
@@ -69,8 +69,8 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                             <button
                                 onClick={() => setActiveTab('mindmap')}
                                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'mindmap'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <Workflow className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                         </div>
 
                         {!node.isPublished && (
-                            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                            <span className="px-3 py-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-full text-xs font-medium">
                                 📝 Draft
                             </span>
                         )}
@@ -105,7 +105,7 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                                     )}
                                 </Button>
 
-                                <div className="pl-2 border-l border-gray-300">
+                                <div className="pl-2 border-l border-border">
                                     <WikiPageControls
                                         nodeId={node.id}
                                         isPublished={node.isPublished}
@@ -120,7 +120,7 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                 {node.tags && node.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-4">
                         {node.tags.map((tag: string) => (
-                            <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800">
+                            <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-500/10 text-sky-700 dark:text-sky-400">
                                 <Tag className="w-3 h-3 mr-1" />
                                 {tag}
                             </span>

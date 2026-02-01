@@ -86,16 +86,9 @@ export default function HomeClient({
             {/* Scroll Snap Container */}
             <div
                 ref={containerRef}
-                className="h-screen overflow-y-auto snap-y snap-mandatory bg-white"
+                className="h-screen overflow-y-auto snap-y snap-mandatory bg-background"
                 style={{ scrollBehavior: 'smooth' }}
             >
-                {/* Animated Background Orbs */}
-                <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-                    <div className="absolute w-[600px] h-[600px] rounded-full bg-sky-100 opacity-50 -top-40 -right-40 blur-3xl" />
-                    <div className="absolute w-[500px] h-[500px] rounded-full bg-blue-100 opacity-40 top-1/2 -left-40 blur-3xl" />
-                    <div className="absolute w-[400px] h-[400px] rounded-full bg-sky-50 opacity-60 bottom-20 right-1/4 blur-3xl" />
-                </div>
-
                 {/* Fixed 3D Shapes that move around the viewport */}
                 <div
                     className="fixed inset-0 z-5 pointer-events-none overflow-hidden"
@@ -178,16 +171,16 @@ export default function HomeClient({
                 {/* Hero Section */}
                 <section className="relative h-screen snap-center snap-always flex items-center justify-center z-10">
                     <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-gray-900">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-foreground">
                             {companyInfo.tagline}
                         </h1>
-                        <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-600 max-w-3xl mx-auto">
+                        <p className="text-lg md:text-xl lg:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto">
                             {companyInfo.mission}
                         </p>
                         <div>
                             <Link
                                 href="/courses"
-                                className="inline-flex items-center justify-center px-8 py-4 bg-sky-500 text-white font-bold text-lg rounded-lg hover:bg-sky-600 transition-all shadow-lg hover:shadow-xl"
+                                className="inline-flex items-center justify-center px-8 py-4 bg-primary text-primary-foreground font-bold text-lg rounded-lg hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
                             >
                                 Explore Courses
                                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -210,18 +203,18 @@ export default function HomeClient({
                                 </div>
                             </div>
                             <div>
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-gray-900">Hands-On Learning</h2>
-                                <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed">
-                                    Watch our students bring their ideas to life in state-of-the-art facilities. From concept to creation, they learn by doing.
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">Hands-On Learning</h2>
+                                <p className="text-lg lg:text-xl text-muted-foreground mb-8 leading-relaxed">
+                                    Real-world projects and competitions that develop critical thinking and problem-solving skills.
                                 </p>
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
-                                        <div className="text-4xl lg:text-5xl font-bold text-sky-500 mb-2">500+</div>
-                                        <div className="text-gray-500 text-base lg:text-lg">Students Taught</div>
+                                        <div className="text-4xl font-bold text-primary">5,000+</div>
+                                        <div className="text-muted-foreground text-base lg:text-lg">Students Taught</div>
                                     </div>
                                     <div>
-                                        <div className="text-4xl lg:text-5xl font-bold text-sky-500 mb-2">10+</div>
-                                        <div className="text-gray-500 text-base lg:text-lg">Years Experience</div>
+                                        <div className="text-4xl font-bold text-primary">15+</div>
+                                        <div className="text-muted-foreground text-base lg:text-lg">Years Experience</div>
                                     </div>
                                 </div>
                             </div>
@@ -234,18 +227,18 @@ export default function HomeClient({
                     <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                             <div className="order-2 lg:order-1">
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-gray-900">Competing & Winning</h2>
-                                <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed">
-                                    Our teams don't just participate—they excel. Experience the thrill of competition as our students showcase their skills on the world stage.
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">Competing & Winning</h2>
+                                <p className="text-lg lg:text-xl text-muted-foreground mb-8 leading-relaxed">
+                                    Our teams consistently excel in robotics competitions and innovation challenges.
                                 </p>
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
-                                        <div className="text-4xl lg:text-5xl font-bold text-sky-500 mb-2">50+</div>
-                                        <div className="text-gray-500 text-base lg:text-lg">Competitions Won</div>
+                                        <div className="text-4xl font-bold text-primary">50+</div>
+                                        <div className="text-muted-foreground text-base lg:text-lg">Competitions Won</div>
                                     </div>
                                     <div>
-                                        <div className="text-4xl lg:text-5xl font-bold text-sky-500 mb-2">6</div>
-                                        <div className="text-gray-500 text-base lg:text-lg">Program Levels</div>
+                                        <div className="text-4xl font-bold text-primary">3</div>
+                                        <div className="text-muted-foreground text-base lg:text-lg">Program Levels</div>
                                     </div>
                                 </div>
                             </div>
@@ -253,8 +246,7 @@ export default function HomeClient({
                                 <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl shadow-2xl flex items-center justify-center text-white overflow-hidden relative">
                                     <div className="text-center p-8 relative z-10">
                                         <div className="text-6xl lg:text-7xl mb-4">🏆</div>
-                                        <p className="text-xl lg:text-2xl font-bold">Competition Action</p>
-                                        <p className="text-blue-100 mt-2">Video Coming Soon</p>
+                                        <p className="text-blue-100 mt-2">Competition Action</p>
                                     </div>
                                 </div>
                             </div>
@@ -266,47 +258,47 @@ export default function HomeClient({
                 <section className="relative h-screen snap-end snap-always flex items-center justify-center z-10">
                     <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                         <div className="text-center mb-10">
-                            <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">Featured Programs</h2>
-                            <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
+                            <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">Featured Programs</h2>
+                            <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
                                 Comprehensive robotics education designed for every skill level
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                             {featuredCourses.map((course) => (
-                                <div
+                                <Link
+                                    href={`/courses/${course.slug}`}
                                     key={course.id}
-                                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500"
+                                    className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-500"
                                 >
                                     <div className="h-32 lg:h-40 bg-gradient-to-br from-sky-400 to-sky-600 relative flex items-center justify-center">
                                         <div className="absolute bottom-3 left-3">
-                                            <span className="px-3 py-1.5 bg-white text-gray-900 font-semibold text-sm rounded-full shadow">
+                                            <span className="px-3 py-1.5 bg-card text-foreground font-semibold text-sm rounded-full shadow">
                                                 {course.level}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="p-5">
                                         <div className="flex justify-between items-start mb-3">
-                                            <h3 className="text-lg font-bold text-gray-900">{course.name}</h3>
-                                            <div className="text-xl font-bold text-sky-500">${Number(course.price)}</div>
+                                            <h3 className="text-lg font-bold text-foreground">{course.name}</h3>
+                                            <div className="text-xl font-bold text-primary">${Number(course.price)}</div>
                                         </div>
-                                        <p className="text-gray-600 mb-4 line-clamp-2 text-sm">{course.description}</p>
-                                        <Link
-                                            href="/courses"
-                                            className="inline-flex items-center text-sky-500 hover:text-sky-600 font-semibold text-sm"
+                                        <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">{course.description}</p>
+                                        <div
+                                            className="inline-flex items-center text-primary hover:text-primary/90 font-semibold text-sm"
                                         >
                                             Learn More
                                             <ArrowRight className="ml-2 w-4 h-4" />
-                                        </Link>
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
 
                         <div className="text-center mt-8">
                             <Link
                                 href="/courses"
-                                className="inline-flex items-center justify-center px-8 py-4 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-all"
+                                className="inline-flex items-center justify-center px-8 py-4 bg-foreground text-background font-semibold rounded-lg hover:bg-foreground/90 transition-all"
                             >
                                 View All Courses
                                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -320,15 +312,16 @@ export default function HomeClient({
                     <section className="relative h-screen snap-end snap-always flex items-center justify-center z-10">
                         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                             <div className="text-center mb-10">
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-gray-900">Upcoming Events</h2>
-                                <p className="text-lg lg:text-xl text-gray-600">Join us for workshops and competitions</p>
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">Upcoming Events</h2>
+                                <p className="text-lg lg:text-xl text-muted-foreground">Join us for workshops and competitions</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                                 {recentActivities.map((activity) => (
-                                    <div
+                                    <Link
+                                        href={`/events`}
                                         key={activity.id}
-                                        className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all"
+                                        className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all"
                                     >
                                         <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-5 py-3">
                                             <div className="flex items-center justify-between text-white">
@@ -337,13 +330,13 @@ export default function HomeClient({
                                             </div>
                                         </div>
                                         <div className="p-5">
-                                            <h3 className="text-lg font-bold mb-2 text-gray-900">{activity.title}</h3>
-                                            <p className="text-gray-600 mb-4 line-clamp-2 text-sm">{activity.description}</p>
-                                            <div className="text-sm text-gray-500 space-y-1">
+                                            <h3 className="text-lg font-bold mb-2 text-foreground">{activity.title}</h3>
+                                            <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">{activity.description}</p>
+                                            <div className="text-sm text-muted-foreground/80 space-y-1">
                                                 <div suppressHydrationWarning>{new Date(activity.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -361,7 +354,6 @@ export default function HomeClient({
                             playsInline
                             suppressHydrationWarning
                             className="absolute inset-0 w-full h-full object-cover"
-                            poster="/images/cta-poster.jpg"
                         >
                         </video>
                         {/* Blur overlay */}
@@ -381,7 +373,7 @@ export default function HomeClient({
                         </p>
                         <Link
                             href="/contact"
-                            className="inline-flex items-center justify-center px-10 py-5 bg-white text-sky-600 font-bold text-lg rounded-lg hover:bg-gray-100 transition-all shadow-2xl"
+                            className="inline-flex items-center justify-center px-10 py-5 bg-card text-primary font-bold text-lg rounded-lg hover:bg-card/90 transition-all shadow-2xl"
                         >
                             Get Started Today
                             <ArrowRight className="ml-3 w-6 h-6" />

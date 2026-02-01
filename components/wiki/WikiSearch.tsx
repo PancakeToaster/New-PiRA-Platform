@@ -19,15 +19,19 @@ interface WikiSearchProps {
         content: string;
         nodeType: string;
     }>;
+    compact?: boolean;
 }
 
-export default function WikiSearch({ nodes }: WikiSearchProps) {
+export default function WikiSearch({ nodes, compact = false }: WikiSearchProps) {
     const [isOpen, setIsOpen] = useState(false);
+    // ... (rest of state items are unchanged, lines 26-30 approx)
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+
+    // ... (keep useEffects unchanged)
 
     // Initialize Fuse.js
     const fuse = useRef(
@@ -127,14 +131,26 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
     };
 
     if (!isOpen) {
+        if (compact) {
+            return (
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    title="Search (⌘K)"
+                >
+                    <Search className="w-5 h-5" />
+                </button>
+            );
+        }
+
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground bg-muted/50 rounded-lg hover:bg-muted transition-colors"
             >
                 <Search className="w-4 h-4" />
                 <span>Search...</span>
-                <kbd className="ml-auto px-2 py-0.5 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded">
+                <kbd className="ml-auto px-2 py-0.5 text-xs font-semibold text-muted-foreground bg-card border border-border rounded">
                     ⌘K
                 </kbd>
             </button>
@@ -143,10 +159,10 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-20">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
+            <div className="bg-card rounded-lg shadow-2xl w-full max-w-2xl mx-4 border border-border">
                 {/* Search Input */}
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200">
-                    <Search className="w-5 h-5 text-gray-400" />
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+                    <Search className="w-5 h-5 text-muted-foreground" />
                     <input
                         ref={inputRef}
                         type="text"
@@ -154,14 +170,14 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Search knowledge base..."
-                        className="flex-1 text-base outline-none"
+                        className="flex-1 text-base outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
                     />
                     <button
                         onClick={() => {
                             setIsOpen(false);
                             setQuery('');
                         }}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-muted-foreground hover:text-foreground"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -170,11 +186,11 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
                 {/* Results */}
                 <div className="max-h-96 overflow-y-auto">
                     {query.length < 2 ? (
-                        <div className="px-4 py-8 text-center text-sm text-gray-500">
+                        <div className="px-4 py-8 text-center text-sm text-muted-foreground">
                             Type at least 2 characters to search
                         </div>
                     ) : results.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-sm text-gray-500">
+                        <div className="px-4 py-8 text-center text-sm text-muted-foreground">
                             No results found for "{query}"
                         </div>
                     ) : (
@@ -183,16 +199,16 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
                                 <button
                                     key={result.id}
                                     onClick={() => handleSelect(result.id)}
-                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors ${index === selectedIndex ? 'bg-sky-50' : ''
+                                    className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors ${index === selectedIndex ? 'bg-accent/50' : ''
                                         }`}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <FileText className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
+                                        <FileText className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                                         <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-gray-900 truncate">
+                                            <div className="font-medium text-foreground truncate">
                                                 {result.title}
                                             </div>
-                                            <div className="text-sm text-gray-500 line-clamp-2 mt-1">
+                                            <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
                                                 {result.excerpt}
                                             </div>
                                         </div>
@@ -204,20 +220,20 @@ export default function WikiSearch({ nodes }: WikiSearchProps) {
                 </div>
 
                 {/* Footer */}
-                <div className="px-4 py-2 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500">
+                <div className="px-4 py-2 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-muted/30">
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">↑</kbd>
-                            <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">↓</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">↑</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">↓</kbd>
                             to navigate
                         </span>
                         <span className="flex items-center gap-1">
-                            <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">↵</kbd>
+                            <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">↵</kbd>
                             to select
                         </span>
                     </div>
                     <span className="flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded">esc</kbd>
+                        <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">esc</kbd>
                         to close
                     </span>
                 </div>

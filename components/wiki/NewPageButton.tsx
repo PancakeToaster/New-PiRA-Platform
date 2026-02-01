@@ -80,16 +80,16 @@ export default function NewPageButton() {
 
             {isOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+                    <div className="bg-card rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-gray-900">Create New Page</h2>
+                            <h2 className="text-xl font-bold text-foreground">Create New Page</h2>
                             <button
                                 onClick={() => {
                                     setIsOpen(false);
                                     setTitle('');
                                     setError('');
                                 }}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-muted-foreground hover:text-foreground"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -97,7 +97,7 @@ export default function NewPageButton() {
 
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="page-title" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="page-title" className="block text-sm font-medium text-foreground mb-1">
                                     Page Title
                                 </label>
                                 <input
@@ -111,7 +111,7 @@ export default function NewPageButton() {
                                         }
                                     }}
                                     placeholder="Enter page title..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 bg-background text-foreground"
                                     autoFocus
                                 />
                             </div>

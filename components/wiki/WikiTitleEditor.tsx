@@ -55,7 +55,7 @@ export default function WikiTitleEditor({ nodeId, initialTitle, isEditing, class
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 text-3xl font-bold text-gray-900 border-b-2 border-sky-500 focus:outline-none bg-transparent px-1 py-0.5"
+                    className="flex-1 text-3xl font-bold text-foreground border-b-2 border-sky-500 focus:outline-none bg-transparent px-1 py-0.5"
                     disabled={isSaving}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSave();
@@ -65,7 +65,7 @@ export default function WikiTitleEditor({ nodeId, initialTitle, isEditing, class
                 <button
                     onClick={handleSave}
                     disabled={isSaving || title === initialTitle}
-                    className="p-1 text-green-600 hover:bg-green-50 rounded disabled:opacity-50"
+                    className="p-1 text-green-600 hover:bg-green-500/10 rounded disabled:opacity-50"
                     title="Save Title"
                 >
                     {isSaving ? <Loader2 className="w-6 h-6 animate-spin" /> : <Check className="w-6 h-6" />}
@@ -73,7 +73,7 @@ export default function WikiTitleEditor({ nodeId, initialTitle, isEditing, class
                 <button
                     onClick={() => setTitle(initialTitle)}
                     disabled={isSaving}
-                    className="p-1 text-red-500 hover:bg-red-50 rounded disabled:opacity-50"
+                    className="p-1 text-red-500 hover:bg-red-500/10 rounded disabled:opacity-50"
                     title="Cancel"
                 >
                     <X className="w-6 h-6" />
@@ -83,7 +83,7 @@ export default function WikiTitleEditor({ nodeId, initialTitle, isEditing, class
     }
 
     return (
-        <h1 className={cn("text-3xl font-bold text-gray-900 mb-4", className)}>
+        <h1 className={cn("text-3xl font-bold text-foreground mb-4", className)}>
             {title}
         </h1>
     );

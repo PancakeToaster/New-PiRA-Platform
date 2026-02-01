@@ -17,7 +17,7 @@ export default function StudentListActions({ isEmptyState }: StudentListActionsP
             <Button
                 onClick={() => setShowModal(true)}
                 variant={isEmptyState ? 'primary' : 'outline'}
-                className={isEmptyState ? 'bg-sky-600' : ''}
+                className={isEmptyState ? 'bg-primary hover:bg-primary/90' : ''}
             >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Student

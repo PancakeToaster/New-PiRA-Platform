@@ -87,7 +87,7 @@ export default function ProjectSettingsPage({
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -97,8 +97,8 @@ export default function ProjectSettingsPage({
     return (
         <div className="max-w-3xl mx-auto space-y-8">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Project Settings</h1>
-                <p className="text-gray-500">Manage project details and configuration.</p>
+                <h1 className="text-2xl font-bold text-foreground">Project Settings</h1>
+                <p className="text-muted-foreground">Manage project details and configuration.</p>
             </div>
 
             <form onSubmit={handleSave}>
@@ -132,7 +132,7 @@ export default function ProjectSettingsPage({
                                     id="status"
                                     value={formData.status}
                                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
+                                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 >
                                     <option value="planning">Planning</option>
                                     <option value="active">Active</option>
@@ -146,7 +146,7 @@ export default function ProjectSettingsPage({
                                     id="priority"
                                     value={formData.priority}
                                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500"
+                                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 >
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
@@ -176,7 +176,7 @@ export default function ProjectSettingsPage({
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-end bg-gray-50 p-4 rounded-b-xl">
+                    <CardFooter className="flex justify-end bg-muted/50 p-4 rounded-b-xl">
                         <Button type="submit" disabled={isSaving}>
                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                             Save Changes
@@ -186,15 +186,15 @@ export default function ProjectSettingsPage({
             </form>
 
             {/* Danger Zone (Future impl for delete project) */}
-            <Card className="border-red-200">
+            <Card className="border-red-200 dark:border-red-900/50">
                 <CardHeader>
-                    <CardTitle className="text-red-600 flex items-center">
+                    <CardTitle className="text-red-600 dark:text-red-500 flex items-center">
                         <AlertTriangle className="w-5 h-5 mr-2" />
                         Danger Zone
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4">
                         Deleting a project is irreversible. All tasks, documents, and data associated with this project will be permanently removed.
                     </p>
                     <Button variant="danger" disabled={true}>

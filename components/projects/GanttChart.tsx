@@ -137,7 +137,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
       case 'blocked':
         return 'bg-red-500';
       default:
-        return 'bg-gray-400';
+        return 'bg-muted';
     }
   };
 
@@ -150,7 +150,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
       case 'medium':
         return 'border-l-4 border-yellow-500';
       default:
-        return 'border-l-4 border-gray-300';
+        return 'border-l-4 border-muted';
     }
   };
 
@@ -237,9 +237,9 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
   const todayPosition = todayOffset * (columnWidth / (zoomLevel === 'day' ? 1 : zoomLevel === 'week' ? 7 : 30));
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div className="border border-border rounded-lg overflow-hidden bg-card">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
             <ChevronLeft className="w-4 h-4" />
@@ -252,22 +252,22 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">Zoom:</span>
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+          <span className="text-sm text-muted-foreground">Zoom:</span>
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <button
               onClick={() => setZoomLevel('day')}
               className={`px-3 py-1 text-sm ${zoomLevel === 'day'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent'
                 }`}
             >
               Day
             </button>
             <button
               onClick={() => setZoomLevel('week')}
-              className={`px-3 py-1 text-sm border-x border-gray-300 ${zoomLevel === 'week'
+              className={`px-3 py-1 text-sm border-x border-border ${zoomLevel === 'week'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent'
                 }`}
             >
               Week
@@ -276,7 +276,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
               onClick={() => setZoomLevel('month')}
               className={`px-3 py-1 text-sm ${zoomLevel === 'month'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent'
                 }`}
             >
               Month
@@ -287,10 +287,10 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
 
       <div className="flex">
         {/* Task List */}
-        <div className="w-64 flex-shrink-0 border-r border-gray-200">
+        <div className="w-64 flex-shrink-0 border-r border-border">
           {/* Header */}
-          <div className="h-12 px-4 flex items-center bg-gray-50 border-b border-gray-200">
-            <span className="font-medium text-gray-700">Task</span>
+          <div className="h-12 px-4 flex items-center bg-muted/30 border-b border-border">
+            <span className="font-medium text-foreground">Task</span>
           </div>
           {/* Task Names */}
           <div>
@@ -298,22 +298,22 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
               <div
                 key={task.id}
                 onClick={() => onTaskClick(task)}
-                className={`h-12 px-4 flex items-center border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${getPriorityBorder(
+                className={`h-12 px-4 flex items-center border-b border-border hover:bg-accent cursor-pointer ${getPriorityBorder(
                   task.priority
                 )}`}
               >
                 <div className="flex flex-col justify-center w-full overflow-hidden">
                   {task.projectName && (
                     <span
-                      className="text-xs font-semibold mb-0.5"
-                      style={{ color: task.projectColor || '#6b7280' }}
+                      className="text-xs font-semibold mb-0.5 text-muted-foreground"
+                      style={{ color: task.projectColor }}
                     >
                       {task.projectName}
                     </span>
                   )}
-                  <span className="text-sm text-gray-900 truncate">{task.title}</span>
+                  <span className="text-sm text-foreground truncate">{task.title}</span>
                   {(task.checklistItems?.length ?? 0) > 0 && (
-                    <div className="flex items-center mt-0.5 space-x-1 text-xs text-gray-400">
+                    <div className="flex items-center mt-0.5 space-x-1 text-xs text-muted-foreground">
                       <CheckSquare className="w-3 h-3" />
                       <span>
                         {task.checklistItems?.filter(i => i.isCompleted).length}/{task.checklistItems?.length}
@@ -324,7 +324,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
               </div>
             ))}
             {tasks.length === 0 && (
-              <div className="h-24 flex items-center justify-center text-gray-400 text-sm">
+              <div className="h-24 flex items-center justify-center text-muted-foreground text-sm">
                 No tasks with dates
               </div>
             )}
@@ -334,21 +334,21 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
         {/* Gantt Area */}
         <div className="flex-1 overflow-x-auto" ref={containerRef}>
           {/* Date Headers */}
-          <div className="h-12 flex bg-gray-50 border-b border-gray-200 sticky top-0">
+          <div className="h-12 flex bg-muted/30 border-b border-border sticky top-0">
             {dates.map((date, index) => {
               const isWeekend = date.getDay() === 0 || date.getDay() === 6;
               const isToday = date.toDateString() === today.toDateString();
               return (
                 <div
                   key={index}
-                  className={`flex-shrink-0 flex items-center justify-center border-r border-gray-100 text-xs ${isWeekend ? 'bg-gray-100' : ''
-                    } ${isToday ? 'bg-sky-100' : ''}`}
+                  className={`flex-shrink-0 flex items-center justify-center border-r border-border text-xs ${isWeekend ? 'bg-muted/10' : ''
+                    } ${isToday ? 'bg-sky-500/10' : ''}`}
                   style={{ width: columnWidth / (zoomLevel === 'day' ? 1 : zoomLevel === 'week' ? 7 : 30) }}
                 >
                   {zoomLevel === 'day' && (
                     <div className="text-center">
-                      <div className="text-gray-400">{date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}</div>
-                      <div className={`font-medium ${isToday ? 'text-sky-600' : 'text-gray-600'}`}>
+                      <div className="text-muted-foreground">{date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}</div>
+                      <div className={`font-medium ${isToday ? 'text-sky-600' : 'text-foreground'}`}>
                         {date.getDate()}
                       </div>
                     </div>
@@ -375,7 +375,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
                 return (
                   <div
                     key={index}
-                    className={`flex-shrink-0 border-r border-gray-100 ${isWeekend ? 'bg-gray-50/50' : ''
+                    className={`flex-shrink-0 border-r border-border ${isWeekend ? 'bg-muted/5' : ''
                       }`}
                     style={{ width: columnWidth / (zoomLevel === 'day' ? 1 : zoomLevel === 'week' ? 7 : 30) }}
                   />
@@ -389,7 +389,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
               return (
                 <div
                   key={task.id}
-                  className="h-12 relative border-b border-gray-100"
+                  className="h-12 relative border-b border-border"
                 >
                   {barStyle.visible && (
                     <div
@@ -420,7 +420,7 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
             })}
 
             {tasks.length === 0 && (
-              <div className="h-24 flex items-center justify-center text-gray-400 text-sm">
+              <div className="h-24 flex items-center justify-center text-muted-foreground/50 text-sm">
                 Add dates to tasks to see them on the Gantt chart
               </div>
             )}
@@ -429,30 +429,30 @@ export default function GanttChart({ tasks, onTaskClick }: GanttChartProps) {
       </div>
 
       {/* Legend */}
-      <div className="px-4 py-2 border-t border-gray-200 bg-gray-50 flex items-center space-x-6 text-xs">
+      <div className="px-4 py-2 border-t border-border bg-muted/30 flex items-center space-x-6 text-xs">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded bg-gray-400" />
-          <span className="text-gray-600">To Do</span>
+          <span className="text-muted-foreground">To Do</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded bg-blue-500" />
-          <span className="text-gray-600">In Progress</span>
+          <span className="text-muted-foreground">In Progress</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded bg-purple-500" />
-          <span className="text-gray-600">Review</span>
+          <span className="text-muted-foreground">Review</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded bg-green-500" />
-          <span className="text-gray-600">Done</span>
+          <span className="text-muted-foreground">Done</span>
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded bg-red-500" />
-          <span className="text-gray-600">Blocked</span>
+          <span className="text-muted-foreground">Blocked</span>
         </div>
         <div className="flex items-center space-x-2 ml-auto">
           <div className="w-0.5 h-4 bg-red-500" />
-          <span className="text-gray-600">Today</span>
+          <span className="text-muted-foreground">Today</span>
         </div>
       </div>
     </div>

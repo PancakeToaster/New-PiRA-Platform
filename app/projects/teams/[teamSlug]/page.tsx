@@ -83,7 +83,7 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
       case 'completed':
         return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -92,7 +92,7 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -100,8 +100,8 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
   if (error || !team) {
     return (
       <div className="text-center py-12">
-        <FolderKanban className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-        <h2 className="text-lg font-medium text-gray-900 mb-2">
+        <FolderKanban className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-lg font-medium text-foreground mb-2">
           {error || 'Team not found'}
         </h2>
         <Link href="/projects/teams">
@@ -123,11 +123,11 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             {team.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{team.name}</h1>
+            <h1 className="text-3xl font-bold text-foreground">{team.name}</h1>
             {team.description && (
-              <p className="mt-1 text-gray-500">{team.description}</p>
+              <p className="mt-1 text-muted-foreground">{team.description}</p>
             )}
-            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+            <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
               <span className="flex items-center">
                 <Users className="w-4 h-4 mr-1" />
                 {team._count.members} members
@@ -156,15 +156,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-sky-100 rounded-lg">
-                    <Users className="w-5 h-5 text-sky-600" />
+                  <div className="p-2 bg-sky-100 dark:bg-sky-900/30 rounded-lg">
+                    <Users className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Members</p>
-                    <p className="text-sm text-gray-500">{team._count.members} people</p>
+                    <p className="font-medium text-foreground">Members</p>
+                    <p className="text-sm text-muted-foreground">{team._count.members} people</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -175,15 +175,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Users className="w-5 h-5 text-orange-600" />
+                  <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                    <Users className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Subteams</p>
-                    <p className="text-sm text-gray-500">Manage structure</p>
+                    <p className="font-medium text-foreground">Subteams</p>
+                    <p className="text-sm text-muted-foreground">Manage structure</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -194,15 +194,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-pink-100 rounded-lg">
-                    <FolderKanban className="w-5 h-5 text-pink-600" />
+                  <div className="p-2 bg-pink-100 dark:bg-pink-900/30 rounded-lg">
+                    <FolderKanban className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Files</p>
-                    <p className="text-sm text-gray-500">Docs & assets</p>
+                    <p className="font-medium text-foreground">Files</p>
+                    <p className="text-sm text-muted-foreground">Docs & assets</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -213,15 +213,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Calendar className="w-5 h-5 text-purple-600" />
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Calendar</p>
-                    <p className="text-sm text-gray-500">Team events</p>
+                    <p className="font-medium text-foreground">Calendar</p>
+                    <p className="text-sm text-muted-foreground">Team events</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -232,15 +232,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <BarChart3 className="w-5 h-5 text-green-600" />
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <BarChart3 className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Team Gantt</p>
-                    <p className="text-sm text-gray-500">Master schedule</p>
+                    <p className="font-medium text-foreground">Team Gantt</p>
+                    <p className="text-sm text-muted-foreground">Master schedule</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -251,15 +251,15 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gray-100 rounded-lg">
-                    <MoreVertical className="w-5 h-5 text-gray-600" />
+                  <div className="p-2 bg-muted rounded-lg">
+                    <MoreVertical className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Settings</p>
-                    <p className="text-sm text-gray-500">Manage team</p>
+                    <p className="font-medium text-foreground">Settings</p>
+                    <p className="text-sm text-muted-foreground">Manage team</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -276,9 +276,9 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
         <CardContent>
           {team.projects.length === 0 ? (
             <div className="text-center py-8">
-              <FolderKanban className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
-              <p className="text-gray-500 mb-4">
+              <FolderKanban className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No projects yet</h3>
+              <p className="text-muted-foreground mb-4">
                 Create your first project to start managing tasks.
               </p>
               {canManage && (
@@ -297,7 +297,7 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
                   key={project.id}
                   href={`/projects/${team.slug}/${project.slug}`}
                 >
-                  <div className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center space-x-4">
                       <div
                         className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
@@ -306,16 +306,16 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
                         {project.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-900">{project.name}</h3>
+                        <h3 className="font-medium text-foreground">{project.name}</h3>
                         {project.description && (
-                          <p className="text-sm text-gray-500 line-clamp-1">
+                          <p className="text-sm text-muted-foreground line-clamp-1">
                             {project.description}
                           </p>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {project._count.tasks} tasks
                       </span>
                       <span
@@ -325,7 +325,7 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
                       >
                         {project.status.replace('_', ' ')}
                       </span>
-                      <ArrowRight className="w-5 h-5 text-gray-400" />
+                      <ArrowRight className="w-5 h-5 text-muted-foreground" />
                     </div>
                   </div>
                 </Link>
@@ -369,19 +369,19 @@ function RecentFilesWidget({ teamId, teamSlug }: { teamId: string; teamSlug: str
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex justify-center py-4"><Loader2 className="animate-spin text-gray-400" /></div>
+          <div className="flex justify-center py-4"><Loader2 className="animate-spin text-muted-foreground" /></div>
         ) : (
           <div className="space-y-3">
             {files.map(file => (
-              <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+              <div key={file.id} className="flex items-center justify-between p-3 border border-border rounded-lg bg-muted/30">
                 <div className="flex items-center space-x-3 overflow-hidden">
-                  <FolderKanban className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  <FolderKanban className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                    <p className="text-xs text-gray-500">By {file.uploader.firstName} • {new Date(file.createdAt).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">By {file.uploader.firstName} • {new Date(file.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <a href={file.url} download target="_blank" className="text-sky-600 hover:text-sky-700 text-sm font-medium">Download</a>
+                <a href={file.url} download target="_blank" className="text-sky-600 hover:text-sky-500 text-sm font-medium">Download</a>
               </div>
             ))}
           </div>

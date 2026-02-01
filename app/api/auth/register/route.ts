@@ -1,10 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
+import { z } from 'zod';
+
+function generateTempPassword(): string {
+  return randomBytes(12).toString('base64url').slice(0, 12) + 'A1!';
+}
+
+const registerSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').max(100),
+  lastName: z.string().min(1, 'Last name is required').max(100),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone: z.string().optional(),
+  userType: z.enum(['student', 'parent', 'public']).default('public'),
+  dateOfBirth: z.string().optional(),
+  grade: z.string().optional().nullable(),
+  school: z.string().optional().nullable(),
+  childFirstName: z.string().optional(),
+  childLastName: z.string().optional(),
+  childEmail: z.string().email().optional().nullable(),
+  childAge: z.union([z.string(), z.number()]).optional().nullable(),
+  childDateOfBirth: z.string().optional().nullable(),
+  interests: z.array(z.string()).optional(),
+  parentName: z.string().optional(),
+  parentEmail: z.string().email().optional().nullable(),
+  parentPhone: z.string().optional().nullable(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const parsed = registerSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input' },
+        { status: 400 }
+      );
+    }
+
     const {
       firstName,
       lastName,
@@ -12,33 +48,16 @@ export async function POST(request: NextRequest) {
       password,
       phone,
       userType,
-      // Student fields
       dateOfBirth,
       grade,
       school,
-      // Parent fields
       childFirstName,
       childLastName,
       childEmail,
       childAge,
       childDateOfBirth,
       interests,
-    } = body;
-
-    // Validate required fields
-    if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json(
-        { error: 'Email, password, first name, and last name are required' },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'Password must be at least 8 characters' },
-        { status: 400 }
-      );
-    }
+    } = parsed.data;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -86,6 +105,7 @@ export async function POST(request: NextRequest) {
       });
 
       let generatedChildUsername: string | undefined;
+      let generatedChildTempPassword: string | undefined;
 
       // Create profile based on user type
       if (userType === 'student') {
@@ -121,7 +141,7 @@ export async function POST(request: NextRequest) {
               parentId = pp.id;
             }
           } else {
-            const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+            const tempPassword = generateTempPassword();
             const hashedParentPassword = await bcrypt.hash(tempPassword, 10);
             const newParent = await tx.user.create({
               data: {
@@ -136,8 +156,7 @@ export async function POST(request: NextRequest) {
             });
             const pp = await tx.parentProfile.create({ data: { userId: newParent.id, phone: parentPhone } });
             parentId = pp.id;
-            // Log temp password for dev
-            console.log(`[EMAIL] Parent Created. TempPass: ${tempPassword}`);
+            // TODO: Integrate real email service to send temp password to parent
           }
 
           if (parentId) {
@@ -185,11 +204,15 @@ export async function POST(request: NextRequest) {
               generatedChildUsername = finalUsername;
             }
 
+            // Generate a separate password for the child account
+            generatedChildTempPassword = generateTempPassword();
+            const hashedChildPassword = await bcrypt.hash(generatedChildTempPassword, 10);
+
             const childUser = await tx.user.create({
               data: {
                 email: finalChildEmail,
                 username: finalUsername,
-                password: hashedPassword,
+                password: hashedChildPassword,
                 firstName: childFirstName,
                 lastName: childLastName,
                 roles: {
@@ -218,7 +241,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      return { user, childUsername: generatedChildUsername };
+      return { user, childUsername: generatedChildUsername, childTempPassword: generatedChildTempPassword };
     });
 
     return NextResponse.json(
@@ -232,7 +255,8 @@ export async function POST(request: NextRequest) {
         },
         child: result.childUsername ? {
           username: result.childUsername,
-          info: 'Please save this username for your child to log in.'
+          tempPassword: result.childTempPassword,
+          info: 'Please save this username and temporary password for your child to log in.'
         } : undefined
       },
       { status: 201 }

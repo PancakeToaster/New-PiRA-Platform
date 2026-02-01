@@ -66,12 +66,12 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
     );
 
     const eventTypeColors: Record<string, string> = {
-        competition: 'bg-red-100 text-red-800 border-red-200',
-        deadline: 'bg-orange-100 text-orange-800 border-orange-200',
-        meeting: 'bg-blue-100 text-blue-800 border-blue-200',
-        class: 'bg-green-100 text-green-800 border-green-200',
-        practice: 'bg-purple-100 text-purple-800 border-purple-200',
-        other: 'bg-gray-100 text-gray-800 border-gray-200',
+        competition: 'bg-red-500/10 text-red-500 border-red-200/20',
+        deadline: 'bg-orange-500/10 text-orange-500 border-orange-200/20',
+        meeting: 'bg-blue-500/10 text-blue-500 border-blue-200/20',
+        class: 'bg-green-500/10 text-green-500 border-green-200/20',
+        practice: 'bg-purple-500/10 text-purple-500 border-purple-200/20',
+        other: 'bg-muted text-muted-foreground border-border',
     };
 
     return (
@@ -80,7 +80,7 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
             <Card className="flex-1 flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between py-4">
                     <div className="flex items-center space-x-2">
-                        <h2 className="text-xl font-bold text-gray-900">
+                        <h2 className="text-xl font-bold text-foreground">
                             {format(currentDate, 'MMMM yyyy')}
                         </h2>
                         <div className="flex gap-1">
@@ -98,11 +98,11 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                 </CardHeader>
                 <CardContent className="flex-1 p-0 flex flex-col">
                     {/* Weekday Headers */}
-                    <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+                    <div className="grid grid-cols-7 border-b border-border bg-muted/50">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                             <div
                                 key={day}
-                                className="py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                                className="py-2 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider"
                             >
                                 {day}
                             </div>
@@ -124,20 +124,20 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                                     key={day.toString()}
                                     onClick={() => setSelectedDate(day)}
                                     className={cn(
-                                        "relative border-b border-r border-gray-100 p-2 cursor-pointer transition-colors hover:bg-gray-50 flex flex-col",
-                                        !isCurrentMonth && "bg-gray-50/50 text-gray-400",
-                                        isSelected && "bg-sky-50 ring-2 ring-inset ring-sky-500 z-10",
-                                        isToday(day) && !isSelected && "bg-blue-50/30"
+                                        "relative border-b border-r border-border p-2 cursor-pointer transition-colors hover:bg-accent flex flex-col",
+                                        !isCurrentMonth && "bg-muted/30 text-muted-foreground/50",
+                                        isSelected && "bg-primary/5 ring-2 ring-inset ring-primary z-10",
+                                        isToday(day) && !isSelected && "bg-primary/5"
                                     )}
                                 >
                                     <span
                                         className={cn(
                                             "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1",
                                             isToday(day)
-                                                ? "bg-sky-600 text-white"
+                                                ? "bg-primary text-primary-foreground"
                                                 : isSelected
-                                                    ? "text-sky-700"
-                                                    : "text-gray-700"
+                                                    ? "text-primary"
+                                                    : "text-foreground"
                                         )}
                                     >
                                         {format(day, 'd')}
@@ -158,7 +158,7 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                                             </div>
                                         ))}
                                         {dateEvents.length > 3 && (
-                                            <div className="text-xs text-gray-500 pl-1">
+                                            <div className="text-xs text-muted-foreground pl-1">
                                                 +{dateEvents.length - 3} more
                                             </div>
                                         )}
@@ -185,10 +185,10 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                             {selectedDateEvents.map((event) => (
                                 <div
                                     key={event.id}
-                                    className="p-3 border rounded-lg bg-gray-50 space-y-2 hover:shadow-sm transition-shadow"
+                                    className="p-3 border border-border rounded-lg bg-card space-y-2 hover:shadow-sm transition-shadow"
                                 >
                                     <div className="flex items-start justify-between">
-                                        <h4 className="font-semibold text-gray-900">{event.title}</h4>
+                                        <h4 className="font-semibold text-foreground">{event.title}</h4>
                                         <span
                                             className={cn(
                                                 "px-2 py-0.5 text-[10px] uppercase font-bold rounded-full border",
@@ -199,9 +199,9 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                                         </span>
                                     </div>
 
-                                    <div className="space-y-1.5 text-sm text-gray-600">
+                                    <div className="space-y-1.5 text-sm text-foreground/80">
                                         <div className="flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-gray-400" />
+                                            <Clock className="w-4 h-4 text-muted-foreground" />
                                             <span>
                                                 {event.allDay
                                                     ? 'All Day'
@@ -214,16 +214,16 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
 
                                         {event.location && (
                                             <div className="flex items-center gap-2">
-                                                <MapPin className="w-4 h-4 text-gray-400" />
+                                                <MapPin className="w-4 h-4 text-muted-foreground" />
                                                 <span>{event.location}</span>
                                             </div>
                                         )}
 
                                         <div className="flex items-start gap-2">
-                                            <Users className="w-4 h-4 text-gray-400 mt-0.5" />
+                                            <Users className="w-4 h-4 text-muted-foreground mt-0.5" />
                                             <div className="flex flex-wrap gap-1">
                                                 {event.studentNames.map((name, i) => (
-                                                    <span key={i} className="bg-white border px-1.5 rounded text-xs text-gray-700">
+                                                    <span key={i} className="bg-background border border-border px-1.5 rounded text-xs text-foreground">
                                                         {name}
                                                     </span>
                                                 ))}
@@ -240,9 +240,9 @@ export default function ParentCalendar({ events }: ParentCalendarProps) {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center py-10">
-                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                                <Clock className="w-6 h-6 text-gray-400" />
+                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center py-10">
+                            <div className="w-12 h-12 bg-muted/50 rounded-full flex items-center justify-center mb-3">
+                                <Clock className="w-6 h-6 text-muted-foreground/50" />
                             </div>
                             <p>No events for this day</p>
                         </div>

@@ -72,14 +72,65 @@ export async function GET() {
       prisma.assignmentSubmission.count({
         where: { submittedAt: { gte: oneWeekAgo } },
       }),
-      prisma.pageView.groupBy({
-        by: ['path'],
-        _count: { path: true },
+      // Get top pages with titles
+      prisma.pageView.findMany({
         where: { viewedAt: { gte: thirtyDaysAgo } },
-        orderBy: { _count: { path: 'desc' } },
-        take: 10,
+        select: {
+          path: true,
+          pageTitle: true,
+          knowledgeNode: {
+            select: { title: true }
+          }
+        },
+        orderBy: { viewedAt: 'desc' },
+        take: 1000, // Get more to group properly
       }),
     ]);
+
+    // Process page views to group by path and get titles
+    const pageViewsMap = new Map<string, { path: string; title: string | null; count: number }>();
+    for (const pv of pageViewsByPath) {
+      const title = pv.pageTitle || pv.knowledgeNode?.title || null;
+      const existing = pageViewsMap.get(pv.path);
+      if (existing) {
+        existing.count++;
+        // Prefer non-null titles
+        if (!existing.title && title) {
+          existing.title = title;
+        }
+      } else {
+        pageViewsMap.set(pv.path, { path: pv.path, title, count: 1 });
+      }
+    }
+    const topPageViews = Array.from(pageViewsMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    // Get referrer analytics
+    const referrerData = await prisma.pageView.groupBy({
+      by: ['referrerDomain'],
+      _count: { referrerDomain: true },
+      where: {
+        viewedAt: { gte: thirtyDaysAgo },
+        referrerDomain: { not: null },
+      },
+      orderBy: { _count: { referrerDomain: 'desc' } },
+      take: 10,
+    });
+
+    const totalExternalViews = await prisma.pageView.count({
+      where: {
+        viewedAt: { gte: thirtyDaysAgo },
+        referrerDomain: { not: null },
+      },
+    });
+
+    const totalDirectViews = await prisma.pageView.count({
+      where: {
+        viewedAt: { gte: thirtyDaysAgo },
+        referrer: null,
+      },
+    });
 
     // Fetch recent activity and error logs
     const [activityLogs, errorLogs] = await Promise.all([
@@ -127,10 +178,19 @@ export async function GET() {
         newContacts,
         submissionsThisWeek,
       },
-      pageViews: pageViewsByPath.map(pv => ({
+      pageViews: topPageViews.map(pv => ({
         path: pv.path,
-        count: pv._count.path,
+        title: pv.title,
+        count: pv.count,
       })),
+      referrers: {
+        topReferrers: referrerData.map(r => ({
+          domain: r.referrerDomain,
+          count: r._count.referrerDomain,
+        })),
+        externalViews: totalExternalViews,
+        directViews: totalDirectViews,
+      },
       activityLogs,
       errorLogs,
     });

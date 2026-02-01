@@ -33,7 +33,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
     // If you plan to add client-side filtering/search later, you might re-introduce state
 
     return (
-        <div className="min-h-screen flex flex-col bg-white">
+        <div className="min-h-screen flex flex-col bg-background">
             <Navbar />
 
             <main className="flex-1 pt-20">
@@ -45,8 +45,8 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                     {courses.length === 0 ? (
                         <div className="text-center py-16">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Coming Soon</h2>
-                            <p className="text-gray-600 mb-8">
+                            <h2 className="text-2xl font-bold text-foreground mb-4">Coming Soon</h2>
+                            <p className="text-muted-foreground mb-8">
                                 We're preparing exciting new courses. Check back soon or contact us for more information.
                             </p>
                             <Link
@@ -62,7 +62,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                             {courses.map((course) => (
                                 <div
                                     key={course.id}
-                                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
+                                    className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
                                 >
                                     {/* Course Header */}
                                     <div className="h-32 bg-gradient-to-br from-sky-400 to-sky-600 relative flex items-center justify-center">
@@ -84,38 +84,38 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
 
                                     {/* Course Content */}
                                     <div className="p-6">
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2">{course.name}</h3>
-                                        <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
+                                        <h3 className="text-xl font-bold text-foreground mb-2">{course.name}</h3>
+                                        <p className="text-muted-foreground mb-4 line-clamp-2">{course.description}</p>
 
                                         <div className="space-y-2 text-sm mb-4">
                                             {course.ageRange && (
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-500">Age Range:</span>
-                                                    <span className="font-medium text-gray-900">{course.ageRange}</span>
+                                                    <span className="text-muted-foreground">Age Range:</span>
+                                                    <span className="font-medium text-foreground">{course.ageRange}</span>
                                                 </div>
                                             )}
                                             {course.duration && (
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-500">Duration:</span>
-                                                    <span className="font-medium text-gray-900">{course.duration}</span>
+                                                    <span className="text-muted-foreground">Duration:</span>
+                                                    <span className="font-medium text-foreground">{course.duration}</span>
                                                 </div>
                                             )}
                                         </div>
 
                                         {course.topics && course.topics.length > 0 && (
-                                            <div className="border-t border-gray-100 pt-4 mb-4">
-                                                <p className="text-xs text-gray-500 mb-2">Topics covered:</p>
+                                            <div className="border-t border-border pt-4 mb-4">
+                                                <p className="text-xs text-muted-foreground mb-2">Topics covered:</p>
                                                 <div className="flex flex-wrap gap-1">
                                                     {course.topics.slice(0, 3).map((topic, idx) => (
                                                         <span
                                                             key={idx}
-                                                            className="px-2 py-1 text-xs bg-sky-50 text-sky-700 rounded-full"
+                                                            className="px-2 py-1 text-xs bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 rounded-full"
                                                         >
                                                             {topic}
                                                         </span>
                                                     ))}
                                                     {course.topics.length > 3 && (
-                                                        <span className="px-2 py-1 text-xs text-gray-500">
+                                                        <span className="px-2 py-1 text-xs text-muted-foreground">
                                                             +{course.topics.length - 3} more
                                                         </span>
                                                     )}
@@ -125,7 +125,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
 
                                         <Link
                                             href={`/courses/${course.slug}`}
-                                            className="inline-flex items-center text-sky-500 hover:text-sky-600 font-semibold text-sm"
+                                            className="inline-flex items-center text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 font-semibold text-sm"
                                         >
                                             Learn More
                                             <ArrowRight className="ml-2 w-4 h-4" />
@@ -143,13 +143,13 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                                 <div className="h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent flex-1" />
                                 <div className="px-6 flex items-center space-x-2">
                                     <Sparkles className="w-5 h-5 text-purple-500" />
-                                    <h2 className="text-2xl font-bold text-gray-900">Coming Soon</h2>
+                                    <h2 className="text-2xl font-bold text-foreground">Coming Soon</h2>
                                     <Sparkles className="w-5 h-5 text-purple-500" />
                                 </div>
                                 <div className="h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent flex-1" />
                             </div>
 
-                            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                            <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
                                 We're developing new courses based on community interest. Show your interest to help us prioritize!
                             </p>
 
@@ -157,7 +157,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                                 {developmentCourses.map((course) => (
                                     <div
                                         key={course.id}
-                                        className="bg-white border-2 border-dashed border-purple-200 rounded-2xl overflow-hidden hover:border-purple-300 transition-all duration-300"
+                                        className="bg-card border-2 border-dashed border-purple-200 dark:border-purple-800/50 rounded-2xl overflow-hidden hover:border-purple-300 dark:hover:border-purple-700/50 transition-all duration-300"
                                     >
                                         {/* Course Header */}
                                         <div className="h-32 bg-gradient-to-br from-purple-400 to-purple-600 relative flex items-center justify-center">
@@ -178,38 +178,38 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
 
                                         {/* Course Content */}
                                         <div className="p-6">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">{course.name}</h3>
-                                            <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
+                                            <h3 className="text-xl font-bold text-foreground mb-2">{course.name}</h3>
+                                            <p className="text-muted-foreground mb-4 line-clamp-3">{course.description}</p>
 
                                             <div className="space-y-2 text-sm mb-4">
                                                 {course.ageRange && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-500">Age Range:</span>
-                                                        <span className="font-medium text-gray-900">{course.ageRange}</span>
+                                                        <span className="text-muted-foreground">Age Range:</span>
+                                                        <span className="font-medium text-foreground">{course.ageRange}</span>
                                                     </div>
                                                 )}
                                                 {course.duration && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-500">Duration:</span>
-                                                        <span className="font-medium text-gray-900">{course.duration}</span>
+                                                        <span className="text-muted-foreground">Duration:</span>
+                                                        <span className="font-medium text-foreground">{course.duration}</span>
                                                     </div>
                                                 )}
                                             </div>
 
                                             {course.topics && course.topics.length > 0 && (
-                                                <div className="border-t border-gray-100 pt-4 mb-4">
-                                                    <p className="text-xs text-gray-500 mb-2">Planned topics:</p>
+                                                <div className="border-t border-border pt-4 mb-4">
+                                                    <p className="text-xs text-muted-foreground mb-2">Planned topics:</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {course.topics.slice(0, 3).map((topic, idx) => (
                                                             <span
                                                                 key={idx}
-                                                                className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full"
+                                                                className="px-2 py-1 text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 rounded-full"
                                                             >
                                                                 {topic}
                                                             </span>
                                                         ))}
                                                         {course.topics.length > 3 && (
-                                                            <span className="px-2 py-1 text-xs text-gray-500">
+                                                            <span className="px-2 py-1 text-xs text-muted-foreground">
                                                                 +{course.topics.length - 3} more
                                                             </span>
                                                         )}
@@ -217,7 +217,7 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                                                 </div>
                                             )}
 
-                                            <div className="border-t border-gray-100 pt-4">
+                                            <div className="border-t border-border pt-4">
                                                 <CourseInterestButton courseId={course.id} />
                                             </div>
                                         </div>
@@ -228,9 +228,9 @@ export default function CoursesClient({ courses, developmentCourses, footer }: C
                     )}
 
                     {/* CTA Section */}
-                    <div className="mt-16 text-center bg-gradient-to-br from-sky-50 to-white rounded-3xl p-12 border border-sky-100">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">Not sure which course is right?</h2>
-                        <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <div className="mt-16 text-center bg-gradient-to-br from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-3xl p-12 border border-sky-100 dark:border-border">
+                        <h2 className="text-3xl font-bold text-foreground mb-4">Not sure which course is right?</h2>
+                        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                             Contact us for a free consultation and we'll help you find the perfect program for your skill level and goals.
                         </p>
                         <Link

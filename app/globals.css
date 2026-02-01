@@ -2,22 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+    --radius: 0.5rem;
+  }
 
-
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  .dark {
+    --background: 0 0% 9%;
+    --foreground: 210 40% 85%;
+    --card: 0 0% 11%;
+    --card-foreground: 210 40% 85%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 210 40% 85%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 210 40% 85%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 0 0% 16%;
+    --accent-foreground: 210 40% 85%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 199 89% 48%;
+  }
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 
   input[type='text'],
   input[type='email'],
@@ -29,21 +68,19 @@ body {
   input[type='date'],
   textarea,
   select {
-    @apply border border-gray-300 rounded-md bg-white text-gray-900 shadow-sm;
+    @apply border border-input rounded-md bg-background text-foreground shadow-sm;
   }
 
   input:focus,
   textarea:focus,
   select:focus {
-    @apply ring-2 ring-sky-500 border-sky-500 outline-none;
+    @apply ring-2 ring-ring border-ring outline-none;
   }
 
   input::placeholder,
   textarea::placeholder {
-    @apply text-gray-400;
+    @apply text-muted-foreground;
   }
-
-
 }
 
 @layer utilities {
@@ -64,16 +101,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0891b2;
+  background: hsl(var(--primary));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0e7490;
+  background: hsl(var(--primary) / 0.8);
 }
 
 /* Animations */
@@ -172,7 +209,7 @@ html {
 /* Video placeholder styling */
 .video-placeholder {
   position: relative;
-  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
   overflow: hidden;
 }
 
@@ -307,14 +344,14 @@ section {
 }
 
 .ProseMirror code {
-  background-color: #f4f4f4;
+  background-color: hsl(var(--muted));
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-family: monospace;
 }
 
 .ProseMirror pre {
-  background-color: #f4f4f4;
+  background-color: hsl(var(--muted));
   padding: 1rem;
   border-radius: 4px;
   overflow-x: auto;
@@ -326,8 +363,8 @@ section {
 }
 
 .ProseMirror blockquote {
-  border-left: 4px solid #e5e7eb;
+  border-left: 4px solid hsl(var(--border));
   padding-left: 1rem;
   margin: 1rem 0;
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
 }

@@ -114,20 +114,20 @@ export default function TestModeBanner({ roleName }: TestModeBannerProps) {
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="flex items-center space-x-2 bg-white border border-yellow-400 shadow-lg rounded-full px-4 py-2 hover:shadow-xl transition-shadow"
+          className="flex items-center space-x-2 bg-card border border-yellow-400 shadow-lg rounded-full px-4 py-2 hover:shadow-xl transition-shadow"
         >
           <FlaskConical className="w-4 h-4 text-yellow-600" />
-          <span className="font-semibold text-gray-800 text-sm">TEST:</span>
+          <span className="font-semibold text-foreground text-sm">TEST:</span>
           <span className={`px-2 py-0.5 rounded text-white text-xs ${getRoleBadgeColor(roleName)}`}>
             {roleName}
           </span>
-          <ChevronUp className="w-4 h-4 text-gray-500" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
         </button>
       )}
 
       {/* Expanded State - Full Popup Card */}
       {isExpanded && (
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden w-72">
+        <div className="bg-card rounded-lg shadow-2xl border border-border overflow-hidden w-72">
           {/* Header */}
           <div className="bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -143,8 +143,8 @@ export default function TestModeBanner({ roleName }: TestModeBannerProps) {
           </div>
 
           {/* Current Role */}
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-xs text-gray-500 mb-1">Viewing as:</p>
+          <div className="px-4 py-3 border-b border-border">
+            <p className="text-xs text-muted-foreground mb-1">Viewing as:</p>
             <span className={`px-3 py-1 rounded text-white text-sm font-medium ${getRoleBadgeColor(roleName)}`}>
               {roleName}
             </span>
@@ -157,32 +157,31 @@ export default function TestModeBanner({ roleName }: TestModeBannerProps) {
                 key={role.name}
                 onClick={() => switchRole(role)}
                 disabled={switchingTo === role.name || role.name === roleName}
-                className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                  role.name === roleName ? 'bg-sky-50' : ''
-                } ${switchingTo === role.name ? 'opacity-50' : ''}`}
+                className={`w-full flex items-center justify-between px-4 py-3 hover:bg-accent transition-colors border-b border-border last:border-b-0 ${role.name === roleName ? 'bg-primary/10' : ''
+                  } ${switchingTo === role.name ? 'opacity-50' : ''}`}
               >
                 <div className="text-left">
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium text-gray-900 text-sm">{role.name}</span>
+                    <span className="font-medium text-foreground text-sm">{role.name}</span>
                     {role.name === roleName && (
-                      <span className="text-xs text-sky-600">(Current)</span>
+                      <span className="text-xs text-primary">(Current)</span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500">{role.description}</p>
+                  <p className="text-xs text-muted-foreground">{role.description}</p>
                 </div>
                 {switchingTo === role.name && (
-                  <div className="w-4 h-4 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 )}
               </button>
             ))}
           </div>
 
           {/* Footer - Exit Button */}
-          <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+          <div className="px-4 py-3 bg-muted border-t border-border">
             <button
               onClick={exitTestMode}
               disabled={isExiting}
-              className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 font-semibold text-sm"
+              className="w-full flex items-center justify-center space-x-2 bg-foreground text-yellow-400 px-4 py-2 rounded-lg hover:bg-foreground/90 transition-colors disabled:opacity-50 font-semibold text-sm"
             >
               <X className="w-4 h-4" />
               <span>{isExiting ? 'Exiting...' : 'Exit Test Mode'}</span>

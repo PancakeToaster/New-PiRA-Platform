@@ -140,7 +140,7 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                         <CardTitle>Ready to begin?</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="text-gray-600">
+                        <p className="text-muted-foreground">
                             Click start when you are ready.
                             {loading ? ' Loading...' : ''}
                         </p>
@@ -165,17 +165,17 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
     return (
         <div className="max-w-4xl mx-auto py-8 px-4">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border">
+            <div className="flex items-center justify-between mb-6 bg-card p-4 rounded-lg shadow-sm border border-border">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900">{quizData?.title}</h1>
-                    <div className="text-sm text-gray-500">
+                    <h1 className="text-xl font-bold text-foreground">{quizData?.title}</h1>
+                    <div className="text-sm text-muted-foreground">
                         Question {currentQuestionIndex + 1} of {questions.length}
                     </div>
                 </div>
                 {timeLeft !== null && (
                     <div className={cn(
                         "flex items-center gap-2 font-mono text-xl font-bold px-4 py-2 rounded-md",
-                        timeLeft < 60 ? "bg-red-100 text-red-600 animate-pulse" : "bg-gray-100 text-gray-700"
+                        timeLeft < 60 ? "bg-destructive/10 text-destructive animate-pulse" : "bg-muted text-muted-foreground"
                     )}>
                         <Timer className="w-5 h-5" />
                         {formatTime(timeLeft)}
@@ -189,10 +189,10 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                     <Card className="min-h-[400px] flex flex-col">
                         <CardContent className="p-6 flex-1">
                             <div className="mb-6">
-                                <h2 className="text-lg font-medium text-gray-900 mb-2">
+                                <h2 className="text-lg font-medium text-foreground mb-2">
                                     {currentQuestion.question}
                                 </h2>
-                                <span className="text-sm text-gray-500 italic">
+                                <span className="text-sm text-muted-foreground italic">
                                     {currentQuestion.points} points
                                 </span>
                             </div>
@@ -203,8 +203,8 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                     <label
                                         key={idx}
                                         className={cn(
-                                            "flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50",
-                                            responses[currentQuestion.id] === opt.text ? "border-sky-500 bg-sky-50 ring-1 ring-sky-500" : "border-gray-200"
+                                            "flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-accent",
+                                            responses[currentQuestion.id] === opt.text ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border"
                                         )}
                                     >
                                         <input
@@ -213,9 +213,9 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                             value={opt.text}
                                             checked={responses[currentQuestion.id] === opt.text}
                                             onChange={() => handleOptionSelect(currentQuestion.id, opt.text)}
-                                            className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300"
+                                            className="h-4 w-4 text-primary focus:ring-primary border-border"
                                         />
-                                        <span className="ml-3 text-gray-700">{opt.text}</span>
+                                        <span className="ml-3 text-foreground">{opt.text}</span>
                                     </label>
                                 ))}
 
@@ -225,8 +225,8 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                             <label
                                                 key={opt}
                                                 className={cn(
-                                                    "flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50",
-                                                    responses[currentQuestion.id] === opt ? "border-sky-500 bg-sky-50 ring-1 ring-sky-500" : "border-gray-200"
+                                                    "flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-accent",
+                                                    responses[currentQuestion.id] === opt ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border"
                                                 )}
                                             >
                                                 <input
@@ -235,9 +235,9 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                                     value={opt}
                                                     checked={responses[currentQuestion.id] === opt}
                                                     onChange={() => handleOptionSelect(currentQuestion.id, opt)}
-                                                    className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300"
+                                                    className="h-4 w-4 text-primary focus:ring-primary border-border"
                                                 />
-                                                <span className="ml-3 text-gray-700">{opt}</span>
+                                                <span className="ml-3 text-foreground">{opt}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -245,7 +245,7 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
 
                                 {(currentQuestion.questionType === 'short_answer' || currentQuestion.questionType === 'essay') && (
                                     <textarea
-                                        className="w-full border rounded-md p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 min-h-[150px]"
+                                        className="w-full border border-border rounded-md p-3 focus:ring-2 focus:ring-primary focus:border-primary min-h-[150px] bg-background text-foreground"
                                         placeholder="Type your answer here..."
                                         value={responses[currentQuestion.id] || ''}
                                         onChange={(e) => handleOptionSelect(currentQuestion.id, e.target.value)}
@@ -253,8 +253,7 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                 )}
                             </div>
                         </CardContent>
-
-                        <div className="border-t p-4 bg-gray-50 flex justify-between items-center rounded-b-lg">
+                        <div className="border-t border-border p-4 bg-muted/30 flex justify-between items-center rounded-b-lg">
                             <Button
                                 variant="ghost"
                                 onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
@@ -303,8 +302,8 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                         onClick={() => setCurrentQuestionIndex(idx)}
                                         className={cn(
                                             "w-full aspect-square flex items-center justify-center text-sm font-medium rounded-md transition-colors",
-                                            idx === currentQuestionIndex ? "ring-2 ring-sky-500 ring-offset-2 bg-white border-sky-500 text-sky-600" :
-                                                responses[q.id] ? "bg-sky-100 text-sky-800" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                            idx === currentQuestionIndex ? "ring-2 ring-primary ring-offset-2 bg-card border-primary text-primary" :
+                                                responses[q.id] ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground hover:bg-accent"
                                         )}
                                     >
                                         {idx + 1}
@@ -315,17 +314,17 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                                 ))}
                             </div>
 
-                            <div className="mt-6 space-y-2 text-xs text-gray-500">
+                            <div className="mt-6 space-y-2 text-xs text-muted-foreground">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-sky-100 rounded" />
+                                    <div className="w-3 h-3 bg-primary/20 rounded" />
                                     <span>Answered</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-gray-100 rounded" />
+                                    <div className="w-3 h-3 bg-muted rounded" />
                                     <span>Unanswered</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 border-2 border-sky-500 rounded" />
+                                    <div className="w-3 h-3 border-2 border-primary rounded" />
                                     <span>Current</span>
                                 </div>
                             </div>

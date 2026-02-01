@@ -1,0 +1,4 @@
+≡ƒöæ Found API Key: re_N4...Uyx4v
+≡ƒô¿ Attempting to send test email to delivered@resend.dev...
+Γ£à Success! Email accepted by Resend.
+   ID: 2b9acc0f-d7bf-48a8-994e-4b2c58f6193a

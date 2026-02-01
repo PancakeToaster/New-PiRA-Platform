@@ -26,10 +26,10 @@ export default async function ParentDashboard() {
   if (!parentId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Setup Required</h2>
-        <p className="text-gray-600 mb-4">No Parent Profile found for this user.</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">Setup Required</h2>
+        <p className="text-muted-foreground mb-4">No Parent Profile found for this user.</p>
         {typedUser.roles.includes('Admin') && (
-          <p className="text-sm text-sky-600">Admin Tip: Create at least one Parent Profile in the database to test this view.</p>
+          <p className="text-sm text-primary">Admin Tip: Create at least one Parent Profile in the database to test this view.</p>
         )}
       </div>
     );
@@ -181,10 +181,10 @@ export default async function ParentDashboard() {
     <div className="max-w-7xl mx-auto">
       {/* Personalized Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-foreground">
           Welcome back, {typedUser.firstName || typedUser.name || 'Parent'}
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           Here is what is happening with your students today.
         </p>
       </div>

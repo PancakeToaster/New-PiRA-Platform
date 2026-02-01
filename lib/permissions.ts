@@ -1,5 +1,6 @@
 import 'server-only';
 import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
 import { authOptions } from './auth';
 import { cookies } from 'next/headers';
 
@@ -129,4 +130,38 @@ export async function isStudent(): Promise<boolean> {
 
 export async function isParent(): Promise<boolean> {
   return hasRole('Parent');
+}
+
+/**
+ * Require admin access for an API route.
+ * Returns the current user if they are an admin, otherwise returns a 401 response.
+ */
+export async function requireAdmin(): Promise<
+  | { user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>> }
+  | { error: Response }
+> {
+  const user = await getCurrentUser();
+  if (!user || !user.roles?.includes('Admin')) {
+    return {
+      error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+  return { user };
+}
+
+/**
+ * Require authentication for an API route.
+ * Returns the current user if authenticated, otherwise returns a 401 response.
+ */
+export async function requireAuth(): Promise<
+  | { user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>> }
+  | { error: Response }
+> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+  return { user };
 }

@@ -12,6 +12,7 @@ import {
   Trophy,
   Clock,
   ArrowLeft,
+  ClipboardCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -53,6 +54,14 @@ export default async function StudentDetailPage({ params }: Props) {
         },
         orderBy: { enrolledAt: 'desc' },
       },
+      attendanceRecords: {
+        include: {
+          session: {
+            select: { date: true, topic: true, lmsCourse: { select: { name: true } } },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
     },
   });
 
@@ -66,6 +75,25 @@ export default async function StudentDetailPage({ params }: Props) {
   const completedEnrollments = student.courseEnrollments.filter(
     (e) => e.status === 'completed'
   );
+
+  // Attendance summary
+  const totalAttendance = student.attendanceRecords.length;
+  const presentCount = student.attendanceRecords.filter(
+    (r) => r.status === 'present'
+  ).length;
+  const absentCount = student.attendanceRecords.filter(
+    (r) => r.status === 'absent'
+  ).length;
+  const lateCount = student.attendanceRecords.filter(
+    (r) => r.status === 'late'
+  ).length;
+  const excusedCount = student.attendanceRecords.filter(
+    (r) => r.status === 'excused'
+  ).length;
+  const attendanceRate =
+    totalAttendance > 0
+      ? Math.round(((presentCount + lateCount) / totalAttendance) * 100)
+      : null;
 
   return (
     <div>
@@ -134,7 +162,7 @@ export default async function StudentDetailPage({ params }: Props) {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <Card>
               <CardContent className="pt-6 text-center">
                 <BookOpen className="w-8 h-8 text-sky-500 mx-auto mb-2" />
@@ -151,7 +179,89 @@ export default async function StudentDetailPage({ params }: Props) {
                 <p className="text-sm text-gray-500">Completed</p>
               </CardContent>
             </Card>
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <ClipboardCheck className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold">
+                  {attendanceRate !== null ? `${attendanceRate}%` : 'N/A'}
+                </p>
+                <p className="text-sm text-gray-500">Attendance</p>
+              </CardContent>
+            </Card>
           </div>
+
+          {/* Attendance Summary */}
+          {totalAttendance > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <ClipboardCheck className="w-5 h-5 mr-2 text-emerald-500" />
+                  Attendance Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-3 mb-4">
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <p className="text-lg font-bold text-green-700">{presentCount}</p>
+                    <p className="text-xs text-green-600">Present</p>
+                  </div>
+                  <div className="text-center p-3 bg-red-50 rounded-lg">
+                    <p className="text-lg font-bold text-red-700">{absentCount}</p>
+                    <p className="text-xs text-red-600">Absent</p>
+                  </div>
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                    <p className="text-lg font-bold text-yellow-700">{lateCount}</p>
+                    <p className="text-xs text-yellow-600">Late</p>
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <p className="text-lg font-bold text-blue-700">{excusedCount}</p>
+                    <p className="text-xs text-blue-600">Excused</p>
+                  </div>
+                </div>
+
+                {/* Recent absences/lates */}
+                {student.attendanceRecords
+                  .filter((r) => r.status === 'absent' || r.status === 'late')
+                  .length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Absences & Lates</h4>
+                    <div className="space-y-2">
+                      {student.attendanceRecords
+                        .filter((r) => r.status === 'absent' || r.status === 'late')
+                        .slice(0, 5)
+                        .map((record) => (
+                          <div
+                            key={record.id}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg text-sm"
+                          >
+                            <div>
+                              <span className="font-medium text-gray-900">
+                                {record.session.lmsCourse.name}
+                              </span>
+                              {record.session.topic && (
+                                <span className="text-gray-500"> — {record.session.topic}</span>
+                              )}
+                              <p className="text-xs text-gray-400">
+                                {new Date(record.session.date).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                record.status === 'absent'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}
+                            >
+                              {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Active Courses */}
           <Card>

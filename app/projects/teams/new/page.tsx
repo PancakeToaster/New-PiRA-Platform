@@ -81,7 +81,7 @@ export default function NewTeamPage() {
             Back
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Create New Team</h1>
+        <h1 className="text-3xl font-bold text-foreground">Create New Team</h1>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -91,57 +91,57 @@ export default function NewTeamPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Team Name *
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={handleNameChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                 placeholder="Engineering Team"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 URL Slug *
               </label>
               <input
                 type="text"
                 value={formData.slug}
                 onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                 placeholder="engineering-team"
                 required
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Team URL will be: /projects/teams/{formData.slug || 'your-slug'}
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Description
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                 placeholder="Describe what this team is working on..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Team Color
               </label>
               <div className="flex space-x-2">
@@ -150,18 +150,17 @@ export default function NewTeamPage() {
                     key={color}
                     type="button"
                     onClick={() => setFormData((prev) => ({ ...prev, color }))}
-                    className={`w-10 h-10 rounded-lg transition-all ${
-                      formData.color === color
-                        ? 'ring-2 ring-offset-2 ring-gray-400 scale-110'
-                        : 'hover:scale-105'
-                    }`}
+                    className={`w-10 h-10 rounded-lg transition-all ${formData.color === color
+                      ? 'ring-2 ring-offset-2 ring-offset-background ring-primary scale-110'
+                      : 'hover:scale-105'
+                      }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
             </div>
 
-            <div className="flex justify-end space-x-4 pt-4 border-t">
+            <div className="flex justify-end space-x-4 pt-4 border-t border-border">
               <Link href="/projects/teams">
                 <Button variant="outline" type="button">
                   Cancel

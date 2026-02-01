@@ -19,11 +19,16 @@ export async function GET() {
                         lastName: true,
                     },
                 },
+                _count: {
+                    select: { reads: true },
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
 
-        return NextResponse.json({ announcements });
+        const totalUsers = await prisma.user.count();
+
+        return NextResponse.json({ announcements, totalUsers });
     } catch (error) {
         console.error('[ANNOUNCEMENTS_GET]', error);
         return new NextResponse('Internal Error', { status: 500 });

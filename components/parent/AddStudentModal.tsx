@@ -103,25 +103,25 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
     if (successData) {
         return (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-                <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-8 text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-8 text-center">
+                    <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Student Added!</h3>
-                    <p className="text-gray-600 mb-6">Your student has been successfully linked to your account.</p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">Student Added!</h3>
+                    <p className="text-muted-foreground mb-6">Your student has been successfully linked to your account.</p>
 
                     {successData.childUsername && (
-                        <div className="bg-sky-50 border border-sky-100 p-4 rounded-lg mb-6 text-left">
-                            <h4 className="font-bold text-sky-900 mb-1">Login Information</h4>
-                            <p className="text-sm text-sky-800 mb-2">Please save this username for your child:</p>
-                            <div className="bg-white p-3 rounded border border-sky-200 font-mono text-center text-lg font-bold text-sky-600 select-all">
+                        <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg mb-6 text-left">
+                            <h4 className="font-bold text-primary mb-1">Login Information</h4>
+                            <p className="text-sm text-primary/80 mb-2">Please save this username for your child:</p>
+                            <div className="bg-background p-3 rounded border border-primary/30 font-mono text-center text-lg font-bold text-primary select-all">
                                 {successData.childUsername}
                             </div>
-                            <p className="text-xs text-sky-600 mt-2">Password: Student123!</p>
+                            <p className="text-xs text-primary/80 mt-2">Password: Student123!</p>
                         </div>
                     )}
 
-                    <Button onClick={handleClose} className="w-full bg-sky-600 hover:bg-sky-700">
+                    <Button onClick={handleClose} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                         Done
                     </Button>
                 </div>
@@ -131,20 +131,20 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="border-b px-6 py-4 flex justify-between items-center bg-gray-50">
-                    <h3 className="font-semibold text-lg flex items-center gap-2">
-                        <UserPlus className="w-5 h-5 text-sky-600" />
+            <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="border-b border-border px-6 py-4 flex justify-between items-center bg-muted/30">
+                    <h3 className="font-semibold text-lg flex items-center gap-2 text-foreground">
+                        <UserPlus className="w-5 h-5 text-primary" />
                         Add New Student
                     </h3>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={handleClose} className="text-muted-foreground hover:text-foreground">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     {error && (
-                        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md border border-red-200">
+                        <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md border border-destructive/20">
                             {error}
                         </div>
                     )}
@@ -195,12 +195,12 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                         <div className="flex items-center justify-between mb-1">
                             <Label htmlFor="email">Email Address {formData.noEmail ? '' : '*'}</Label>
                             {isUnder13 && (
-                                <label className="flex items-center text-xs text-sky-600 cursor-pointer">
+                                <label className="flex items-center text-xs text-primary cursor-pointer">
                                     <input
                                         type="checkbox"
                                         checked={formData.noEmail}
                                         onChange={(e) => setFormData(prev => ({ ...prev, noEmail: e.target.checked, email: e.target.checked ? '' : prev.email }))}
-                                        className="mr-1 rounded text-sky-500 focus:ring-sky-400"
+                                        className="mr-1 rounded text-primary focus:ring-primary"
                                     />
                                     No email?
                                 </label>
@@ -208,8 +208,8 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                         </div>
 
                         {formData.noEmail ? (
-                            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
-                                <span className="font-semibold text-gray-800">Account will be generated.</span> Login username will be shown after creation.
+                            <div className="p-3 bg-muted border border-border rounded-lg text-sm text-muted-foreground">
+                                <span className="font-semibold text-foreground">Account will be generated.</span> Login username will be shown after creation.
                             </div>
                         ) : (
                             <>
@@ -222,7 +222,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                                     placeholder="student@example.com"
                                     disabled={formData.noEmail}
                                 />
-                                <p className="text-xs text-gray-500">Used for student login</p>
+                                <p className="text-xs text-muted-foreground">Used for student login</p>
                             </>
                         )}
                     </div>
@@ -241,7 +241,7 @@ export default function AddStudentModal({ isOpen, onClose }: AddStudentModalProp
                         <Button type="button" variant="outline" onClick={handleClose}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading} className="bg-sky-600 hover:bg-sky-700">
+                        <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Create Student
                         </Button>

@@ -103,7 +103,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
     return (
         <div className="flex flex-col h-full">
             {/* Toolbar */}
-            <div className="border-b border-gray-200 p-2 flex flex-wrap gap-1 bg-white sticky top-0 z-10">
+            <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-card sticky top-0 z-10">
                 <ToolbarButton
                     onClick={() => insertMarkdown('**', '**', 'bold text')}
                     icon={<Bold className="w-4 h-4" />}
@@ -125,7 +125,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
                     title="Inline Code"
                 />
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+                <div className="w-px h-6 bg-border mx-1" />
 
                 <ToolbarButton
                     onClick={() => insertMarkdown('# ', '', 'Heading 1')}
@@ -143,7 +143,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
                     title="Heading 3"
                 />
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+                <div className="w-px h-6 bg-border mx-1" />
 
                 <ToolbarButton
                     onClick={() => insertMarkdown('- ', '', 'List item')}
@@ -161,7 +161,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
                     title="Quote"
                 />
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+                <div className="w-px h-6 bg-border mx-1" />
 
                 <ToolbarButton
                     onClick={() => insertMarkdown('[', '](url)', 'link text')}
@@ -177,7 +177,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
                 {/* Save Status */}
                 <div className="ml-auto flex items-center space-x-2 text-sm">
                     {saveStatus === 'saving' && (
-                        <span className="text-gray-500 flex items-center">
+                        <span className="text-muted-foreground flex items-center">
                             <span className="animate-spin mr-1">⏳</span> Saving...
                         </span>
                     )}
@@ -198,7 +198,7 @@ export default function MarkdownEditor({ content, onSave, onChange, nodeId }: Ma
                     ref={textareaRef}
                     value={markdown}
                     onChange={handleChange}
-                    className="flex-1 w-full p-4 font-mono text-sm resize-none focus:outline-none border-0 min-h-full"
+                    className="flex-1 w-full p-4 font-mono text-sm resize-none focus:outline-none border-0 min-h-full bg-background text-foreground"
                     placeholder="Write your markdown here..."
                     spellCheck={false}
                 />
@@ -221,7 +221,7 @@ function ToolbarButton({
         <button
             onClick={onClick}
             title={title}
-            className="p-2 rounded hover:bg-gray-100 transition-colors text-gray-700"
+            className="p-2 rounded hover:bg-accent transition-colors text-foreground"
         >
             {icon}
         </button>

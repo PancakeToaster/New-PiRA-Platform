@@ -110,7 +110,7 @@ export default function TestimonialsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -118,7 +118,7 @@ export default function TestimonialsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-900">Testimonials</h1>
+                <h1 className="text-3xl font-bold text-foreground">Testimonials</h1>
             </div>
 
             {/* Create/Edit Form */}
@@ -130,7 +130,7 @@ export default function TestimonialsPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Name
                                 </label>
                                 <input
@@ -138,17 +138,17 @@ export default function TestimonialsPage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Role
                                 </label>
                                 <select
                                     value={formData.role}
                                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 >
                                     <option value="Parent">Parent</option>
                                     <option value="Student">Student</option>
@@ -172,13 +172,13 @@ export default function TestimonialsPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Rating
                                 </label>
                                 <select
                                     value={formData.rating}
                                     onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 >
                                     {[1, 2, 3, 4, 5].map((num) => (
                                         <option key={num} value={num}>
@@ -193,9 +193,9 @@ export default function TestimonialsPage() {
                                         type="checkbox"
                                         checked={formData.isActive}
                                         onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                        className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
+                                        className="w-4 h-4 text-primary border-input rounded focus:ring-primary"
                                     />
-                                    <span className="text-sm font-medium text-gray-700">Active</span>
+                                    <span className="text-sm font-medium text-foreground">Active</span>
                                 </label>
                             </div>
                         </div>
@@ -221,8 +221,8 @@ export default function TestimonialsPage() {
                         <CardContent className="pt-6">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{testimonial.name}</h3>
-                                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                                    <h3 className="font-bold text-foreground">{testimonial.name}</h3>
+                                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -231,10 +231,10 @@ export default function TestimonialsPage() {
                                 </div>
                             </div>
 
-                            <p className="text-gray-600 text-sm mb-4">{testimonial.content}</p>
+                            <p className="text-muted-foreground text-sm mb-4">{testimonial.content}</p>
 
-                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <span className={`px-2 py-1 text-xs font-medium rounded-full ${testimonial.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                            <div className="flex items-center justify-between pt-4 border-t border-border">
+                                <span className={`px-2 py-1 text-xs font-medium rounded-full ${testimonial.isActive ? 'bg-green-500/10 text-green-500' : 'bg-muted text-muted-foreground'}`}>
                                     {testimonial.isActive ? 'Active' : 'Inactive'}
                                 </span>
                                 <div className="flex space-x-2">
@@ -260,7 +260,7 @@ export default function TestimonialsPage() {
             </div>
 
             {testimonials.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-muted-foreground">
                     <p>No testimonials yet. Create your first one above!</p>
                 </div>
             )}

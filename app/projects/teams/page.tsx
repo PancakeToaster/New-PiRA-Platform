@@ -88,24 +88,24 @@ export default function TeamsPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
         <input
           type="text"
           placeholder="Search teams..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+          className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
         />
       </div>
 
       {/* Tabs */}
       {teams.some(t => !t.isActive) && ( // Only show tabs if there are archived teams
-        <div className="flex space-x-1 border-b border-gray-200 mb-6">
+        <div className="flex space-x-1 border-b border-border mb-6">
           <button
             onClick={() => setStatus('active')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${status === 'active'
-              ? 'border-sky-500 text-sky-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
           >
             Active Teams
@@ -113,8 +113,8 @@ export default function TeamsPage() {
           <button
             onClick={() => setStatus('archived')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${status === 'archived'
-              ? 'border-sky-500 text-sky-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
           >
             Archived
@@ -127,11 +127,11 @@ export default function TeamsPage() {
         <Card>
           <CardContent className="py-12">
             <div className="text-center">
-              <Users className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
               {teams.length === 0 ? (
                 <>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No teams yet</h3>
-                  <p className="text-gray-500 mb-4">
+                  <h3 className="text-lg font-medium text-foreground mb-2">No teams yet</h3>
+                  <p className="text-muted-foreground mb-4">
                     Create your first team to start collaborating on projects.
                   </p>
                   <Link href="/projects/teams/new">
@@ -143,8 +143,8 @@ export default function TeamsPage() {
                 </>
               ) : (
                 <>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No {status} teams found</h3>
-                  <p className="text-gray-500">
+                  <h3 className="text-lg font-medium text-foreground mb-2">No {status} teams found</h3>
+                  <p className="text-muted-foreground">
                     {searchQuery ? 'Try adjusting your search query.' :
                       status === 'archived' ? 'You have no archived teams.' : 'You have no active teams.'}
                   </p>
@@ -157,7 +157,7 @@ export default function TeamsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTeams.map((team) => (
             <Link key={team.id} href={`/projects/teams/${team.slug}`}>
-              <Card className={`h-full hover:shadow-lg transition-shadow cursor-pointer ${!team.isActive ? 'bg-gray-50 border-gray-200' : ''}`}>
+              <Card className={`h-full hover:shadow-lg transition-shadow cursor-pointer ${!team.isActive ? 'bg-muted/50 border-input' : 'bg-card'}`}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div
@@ -167,20 +167,20 @@ export default function TeamsPage() {
                       {team.name.charAt(0).toUpperCase()}
                     </div>
                     {!team.isActive && (
-                      <span className="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full font-medium">
+                      <span className="px-2 py-1 text-xs bg-muted text-muted-foreground rounded-full font-medium">
                         Archived
                       </span>
                     )}
                   </div>
-                  <CardTitle className={`mt-4 ${!team.isActive ? 'text-gray-600' : ''}`}>{team.name}</CardTitle>
+                  <CardTitle className={`mt-4 ${!team.isActive ? 'text-muted-foreground' : 'text-foreground'}`}>{team.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {team.description && (
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                       {team.description}
                     </p>
                   )}
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Users className="w-4 h-4" />
                       <span>{team._count.members} members</span>
@@ -195,17 +195,17 @@ export default function TeamsPage() {
                       {team.members.slice(0, 5).map((member, index) => (
                         <div
                           key={index}
-                          className="w-8 h-8 rounded-full bg-sky-100 border-2 border-white flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/30 border-2 border-background flex items-center justify-center"
                           title={`${member.user.firstName} ${member.user.lastName}`}
                         >
-                          <span className="text-xs font-medium text-sky-700">
+                          <span className="text-xs font-medium text-sky-700 dark:text-sky-400">
                             {member.user.firstName.charAt(0)}
                           </span>
                         </div>
                       ))}
                       {team._count.members > 5 && (
-                        <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-500">
+                        <div className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                          <span className="text-xs font-medium text-muted-foreground">
                             +{team._count.members - 5}
                           </span>
                         </div>

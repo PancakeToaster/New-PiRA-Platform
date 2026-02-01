@@ -185,7 +185,7 @@ export default function EditUserPage() {
     const showParentFields = selectedRoles.includes('parent');
     const showTeacherFields = selectedRoles.includes('teacher');
 
-    if (loading) return <div className="flex justify-center h-64 items-center"><Loader2 className="animate-spin text-sky-600" /></div>;
+    if (loading) return <div className="flex justify-center h-64 items-center"><Loader2 className="animate-spin text-primary" /></div>;
 
     return (
         <div className="space-y-6">
@@ -196,12 +196,12 @@ export default function EditUserPage() {
                         Back to Users
                     </Button>
                 </Link>
-                <h1 className="text-3xl font-bold text-gray-900">Edit User</h1>
+                <h1 className="text-3xl font-bold text-foreground">Edit User</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="max-w-3xl">
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive">
                         {error}
                     </div>
                 )}
@@ -214,45 +214,45 @@ export default function EditUserPage() {
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">First Name *</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.firstName}
                                     onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Last Name *</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.lastName}
                                     onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Email *</label>
                                 <input
                                     type="email"
                                     required
                                     value={formData.email}
                                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Username (Optional)</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Username (Optional)</label>
                                 <input
                                     type="text"
                                     value={formData.username}
                                     onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     placeholder="e.g. john.doe"
                                 />
                             </div>
@@ -267,12 +267,12 @@ export default function EditUserPage() {
                                         minLength={8}
                                         value={formData.password}
                                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg pr-10"
+                                        className="w-full px-3 py-2 border border-input rounded-lg pr-10 bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                     >
                                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
@@ -305,7 +305,7 @@ export default function EditUserPage() {
                                 .map((role) => (
                                     <label
                                         key={role.id}
-                                        className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData.roles.includes(role.name) ? 'border-sky-500 bg-sky-50' : 'border-gray-200 hover:border-gray-300'
+                                        className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData.roles.includes(role.name) ? 'border-primary bg-primary/5' : 'border-border hover:border-input'
                                             }`}
                                     >
                                         <input
@@ -315,7 +315,7 @@ export default function EditUserPage() {
                                             className="sr-only"
                                         />
                                         <div>
-                                            <p className="font-medium text-gray-900">{role.name}</p>
+                                            <p className="font-medium text-foreground">{role.name}</p>
                                         </div>
                                     </label>
                                 ))}
@@ -325,33 +325,33 @@ export default function EditUserPage() {
 
                 {/* --- CRM: Student Profile --- */}
                 {showStudentFields && (
-                    <Card className="mb-6 border-sky-200 shadow-sm">
-                        <CardHeader className="bg-sky-50 rounded-t-lg">
-                            <CardTitle className="text-sky-800">Student CRM & Profile</CardTitle>
+                    <Card className="mb-6 border-primary/20 shadow-sm">
+                        <CardHeader className="bg-primary/5 rounded-t-lg">
+                            <CardTitle className="text-primary">Student CRM & Profile</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             {/* Discounts Section */}
-                            <div className="p-4 bg-white border border-gray-200 rounded-lg space-y-4">
-                                <h3 className="font-semibold text-gray-900 border-b pb-2">Discounts & Referrals</h3>
+                            <div className="p-4 bg-card border border-border rounded-lg space-y-4">
+                                <h3 className="font-semibold text-foreground border-b border-border pb-2">Discounts & Referrals</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Performance Discount (%)</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Performance Discount (%)</label>
                                         <input
                                             type="number"
                                             min="0"
                                             max="100"
                                             value={formData.performanceDiscount}
                                             onChange={(e) => setFormData(prev => ({ ...prev, performanceDiscount: parseFloat(e.target.value) || 0 }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500"
+                                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-primary bg-background text-foreground"
                                         />
-                                        <p className="text-xs text-gray-500 mt-1">Manual discount for student performance.</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Manual discount student performance.</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Referred By</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Referred By</label>
                                         <select
                                             value={formData.referredById}
                                             onChange={(e) => setFormData(prev => ({ ...prev, referredById: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500"
+                                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-primary bg-background text-foreground"
                                         >
                                             <option value="">-- No Referrer --</option>
                                             {students
@@ -362,38 +362,38 @@ export default function EditUserPage() {
                                                     </option>
                                                 ))}
                                         </select>
-                                        <p className="text-xs text-gray-500 mt-1">Links to another student for referral bonus.</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Links to another student for referral bonus.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Date of Birth</label>
                                     <input
                                         type="date"
                                         value={formData.dateOfBirth}
                                         onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">School</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">School</label>
                                     <input
                                         type="text"
                                         value={formData.school}
                                         onChange={(e) => setFormData(prev => ({ ...prev, school: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Grade</label>
                                 <input
                                     type="text"
                                     value={formData.grade}
                                     onChange={(e) => setFormData(prev => ({ ...prev, grade: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                         </CardContent>
@@ -408,33 +408,33 @@ export default function EditUserPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
                                 <input
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Address</label>
                                 <textarea
                                     value={formData.address}
                                     onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                                     rows={2}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
 
-                            <div className="pt-4 border-t border-gray-100">
+                            <div className="pt-4 border-t border-border">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Linked Children</label>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 border rounded-lg bg-gray-50">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 border border-border rounded-lg bg-muted/50">
                                     {students.map(student => (
                                         <label
                                             key={student.studentProfile?.id || student.id}
                                             className={`flex items-center p-2 rounded cursor-pointer border transition-all ${formData.studentIds.includes(student.studentProfile?.id)
-                                                ? 'bg-sky-100 border-sky-300 text-sky-900'
-                                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                                ? 'bg-primary/10 border-primary text-primary-foreground'
+                                                : 'bg-card border-border hover:border-input'
                                                 }`}
                                         >
                                             <input
@@ -450,9 +450,9 @@ export default function EditUserPage() {
                                             </div>
                                         </label>
                                     ))}
-                                    {students.length === 0 && <p className="text-gray-500 text-sm p-2">No students found.</p>}
+                                    {students.length === 0 && <p className="text-muted-foreground text-sm p-2">No students found.</p>}
                                 </div>
-                                <p className="text-xs text-gray-500 mt-2">Select the students that belong to this parent.</p>
+                                <p className="text-xs text-muted-foreground mt-2">Select the students that belong to this parent.</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -466,16 +466,16 @@ export default function EditUserPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Specialization</label>
                                 <input
                                     type="text"
                                     value={formData.specialization}
                                     onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Bio</label>
                                 <textarea
                                     value={formData.bio}
                                     onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}

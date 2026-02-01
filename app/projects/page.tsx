@@ -101,35 +101,35 @@ export default function ProjectsDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'done':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case 'in_progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
       case 'review':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
       case 'blocked':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'text-red-600';
+        return 'text-red-600 dark:text-red-400';
       case 'high':
-        return 'text-orange-600';
+        return 'text-orange-600 dark:text-orange-400';
       case 'medium':
-        return 'text-yellow-600';
+        return 'text-yellow-600 dark:text-yellow-400';
       default:
-        return 'text-gray-400';
+        return 'text-muted-foreground';
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -138,8 +138,8 @@ export default function ProjectsDashboard() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-gray-500">
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <p className="mt-1 text-muted-foreground">
           Welcome back! Here's an overview of your projects and tasks.
         </p>
       </div>
@@ -149,12 +149,12 @@ export default function ProjectsDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-sky-100 rounded-lg">
-                <FolderKanban className="w-6 h-6 text-sky-600" />
+              <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg">
+                <FolderKanban className="w-6 h-6 text-sky-600 dark:text-sky-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalTasks}</p>
-                <p className="text-sm text-gray-500">Total Tasks</p>
+                <p className="text-2xl font-bold text-foreground">{stats.totalTasks}</p>
+                <p className="text-sm text-muted-foreground">Total Tasks</p>
               </div>
             </div>
           </CardContent>
@@ -163,12 +163,12 @@ export default function ProjectsDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.completedTasks}</p>
-                <p className="text-sm text-gray-500">Completed</p>
+                <p className="text-2xl font-bold text-foreground">{stats.completedTasks}</p>
+                <p className="text-sm text-muted-foreground">Completed</p>
               </div>
             </div>
           </CardContent>
@@ -177,12 +177,12 @@ export default function ProjectsDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Clock className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.inProgressTasks}</p>
-                <p className="text-sm text-gray-500">In Progress</p>
+                <p className="text-2xl font-bold text-foreground">{stats.inProgressTasks}</p>
+                <p className="text-sm text-muted-foreground">In Progress</p>
               </div>
             </div>
           </CardContent>
@@ -191,12 +191,12 @@ export default function ProjectsDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <AlertCircle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.overdueTasks}</p>
-                <p className="text-sm text-gray-500">Overdue</p>
+                <p className="text-2xl font-bold text-foreground">{stats.overdueTasks}</p>
+                <p className="text-sm text-muted-foreground">Overdue</p>
               </div>
             </div>
           </CardContent>
@@ -219,8 +219,8 @@ export default function ProjectsDashboard() {
           </CardHeader>
           <CardContent>
             {recentTasks.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <FolderKanban className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <div className="text-center py-8 text-muted-foreground">
+                <FolderKanban className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
                 <p>No tasks assigned yet</p>
                 <p className="text-sm">Join a team to start working on projects</p>
               </div>
@@ -232,10 +232,10 @@ export default function ProjectsDashboard() {
                     href={`/projects/${task.project.team.slug}/${task.project.slug}/tasks/${task.id}`}
                     className="block"
                   >
-                    <div className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate">{task.title}</p>
-                        <p className="text-sm text-gray-500">{task.project.name}</p>
+                        <p className="font-medium text-foreground truncate">{task.title}</p>
+                        <p className="text-sm text-muted-foreground">{task.project.name}</p>
                       </div>
                       <div className="flex items-center space-x-2 ml-4">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
@@ -267,8 +267,8 @@ export default function ProjectsDashboard() {
           </CardHeader>
           <CardContent>
             {teams.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <FolderKanban className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <div className="text-center py-8 text-muted-foreground">
+                <FolderKanban className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
                 <p>No teams yet</p>
                 <p className="text-sm">Create or join a team to get started</p>
               </div>
@@ -280,7 +280,7 @@ export default function ProjectsDashboard() {
                     href={`/projects/teams/${team.slug}`}
                     className="block"
                   >
-                    <div className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="flex items-center space-x-3">
                         <div
                           className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
@@ -289,13 +289,13 @@ export default function ProjectsDashboard() {
                           {team.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{team.name}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="font-medium text-foreground">{team.name}</p>
+                          <p className="text-sm text-muted-foreground">
                             {team.projectCount} projects · {team.memberCount} members
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-gray-400" />
+                      <ArrowRight className="w-5 h-5 text-muted-foreground" />
                     </div>
                   </Link>
                 ))}

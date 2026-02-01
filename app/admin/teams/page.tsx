@@ -187,7 +187,7 @@ export default function AdminTeamsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -195,7 +195,7 @@ export default function AdminTeamsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Teams & Projects</h1>
+        <h1 className="text-3xl font-bold text-foreground">Teams & Projects</h1>
         <Button onClick={() => setShowNewTeamModal(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create New Team
@@ -207,8 +207,8 @@ export default function AdminTeamsPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-500">Total Teams</p>
+              <p className="text-3xl font-bold text-foreground">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Teams</p>
             </div>
           </CardContent>
         </Card>
@@ -216,23 +216,23 @@ export default function AdminTeamsPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600">{stats.active}</p>
-              <p className="text-sm text-gray-500">Active</p>
+              <p className="text-sm text-muted-foreground">Active</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-400">{stats.inactive}</p>
-              <p className="text-sm text-gray-500">Inactive</p>
+              <p className="text-3xl font-bold text-muted-foreground/50">{stats.inactive}</p>
+              <p className="text-sm text-muted-foreground">Inactive</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-sky-600">{stats.totalMembers}</p>
-              <p className="text-sm text-gray-500">Total Members</p>
+              <p className="text-3xl font-bold text-primary">{stats.totalMembers}</p>
+              <p className="text-sm text-muted-foreground">Total Members</p>
             </div>
           </CardContent>
         </Card>
@@ -240,7 +240,7 @@ export default function AdminTeamsPage() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-purple-600">{stats.totalProjects}</p>
-              <p className="text-sm text-gray-500">Total Projects</p>
+              <p className="text-sm text-muted-foreground">Total Projects</p>
             </div>
           </CardContent>
         </Card>
@@ -251,19 +251,19 @@ export default function AdminTeamsPage() {
         <CardContent className="py-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search teams..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -276,7 +276,7 @@ export default function AdminTeamsPage() {
       {/* Teams List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTeams.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-gray-500">
+          <div className="col-span-full text-center py-12 text-muted-foreground">
             {teams.length === 0
               ? 'No teams yet. Create your first team!'
               : 'No teams found matching your search.'}
@@ -291,28 +291,27 @@ export default function AdminTeamsPage() {
               <CardContent className="pt-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-gray-900">{team.name}</h3>
-                    <p className="text-sm text-gray-500">/{team.slug}</p>
+                    <h3 className="font-semibold text-foreground">{team.name}</h3>
+                    <p className="text-sm text-muted-foreground">/{team.slug}</p>
                   </div>
                   <button
                     onClick={() => handleToggleStatus(team)}
-                    className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      team.isActive
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
+                    className={`px-2 py-1 text-xs font-medium rounded-full ${team.isActive
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'bg-muted text-muted-foreground'
+                      }`}
                   >
                     {team.isActive ? 'Active' : 'Inactive'}
                   </button>
                 </div>
 
                 {team.description && (
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {team.description}
                   </p>
                 )}
 
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center space-x-1">
                     <Users className="w-4 h-4" />
                     <span>{team._count.members} members</span>
@@ -329,17 +328,17 @@ export default function AdminTeamsPage() {
                     {team.members.slice(0, 5).map((member) => (
                       <div
                         key={member.user.id}
-                        className="w-8 h-8 rounded-full bg-sky-100 border-2 border-white flex items-center justify-center"
+                        className="w-8 h-8 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"
                         title={`${member.user.firstName} ${member.user.lastName} (${member.role})`}
                       >
-                        <span className="text-xs font-medium text-sky-700">
+                        <span className="text-xs font-medium text-primary">
                           {member.user.firstName.charAt(0)}
                         </span>
                       </div>
                     ))}
                     {team._count.members > 5 && (
-                      <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                        <span className="text-xs font-medium text-gray-500">
+                      <div className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                        <span className="text-xs font-medium text-muted-foreground">
                           +{team._count.members - 5}
                         </span>
                       </div>
@@ -347,7 +346,7 @@ export default function AdminTeamsPage() {
                   </div>
                 )}
 
-                <div className="flex items-center space-x-2 pt-3 border-t">
+                <div className="flex items-center space-x-2 pt-3 border-t border-border">
                   <Link href={`/projects/teams/${team.slug}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full">
                       <Eye className="w-4 h-4 mr-1" />
@@ -375,13 +374,13 @@ export default function AdminTeamsPage() {
 
       {/* New Team Modal */}
       {showNewTeamModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Create New Team</h3>
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md mx-4">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">Create New Team</h3>
               <button
                 onClick={() => setShowNewTeamModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -389,7 +388,7 @@ export default function AdminTeamsPage() {
 
             <form onSubmit={handleCreateTeam} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Team Name *
                 </label>
                 <input
@@ -402,14 +401,14 @@ export default function AdminTeamsPage() {
                       slug: generateSlug(e.target.value),
                     }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="Awesome Robotics Team"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   URL Slug *
                 </label>
                 <input
@@ -418,14 +417,14 @@ export default function AdminTeamsPage() {
                   onChange={(e) =>
                     setNewTeam((prev) => ({ ...prev, slug: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="awesome-robotics-team"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Description
                 </label>
                 <textarea
@@ -434,13 +433,13 @@ export default function AdminTeamsPage() {
                     setNewTeam((prev) => ({ ...prev, description: e.target.value }))
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="Describe the team..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Team Color
                 </label>
                 <div className="flex items-center space-x-2">
@@ -458,7 +457,7 @@ export default function AdminTeamsPage() {
                     onChange={(e) =>
                       setNewTeam((prev) => ({ ...prev, color: e.target.value }))
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="flex-1 px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                 </div>
               </div>

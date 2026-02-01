@@ -7,6 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import { clientHasRole } from '@/lib/permissions-client';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -130,7 +131,7 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isCollapsed
         ? 'bg-transparent'
         : isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-sm'
+          ? 'bg-background/90 backdrop-blur-md shadow-sm'
           : 'bg-transparent'
         }`}
     >
@@ -144,7 +145,7 @@ export default function Navbar() {
               <div className="relative h-16 w-60">
                 <Image
                   src="/images/logo.png"
-                  alt="Robotics Academy Logo"
+                  alt="PiRA Logo"
                   fill
                   sizes="(max-width: 768px) 100vw, 240px"
                   className="object-contain object-left"
@@ -157,57 +158,58 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
               <Link
                 href="/about"
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
               >
                 About
               </Link>
               <Link
                 href="/courses"
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
               >
                 Courses
               </Link>
               <Link
                 href="/events"
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
               >
                 Events
               </Link>
               <Link
                 href="/blog"
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
               >
                 Blog
               </Link>
+              <ThemeToggle />
               {user ? (
                 <div className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center space-x-1 text-gray-700 hover:text-sky-500 focus:outline-none"
+                    className="flex items-center space-x-1 text-foreground/80 hover:text-primary focus:outline-none"
                   >
                     <span className="text-sm font-medium">{user.name}</span>
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
+                    <div className="absolute right-0 mt-2 w-48 bg-popover text-popover-foreground rounded-lg shadow-lg py-2 border border-border">
                       <Link
                         href="/portal"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50"
+                        className="block px-4 py-2 text-sm text-foreground/80 hover:bg-accent"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         Portal
                       </Link>
                       <Link
                         href="/contact"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50"
+                        className="block px-4 py-2 text-sm text-foreground/80 hover:bg-accent"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         Contact Us
                       </Link>
-                      <hr className="my-1 border-gray-200" />
+                      <hr className="my-1 border-border" />
                       <button
                         onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-sky-50"
+                        className="block w-full text-left px-4 py-2 text-sm text-foreground/80 hover:bg-accent"
                       >
                         Sign Out
                       </button>
@@ -222,29 +224,29 @@ export default function Navbar() {
                 >
                   <Link
                     href="/join"
-                    className="flex items-center space-x-1 bg-sky-500 text-white px-5 py-2 rounded-full hover:bg-sky-600 transition-colors text-sm font-medium"
+                    className="flex items-center space-x-1 bg-primary text-primary-foreground px-5 py-2 rounded-full hover:bg-primary/90 transition-colors text-sm font-medium"
                   >
                     <span>Join Now</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isJoinDropdownOpen ? 'rotate-180' : ''}`} />
                   </Link>
                   {isJoinDropdownOpen && (
                     <div
-                      className={`absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${isJoinDropdownVisible
+                      className={`absolute right-0 mt-2 w-40 bg-popover text-popover-foreground rounded-lg shadow-xl py-2 border border-border transition-all duration-300 ${isJoinDropdownVisible
                         ? 'opacity-100 translate-y-0'
                         : 'opacity-0 -translate-y-2'
                         }`}
                     >
                       <Link
                         href="/join"
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 font-medium"
+                        className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary font-medium"
                         onClick={() => setIsJoinDropdownOpen(false)}
                       >
                         Create Account
                       </Link>
-                      <hr className="my-1 border-gray-100" />
+                      <hr className="my-1 border-border" />
                       <Link
                         href="/login"
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                        className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                         onClick={() => setIsJoinDropdownOpen(false)}
                       >
                         Sign In
@@ -258,7 +260,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-gray-700 focus:outline-none"
+              className="md:hidden text-foreground/80 focus:outline-none"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -268,19 +270,20 @@ export default function Navbar() {
 
       {/* Collapsed navbar - floating dropdown trigger */}
       {isCollapsed && (
-        <div className="flex justify-end p-4">
+        <div className="flex justify-end items-center gap-2 p-4">
+          <ThemeToggle />
           <div
             className="relative"
             onMouseEnter={handleDropdownOpen}
             onMouseLeave={handleDropdownClose}
           >
             {user ? (
-              <button className="flex items-center space-x-1 text-gray-800 hover:text-sky-500 font-medium text-sm bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm transition-all hover:shadow-md">
+              <button className="flex items-center space-x-1 text-foreground hover:text-primary font-medium text-sm bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm transition-all hover:shadow-md">
                 <span>{user.name}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
             ) : (
-              <button className="flex items-center space-x-1 bg-sky-500 text-white px-5 py-2 rounded-full hover:bg-sky-600 transition-all text-sm font-medium shadow-sm hover:shadow-md">
+              <button className="flex items-center space-x-1 bg-primary text-primary-foreground px-5 py-2 rounded-full hover:bg-primary/90 transition-all text-sm font-medium shadow-sm hover:shadow-md">
                 <span>Join Now</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -289,7 +292,7 @@ export default function Navbar() {
             {/* Dropdown menu */}
             {isDropdownOpen && (
               <div
-                className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-100 transition-all duration-300 ${isDropdownVisible
+                className={`absolute right-0 mt-2 w-48 bg-popover text-popover-foreground rounded-lg shadow-xl py-2 border border-border transition-all duration-300 ${isDropdownVisible
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 -translate-y-2'
                   }`}
@@ -298,73 +301,73 @@ export default function Navbar() {
                   <>
                     <Link
                       href={getDashboardLink()}
-                      className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 font-medium"
+                      className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary font-medium"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       Dashboard
                     </Link>
-                    <hr className="my-1 border-gray-100" />
+                    <hr className="my-1 border-border" />
                   </>
                 )}
                 <Link
                   href="/about"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   About
                 </Link>
                 <Link
                   href="/courses"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   Courses
                 </Link>
                 <Link
                   href="/events"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   Events
                 </Link>
                 <Link
                   href="/blog"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   Blog
                 </Link>
                 <Link
                   href="/join"
-                  className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   Join Us
                 </Link>
-                <hr className="my-1 border-gray-100" />
+                <hr className="my-1 border-border" />
                 <Link
                   href="/contact"
-                  className="block px-4 py-2.5 text-sm text-gray-500 hover:bg-sky-50 hover:text-sky-600"
+                  className="block px-4 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   Contact Us
                 </Link>
                 {user ? (
                   <>
-                    <hr className="my-1 border-gray-100" />
+                    <hr className="my-1 border-border" />
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                      className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-destructive/10"
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
                   <>
-                    <hr className="my-1 border-gray-100" />
+                    <hr className="my-1 border-border" />
                     <Link
                       href="/login"
-                      className="block px-4 py-2.5 text-sm text-sky-600 hover:bg-sky-50 font-medium"
+                      className="block px-4 py-2.5 text-sm text-primary hover:bg-accent font-medium"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       Sign In
@@ -379,63 +382,63 @@ export default function Navbar() {
 
       {/* Mobile Menu - only shown when not collapsed */}
       {isMobileMenuOpen && !isCollapsed && (
-        <div className="md:hidden bg-white border-t border-gray-100">
+        <div className="md:hidden bg-popover border-t border-border">
           <div className="px-4 pt-2 pb-4 space-y-1">
             <Link
               href="/about"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link
               href="/courses"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Courses
             </Link>
             <Link
               href="/events"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Events
             </Link>
             <Link
               href="/blog"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Blog
             </Link>
             <Link
               href="/join"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Join Us
             </Link>
             <Link
               href="/contact"
-              className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+              className="block px-3 py-2 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Contact Us
             </Link>
             {user ? (
               <>
-                <hr className="my-2 border-gray-200" />
+                <hr className="my-2 border-border" />
                 <Link
                   href={getDashboardLink()}
-                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-sky-50 rounded-md"
+                  className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md"
+                  className="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-destructive/10 rounded-md"
                 >
                   Sign Out
                 </button>
@@ -443,7 +446,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="block px-3 py-2 text-base font-medium text-sky-500 hover:bg-sky-50 rounded-md"
+                className="block px-3 py-2 text-base font-medium text-primary hover:bg-accent rounded-md"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Sign In

@@ -61,19 +61,19 @@ export default function CreateAnnouncementPage() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
-            <Link href="/admin/announcements" className="flex items-center text-gray-500 hover:text-gray-900">
+            <Link href="/admin/announcements" className="flex items-center text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Announcements
             </Link>
 
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-900">New Announcement</h1>
+                <h1 className="text-3xl font-bold text-foreground">New Announcement</h1>
             </div>
 
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Megaphone className="w-5 h-5 text-sky-500" />
+                        <Megaphone className="w-5 h-5 text-primary" />
                         Announcement Details
                     </CardTitle>
                 </CardHeader>
@@ -116,7 +116,7 @@ export default function CreateAnnouncementPage() {
                                         placeholder={type === 'course' ? 'Enter Course ID' : 'Enter Team ID'}
                                         required
                                     />
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground">
                                         Check the Course/Team URL for ID (e.g. /admin/courses/[id])
                                     </p>
                                 </div>
@@ -130,33 +130,33 @@ export default function CreateAnnouncementPage() {
                                     <input
                                         type="checkbox"
                                         id="sendToAll"
-                                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">All Users</span>
+                                    <span className="ml-2 text-sm text-foreground">All Users</span>
                                 </label>
                                 <label className="flex items-center">
                                     <input
                                         type="checkbox"
                                         id="sendToStudents"
-                                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">Students</span>
+                                    <span className="ml-2 text-sm text-foreground">Students</span>
                                 </label>
                                 <label className="flex items-center">
                                     <input
                                         type="checkbox"
                                         id="sendToParents"
-                                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">Parents</span>
+                                    <span className="ml-2 text-sm text-foreground">Parents</span>
                                 </label>
                                 <label className="flex items-center">
                                     <input
                                         type="checkbox"
                                         id="sendToTeachers"
-                                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                                        className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                                     />
-                                    <span className="ml-2 text-sm text-gray-700">Teachers</span>
+                                    <span className="ml-2 text-sm text-foreground">Teachers</span>
                                 </label>
                             </div>
                         </div>

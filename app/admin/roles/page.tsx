@@ -21,7 +21,7 @@ export default async function AdminRolesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Roles & Permissions</h1>
+        <h1 className="text-3xl font-bold text-foreground">Roles & Permissions</h1>
         <Button>
           Create New Role
         </Button>
@@ -31,28 +31,28 @@ export default async function AdminRolesPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{roles.length}</p>
-              <p className="text-sm text-gray-500">Total Roles</p>
+              <p className="text-3xl font-bold text-foreground">{roles.length}</p>
+              <p className="text-sm text-muted-foreground">Total Roles</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-sky-500">
+              <p className="text-3xl font-bold text-sky-600 dark:text-sky-400">
                 {totalUsers}
               </p>
-              <p className="text-sm text-gray-500">Users with Roles</p>
+              <p className="text-sm text-muted-foreground">Users with Roles</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-purple-600">
+              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                 {roles.reduce((sum, role) => sum + role._count.permissions, 0)}
               </p>
-              <p className="text-sm text-gray-500">Total Permissions</p>
+              <p className="text-sm text-muted-foreground">Total Permissions</p>
             </div>
           </CardContent>
         </Card>
@@ -65,9 +65,9 @@ export default async function AdminRolesPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle>{role.name}</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">{role.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{role.description}</p>
                 </div>
-                <span className="px-3xl font-medium rounded-full bg-blue-100 text-blue-800">
+                <span className="px-3xl font-medium rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   {role._count.users} users
                 </span>
               </div>
@@ -75,10 +75,10 @@ export default async function AdminRolesPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Permissions:</p>
+                  <p className="text-sm font-medium text-foreground mb-2">Permissions:</p>
                   <div className="flex flex-wrap gap-2">
                     {role._count.permissions === 0 ? (
-                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
+                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-muted/50 text-muted-foreground">
                         No permissions assigned
                       </span>
                     ) : role.permissions.length > 0 ? (
@@ -86,13 +86,13 @@ export default async function AdminRolesPage() {
                         {role.permissions.slice(0, 5).map((rp) => (
                           <span
                             key={rp.id}
-                            className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700"
+                            className="px-2 py-1 text-xs font-medium rounded-full bg-muted text-foreground"
                           >
                             {rp.permission.resource}:{rp.permission.action}
                           </span>
                         ))}
                         {role.permissions.length > 5 && (
-                          <span className="px-2 py-1 text-xs font-medium text-gray-500">
+                          <span className="px-2 py-1 text-xs font-medium text-muted-foreground">
                             +{role.permissions.length - 5} more
                           </span>
                         )}
@@ -125,40 +125,40 @@ export default async function AdminRolesPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Content Management</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="p-4 border rounded-lg border-border">
+              <h3 className="font-medium text-foreground mb-2">Content Management</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• page.view, page.edit</li>
                 <li>• blog.view, blog.create, blog.edit</li>
                 <li>• course.view, course.manage</li>
               </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">User Management</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="p-4 border rounded-lg border-border">
+              <h3 className="font-medium text-foreground mb-2">User Management</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• user.view_all, user.create</li>
                 <li>• user.edit, user.delete</li>
                 <li>• role.manage</li>
               </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Learning Management</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="p-4 border rounded-lg border-border">
+              <h3 className="font-medium text-foreground mb-2">Learning Management</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• knowledge.view, knowledge.create</li>
                 <li>• assignment.view_all, assignment.create</li>
                 <li>• assignment.grade, progress.view_all</li>
               </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Financial</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="p-4 border rounded-lg border-border">
+              <h3 className="font-medium text-foreground mb-2">Financial</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• invoice.view_all, invoice.create</li>
                 <li>• invoice.edit, invoice.delete</li>
               </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Analytics</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
+            <div className="p-4 border rounded-lg border-border">
+              <h3 className="font-medium text-foreground mb-2">Analytics</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• analytics.view</li>
                 <li>• system.monitor, system.manage</li>
               </ul>

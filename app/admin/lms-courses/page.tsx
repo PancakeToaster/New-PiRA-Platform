@@ -118,7 +118,7 @@ export default function AdminLMSCoursesPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -128,8 +128,8 @@ export default function AdminLMSCoursesPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">LMS Courses</h1>
-                    <p className="text-gray-600 mt-1">Manage teaching courses, enrollments, and content</p>
+                    <h1 className="text-3xl font-bold text-foreground">LMS Courses</h1>
+                    <p className="text-muted-foreground mt-1">Manage teaching courses, enrollments, and content</p>
                 </div>
                 <Button onClick={() => setIsCreateModalOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -142,18 +142,18 @@ export default function AdminLMSCoursesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="text-center">
-                            <p className="text-3xl font-bold text-gray-900">{courses.length}</p>
-                            <p className="text-sm text-gray-500">Total Courses</p>
+                            <p className="text-3xl font-bold text-foreground">{courses.length}</p>
+                            <p className="text-sm text-muted-foreground">Total Courses</p>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="pt-6">
                         <div className="text-center">
-                            <p className="text-3xl font-bold text-sky-600">
+                            <p className="text-3xl font-bold text-primary">
                                 {courses.reduce((sum, c) => sum + (c._count?.enrollments || 0), 0)}
                             </p>
-                            <p className="text-sm text-gray-500">Total Enrollments</p>
+                            <p className="text-sm text-muted-foreground">Total Enrollments</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -163,7 +163,7 @@ export default function AdminLMSCoursesPage() {
                             <p className="text-3xl font-bold text-green-600">
                                 {courses.filter(c => c.instructorId).length}
                             </p>
-                            <p className="text-sm text-gray-500">With Instructors</p>
+                            <p className="text-sm text-muted-foreground">With Instructors</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -173,13 +173,13 @@ export default function AdminLMSCoursesPage() {
             <Card>
                 <CardContent className="py-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                         <input
                             type="text"
                             placeholder="Search courses..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                         />
                     </div>
                 </CardContent>
@@ -189,7 +189,7 @@ export default function AdminLMSCoursesPage() {
             <div className="grid grid-cols-1 gap-4">
                 {filteredCourses.length === 0 ? (
                     <Card>
-                        <CardContent className="p-8 text-center text-gray-600">
+                        <CardContent className="p-8 text-center text-muted-foreground">
                             {courses.length === 0
                                 ? 'No courses yet. Create courses in the Offerings section first.'
                                 : 'No courses found matching your search.'}
@@ -201,13 +201,13 @@ export default function AdminLMSCoursesPage() {
                             <CardContent className="p-6">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                        <h3 className="text-xl font-semibold text-foreground mb-2">
                                             {course.name}
                                         </h3>
-                                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                                             {course.description}
                                         </p>
-                                        <div className="flex gap-4 text-sm text-gray-600">
+                                        <div className="flex gap-4 text-sm text-muted-foreground">
                                             <div className="flex items-center gap-1">
                                                 <Users className="w-4 h-4" />
                                                 <span>{course._count?.enrollments || 0} students</span>
@@ -218,7 +218,7 @@ export default function AdminLMSCoursesPage() {
                                             <span>{course._count?.assignments || 0} assignments</span>
                                         </div>
                                         {course.instructor && (
-                                            <p className="text-sm text-gray-500 mt-2">
+                                            <p className="text-sm text-muted-foreground mt-2">
                                                 Instructor: {course.instructor.firstName} {course.instructor.lastName}
                                             </p>
                                         )}
@@ -251,7 +251,7 @@ export default function AdminLMSCoursesPage() {
             >
                 <form onSubmit={handleCreateCourse} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Course Name *
                         </label>
                         <input
@@ -259,13 +259,13 @@ export default function AdminLMSCoursesPage() {
                             required
                             value={createForm.name}
                             onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                             placeholder="e.g., Introduction to Robotics"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Course Code *
                         </label>
                         <input
@@ -273,32 +273,32 @@ export default function AdminLMSCoursesPage() {
                             required
                             value={createForm.code}
                             onChange={(e) => setCreateForm({ ...createForm, code: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                             placeholder="e.g., ROBO-101-2024-SPRING"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Description
                         </label>
                         <textarea
                             value={createForm.description}
                             onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                             rows={3}
                             placeholder="Course description..."
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Instructor (Optional)
                         </label>
                         <select
                             value={createForm.instructorId}
                             onChange={(e) => setCreateForm({ ...createForm, instructorId: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                         >
                             <option value="">No instructor assigned</option>
                             {teachers.map((teacher) => (

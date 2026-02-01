@@ -66,7 +66,7 @@ export function ConfirmDialog({
             <div className="text-center">
                 {getIcon()}
 
-                <div className="text-gray-600 mb-8">
+                <div className="text-muted-foreground mb-8">
                     {message}
                 </div>
 

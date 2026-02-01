@@ -2,21 +2,42 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 
-export async function GET() {
+const createUserSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  firstName: z.string().min(1, 'First name is required').max(100),
+  lastName: z.string().min(1, 'Last name is required').max(100),
+  roles: z.array(z.string()).optional(),
+  dateOfBirth: z.string().optional().nullable(),
+  grade: z.string().optional().nullable(),
+  school: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  bio: z.string().optional().nullable(),
+  specialization: z.string().optional().nullable(),
+});
+
+export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
   const userIsAdmin = await isAdmin();
 
   if (!user || !userIsAdmin) {
-    console.log('[API_ADMIN_USERS] Unauthorized access attempt:', { user: !!user, isAdmin: userIsAdmin });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    console.log('[API_ADMIN_USERS] Fetching users...');
-    const [users, totalStudents, totalParents, totalTeachers] = await Promise.all([
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50')));
+    const skip = (page - 1) * limit;
+
+    const [users, totalCount, totalStudents, totalParents, totalTeachers] = await Promise.all([
       prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
         include: {
           roles: {
             where: {
@@ -56,6 +77,7 @@ export async function GET() {
           teacherProfile: { select: { id: true, specialization: true } },
         },
       }),
+      prisma.user.count(),
       prisma.studentProfile.count(),
       prisma.parentProfile.count(),
       prisma.teacherProfile.count(),
@@ -64,10 +86,16 @@ export async function GET() {
     return NextResponse.json({
       users,
       stats: {
-        total: users.length,
+        total: totalCount,
         students: totalStudents,
         parents: totalParents,
         teachers: totalTeachers,
+      },
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
       },
     });
   } catch (error) {
@@ -86,35 +114,36 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    const parsed = createUserSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input' },
+        { status: 400 }
+      );
+    }
+
     const {
       email,
       password,
       firstName,
       lastName,
       roles: roleNames,
-      // Student-specific fields
       dateOfBirth,
       grade,
       school,
-      // Parent-specific fields
       phone,
       address,
-      // Teacher-specific fields
       bio,
       specialization,
-    } = body;
+    } = parsed.data;
 
-    // Validate required fields
-    if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json(
-        { error: 'Email, password, first name, and last name are required' },
-        { status: 400 }
-      );
-    }
+    // Normalize email
+    const normalizedEmail = email.toLowerCase();
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -141,7 +170,7 @@ export async function POST(request: NextRequest) {
       // Create the user
       const user = await tx.user.create({
         data: {
-          email,
+          email: normalizedEmail,
           password: hashedPassword,
           firstName,
           lastName,

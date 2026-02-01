@@ -12,8 +12,8 @@ services:
       POSTGRES_DB: robotics_academy
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"  # Uncomment for local development only — do not expose in production
     networks:
       - robotics_network
     healthcheck:
@@ -46,8 +46,9 @@ services:
       - robotics_network
     command: >
       sh -c "npx prisma migrate deploy &&
-             npx prisma db seed &&
              node server.js"
+    # To seed the database on first run, use:
+    #   docker compose exec app npx prisma db seed
 
   # Nginx Reverse Proxy
   nginx:
@@ -65,6 +66,30 @@ services:
       - ./uploads:/usr/share/nginx/html/uploads:ro
     networks:
       - robotics_network
+
+  # Database Backup Service
+  backup:
+    image: postgres:16-alpine
+    container_name: robotics_academy_backup
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${DB_PASSWORD:-postgres_password}
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_NAME: robotics_academy
+      BACKUP_DIR: /backups
+      RETENTION_DAYS: 30
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    entrypoint: /bin/sh
+    command: >
+      -c "chmod +x /backup.sh && echo '0 2 * * * /backup.sh >> /var/log/backup.log 2>&1' > /etc/crontabs/root && crond -f -l 2 -L /dev/stdout"
+    networks:
+      - robotics_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:

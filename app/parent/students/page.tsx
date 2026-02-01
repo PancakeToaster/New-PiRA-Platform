@@ -11,7 +11,7 @@ export default async function ParentStudentsPage() {
   if (!user?.profiles?.parent) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Parent profile not found</p>
+        <p className="text-muted-foreground">Parent profile not found</p>
       </div>
     );
   }
@@ -42,7 +42,7 @@ export default async function ParentStudentsPage() {
   if (!parentProfile) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Parent profile not found</p>
+        <p className="text-muted-foreground">Parent profile not found</p>
       </div>
     );
   }
@@ -53,8 +53,8 @@ export default async function ParentStudentsPage() {
     <div>
       <div className="mb-8 flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Students</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-foreground">My Students</h1>
+          <p className="text-muted-foreground mt-2">
             View and manage information about your enrolled students
           </p>
         </div>
@@ -64,11 +64,11 @@ export default async function ParentStudentsPage() {
       {students.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <User className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               No Students Linked
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               No students are currently linked to your account.
             </p>
             <StudentListActions isEmptyState />
@@ -85,14 +85,14 @@ export default async function ParentStudentsPage() {
               <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center">
-                      <User className="w-8 h-8 text-sky-600" />
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="w-8 h-8 text-primary" />
                     </div>
                     <div>
                       <CardTitle className="text-xl">
                         {student.user.firstName} {student.user.lastName}
                       </CardTitle>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         {student.user.email}
                       </p>
                     </div>
@@ -101,19 +101,19 @@ export default async function ParentStudentsPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {student.grade && (
-                      <div className="flex items-center text-gray-600">
+                      <div className="flex items-center text-muted-foreground">
                         <GraduationCap className="w-4 h-4 mr-2" />
                         <span>Grade {student.grade}</span>
                       </div>
                     )}
                     {student.school && (
-                      <div className="flex items-center text-gray-600">
+                      <div className="flex items-center text-muted-foreground">
                         <School className="w-4 h-4 mr-2" />
                         <span>{student.school}</span>
                       </div>
                     )}
                     {student.dateOfBirth && (
-                      <div className="flex items-center text-gray-600">
+                      <div className="flex items-center text-muted-foreground">
                         <Calendar className="w-4 h-4 mr-2" />
                         <span>
                           Born:{' '}
@@ -122,7 +122,7 @@ export default async function ParentStudentsPage() {
                       </div>
                     )}
                     <div className="pt-3 border-t">
-                      <p className="text-sm font-medium text-gray-700">
+                      <p className="text-sm font-medium text-foreground">
                         Active Enrollments
                       </p>
                       {student.courseEnrollments.length > 0 ? (
@@ -130,19 +130,19 @@ export default async function ParentStudentsPage() {
                           {student.courseEnrollments.slice(0, 3).map((enrollment) => (
                             <span
                               key={enrollment.id}
-                              className="px-2 py-1 bg-sky-100 text-sky-700 text-xs rounded-full"
+                              className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
                             >
                               {enrollment.lmsCourse.name}
                             </span>
                           ))}
                           {student.courseEnrollments.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                            <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                               +{student.courseEnrollments.length - 3} more
                             </span>
                           )}
                         </div>
                       ) : (
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           No active courses
                         </p>
                       )}

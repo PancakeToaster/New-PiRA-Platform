@@ -49,7 +49,7 @@ export default function AdminContentEditor({
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
-                    class: 'text-sky-500 hover:text-sky-600 underline',
+                    class: 'text-primary hover:text-primary/90 underline',
                 },
             }),
         ],
@@ -115,7 +115,7 @@ export default function AdminContentEditor({
     return (
         <div className="relative">
             {/* Admin Controls */}
-            <div className="sticky top-20 z-10 bg-white border-b border-gray-200 shadow-sm mb-4">
+            <div className="sticky top-20 z-10 bg-background border-b border-border shadow-sm mb-4">
                 <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         {!isEditMode ? (
@@ -157,7 +157,7 @@ export default function AdminContentEditor({
                         </span>
                     )}
                     {saveStatus === 'error' && (
-                        <span className="text-sm text-red-600 font-medium">
+                        <span className="text-sm text-destructive font-medium">
                             ✗ Failed to save
                         </span>
                     )}
@@ -166,10 +166,10 @@ export default function AdminContentEditor({
                 {/* Toolbar - Only visible in edit mode */}
                 {isEditMode && (
                     <div className="max-w-4xl mx-auto px-4 pb-3">
-                        <div className="flex flex-wrap gap-1 bg-gray-50 p-2 rounded-lg border border-gray-200">
+                        <div className="flex flex-wrap gap-1 bg-muted/50 p-2 rounded-lg border border-border">
                             <button
                                 onClick={() => editor.chain().focus().toggleBold().run()}
-                                className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-300' : ''
+                                className={`p-2 rounded hover:bg-accent ${editor.isActive('bold') ? 'bg-accent/80' : ''
                                     }`}
                                 title="Bold"
                             >
@@ -177,7 +177,7 @@ export default function AdminContentEditor({
                             </button>
                             <button
                                 onClick={() => editor.chain().focus().toggleItalic().run()}
-                                className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-300' : ''
+                                className={`p-2 rounded hover:bg-accent ${editor.isActive('italic') ? 'bg-accent/80' : ''
                                     }`}
                                 title="Italic"
                             >
@@ -263,7 +263,7 @@ export default function AdminContentEditor({
             </div>
 
             {/* Editor Content */}
-            <div className={`prose prose-lg max-w-none ${isEditMode ? 'border-2 border-sky-200 rounded-lg p-4' : ''}`}>
+            <div className={`prose prose-lg max-w-none ${isEditMode ? 'border-2 border-primary/20 rounded-lg p-4' : ''}`}>
                 <EditorContent editor={editor} />
             </div>
         </div>

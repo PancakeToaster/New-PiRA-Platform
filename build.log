@@ -26,12 +26,53 @@ Import trace for requested module:
 
    Linting and checking validity of types ...
    Collecting page data ...
-   Generating static pages (0/92) ...
-   Generating static pages (23/92) 
+   Generating static pages (0/117) ...
+[ANNOUNCEMENTS_GET] n [Error]: Dynamic server usage: Route /api/announcements couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\9276.js:1:37220)
+    at d (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:27870)
+    at s (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:20859)
+    at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\blog\route.js:1:5090)
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\announcements\route.js:1:1280)
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093) {
+  description: "Route /api/announcements couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+[ADMIN_STUDENTS_GET] n [Error]: Dynamic server usage: Route /api/admin/students couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\9276.js:1:37220)
+    at d (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:27870)
+    at s (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:20859)
+    at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\assignments\[id]\submissions\[submissionId]\route.js:1:4810)
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\students\route.js:1:1290)
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093) {
+  description: "Route /api/admin/students couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+[TEACHERS_GET] n [Error]: Dynamic server usage: Route /api/admin/teachers couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\9276.js:1:37220)
+    at d (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:27870)
+    at s (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:20859)
+    at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\assignments\route.js:1:5408)
+    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\teachers\route.js:1:1280)
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093) {
+  description: "Route /api/admin/teachers couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
 Failed to fetch courses: B [Error]: Dynamic server usage: Route /api/courses couldn't be rendered statically because it used `nextUrl.searchParams`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at V (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:21778)
     at Object.get (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:29137)
-    at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\courses\route.js:1:590)
+    at p (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\courses\route.js:1:590)
     at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
     at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
     at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
@@ -42,11 +83,12 @@ Failed to fetch courses: B [Error]: Dynamic server usage: Route /api/courses cou
   description: "Route /api/courses couldn't be rendered statically because it used `nextUrl.searchParams`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
+   Generating static pages (29/117) 
 Graph data fetch error: n [Error]: Dynamic server usage: Route /api/wiki/graph couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at l (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\9276.js:1:37220)
     at d (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:27870)
     at s (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\1790.js:25:20859)
-    at c (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\calendar\route.js:1:7814)
+    at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\admin\assignments\route.js:1:5408)
     at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\api\wiki\graph\route.js:1:1279)
     at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
     at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
@@ -56,38 +98,259 @@ Graph data fetch error: n [Error]: Dynamic server usage: Route /api/wiki/graph c
   description: "Route /api/wiki/graph couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
-   Generating static pages (46/92) 
+   Generating static pages (58/117) 
+   Generating static pages (87/117) 
+ Γ£ô Generating static pages (117/117)
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-Error occurred prerendering page "/". Read more: https://nextjs.org/docs/messages/prerender-error
+Route (app)                                                                    Size     First Load JS
+Γöî Γùï /                                                                          3.88 kB         117 kB
+Γö£ Γùï /_not-found                                                                880 B          88.4 kB
+Γö£ ╞Æ /about                                                                     979 B           157 kB
+Γö£ ╞Æ /admin                                                                     71 kB           165 kB
+Γö£ ╞Æ /admin/analytics                                                           4.61 kB        98.9 kB
+Γö£ ╞Æ /admin/announcements                                                       240 B          96.5 kB
+Γö£ ╞Æ /admin/announcements/create                                                3.06 kB         199 kB
+Γö£ ╞Æ /admin/blog                                                                5.41 kB         108 kB
+Γö£ ╞Æ /admin/blog/[id]                                                           4.94 kB         214 kB
+Γö£ ╞Æ /admin/calendar                                                            4.87 kB        99.2 kB
+Γö£ ╞Æ /admin/courses                                                             6.14 kB         114 kB
+Γö£ ╞Æ /admin/courses/[id]                                                        4.17 kB         107 kB
+Γö£ ╞Æ /admin/courses/[id]/assignments                                            241 B          96.5 kB
+Γö£ ╞Æ /admin/courses/[id]/assignments/[assignmentId]/edit                        183 B           106 kB
+Γö£ ╞Æ /admin/courses/[id]/assignments/[assignmentId]/submissions                 3 kB            106 kB
+Γö£ ╞Æ /admin/courses/[id]/assignments/[assignmentId]/submissions/[submissionId]  3.71 kB         107 kB
+Γö£ ╞Æ /admin/courses/[id]/assignments/new                                        192 B           106 kB
+Γö£ ╞Æ /admin/courses/[id]/attendance                                             4.67 kB         108 kB
+Γö£ ╞Æ /admin/courses/[id]/builder                                                5.64 kB         138 kB
+Γö£ ╞Æ /admin/courses/[id]/grades                                                 2.98 kB        97.3 kB
+Γö£ ╞Æ /admin/courses/[id]/manage                                                 2.94 kB         106 kB
+Γö£ ╞Æ /admin/courses/[id]/quizzes                                                241 B          96.5 kB
+Γö£ ╞Æ /admin/courses/[id]/quizzes/[quizId]/builder                               4.63 kB         111 kB
+Γö£ ╞Æ /admin/courses/[id]/quizzes/new                                            3.42 kB         106 kB
+Γö£ ╞Æ /admin/courses/new                                                         3.27 kB         106 kB
+Γö£ ╞Æ /admin/email-test                                                          2.86 kB        97.2 kB
+Γö£ ╞Æ /admin/finance/expenses                                                    240 B          96.5 kB
+Γö£ ╞Æ /admin/finance/expenses/new                                                4.21 kB         107 kB
+Γö£ ╞Æ /admin/finance/inventory                                                   240 B          96.5 kB
+Γö£ ╞Æ /admin/finance/inventory/new                                               3.24 kB         106 kB
+Γö£ ╞Æ /admin/finance/payroll                                                     240 B          96.5 kB
+Γö£ ╞Æ /admin/finance/payroll/new                                                 3.97 kB         107 kB
+Γö£ ╞Æ /admin/invoices                                                            3.26 kB         625 kB
+Γö£ ╞Æ /admin/invoices/[id]                                                       3.54 kB         625 kB
+Γö£ ╞Æ /admin/invoices/[id]/edit                                                  4.09 kB         107 kB
+Γö£ ╞Æ /admin/invoices/new                                                        5.15 kB         108 kB
+Γö£ ╞Æ /admin/knowledge                                                           3.42 kB         106 kB
+Γö£ ╞Æ /admin/learning-paths                                                      4.22 kB        98.6 kB
+Γö£ ╞Æ /admin/lms-courses                                                         4.12 kB         107 kB
+Γö£ ╞Æ /admin/roles                                                               152 B          87.7 kB
+Γö£ ╞Æ /admin/rubrics                                                             3.83 kB        98.2 kB
+Γö£ ╞Æ /admin/settings                                                            2.76 kB        97.1 kB
+Γö£ ╞Æ /admin/students                                                            4.11 kB        98.4 kB
+Γö£ ╞Æ /admin/team                                                                3.18 kB        97.5 kB
+Γö£ ╞Æ /admin/teams                                                               4.7 kB          108 kB
+Γö£ ╞Æ /admin/testimonials                                                        3.26 kB        97.6 kB
+Γö£ ╞Æ /admin/users                                                               7.56 kB         142 kB
+Γö£ ╞Æ /admin/users/[id]                                                          5.77 kB         109 kB
+Γö£ ╞Æ /admin/users/new                                                           3.65 kB         107 kB
+Γö£ ╞Æ /api/admin/analytics                                                       0 B                0 B
+Γö£ ╞Æ /api/admin/announcements                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/announcements/[id]                                              0 B                0 B
+Γö£ ╞Æ /api/admin/assignments                                                     0 B                0 B
+Γö£ ╞Æ /api/admin/assignments/[id]                                                0 B                0 B
+Γö£ ╞Æ /api/admin/assignments/[id]/rubric-grade                                   0 B                0 B
+Γö£ ╞Æ /api/admin/assignments/[id]/submissions/[submissionId]                     0 B                0 B
+Γö£ ╞Æ /api/admin/badges                                                          0 B                0 B
+Γö£ ╞Æ /api/admin/badges/[id]                                                     0 B                0 B
+Γö£ ╞Æ /api/admin/blog                                                            0 B                0 B
+Γö£ ╞Æ /api/admin/blog/[id]                                                       0 B                0 B
+Γö£ ╞Æ /api/admin/calendar                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/certificates                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/certificates/[id]                                               0 B                0 B
+Γö£ ╞Æ /api/admin/courses                                                         0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/attendance                                         0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/attendance/[sessionId]                             0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/enrollments                                        0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/gradebook                                          0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/gradebook/export                                   0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/modules                                            0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/modules/[moduleId]                                 0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/modules/[moduleId]/lessons                         0 B                0 B
+Γö£ ╞Æ /api/admin/courses/[id]/modules/[moduleId]/lessons/[lessonId]              0 B                0 B
+Γö£ ╞Æ /api/admin/expenses                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/expenses/[id]                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/inventory                                                       0 B                0 B
+Γö£ ╞Æ /api/admin/inventory/[id]                                                  0 B                0 B
+Γö£ ╞Æ /api/admin/invoices                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/invoices/[id]                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/invoices/[id]/send                                              0 B                0 B
+Γö£ ╞Æ /api/admin/knowledge                                                       0 B                0 B
+Γö£ ╞Æ /api/admin/knowledge/[id]                                                  0 B                0 B
+Γö£ ╞Æ /api/admin/learning-paths                                                  0 B                0 B
+Γö£ ╞Æ /api/admin/learning-paths/[id]                                             0 B                0 B
+Γö£ ╞Æ /api/admin/lms-courses                                                     0 B                0 B
+Γö£ ╞Æ /api/admin/lms-courses/[id]/enrollments                                    0 B                0 B
+Γö£ ╞Æ /api/admin/pages                                                           0 B                0 B
+Γö£ ╞Æ /api/admin/pages/[id]                                                      0 B                0 B
+Γö£ ╞Æ /api/admin/payroll/runs                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/payroll/runs/[id]                                               0 B                0 B
+Γö£ ╞Æ /api/admin/quizzes                                                         0 B                0 B
+Γö£ ╞Æ /api/admin/quizzes/[id]                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/quizzes/[id]/questions                                          0 B                0 B
+Γö£ ╞Æ /api/admin/quizzes/[id]/questions/[questionId]                             0 B                0 B
+Γö£ ╞Æ /api/admin/roles                                                           0 B                0 B
+Γö£ ╞Æ /api/admin/rubrics                                                         0 B                0 B
+Γö£ ╞Æ /api/admin/rubrics/[id]                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/settings                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/settings/[key]                                                  0 B                0 B
+Γö£ ╞Æ /api/admin/staff                                                           0 B                0 B
+Γö£ ╞Æ /api/admin/staff/[id]                                                      0 B                0 B
+Γö£ ╞Æ /api/admin/students                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/students/[id]/badges                                            0 B                0 B
+Γö£ ╞Æ /api/admin/students/[id]/certificates                                      0 B                0 B
+Γö£ ╞Æ /api/admin/system/health                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/teachers                                                        0 B                0 B
+Γö£ ╞Æ /api/admin/teams                                                           0 B                0 B
+Γö£ ╞Æ /api/admin/teams/[id]                                                      0 B                0 B
+Γö£ ╞Æ /api/admin/test-mode                                                       0 B                0 B
+Γö£ ╞Æ /api/admin/testimonials                                                    0 B                0 B
+Γö£ ╞Æ /api/admin/testimonials/[id]                                               0 B                0 B
+Γö£ ╞Æ /api/admin/users                                                           0 B                0 B
+Γö£ ╞Æ /api/admin/users/[id]                                                      0 B                0 B
+Γö£ ╞Æ /api/admin/users/approve                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/users/bulk                                                      0 B                0 B
+Γö£ ╞Æ /api/admin/users/pending                                                   0 B                0 B
+Γö£ ╞Æ /api/admin/users/resend-invite                                             0 B                0 B
+Γö£ ╞Æ /api/announcements                                                         0 B                0 B
+Γö£ ╞Æ /api/announcements/[id]/read                                               0 B                0 B
+Γö£ ╞Æ /api/announcements/unread-count                                            0 B                0 B
+Γö£ ╞Æ /api/auth/[...nextauth]                                                    0 B                0 B
+Γö£ ╞Æ /api/auth/register                                                         0 B                0 B
+Γö£ Γùï /api/blog                                                                  0 B                0 B
+Γö£ ╞Æ /api/calendar                                                              0 B                0 B
+Γö£ ╞Æ /api/calendar/[id]                                                         0 B                0 B
+Γö£ ╞Æ /api/calendar/export                                                       0 B                0 B
+Γö£ ╞Æ /api/contact                                                               0 B                0 B
+Γö£ ╞Æ /api/courses                                                               0 B                0 B
+Γö£ ╞Æ /api/courses/[courseId]/interest                                           0 B                0 B
+Γö£ Γùï /api/csrf                                                                  0 B                0 B
+Γö£ ╞Æ /api/email/send                                                            0 B                0 B
+Γö£ ╞Æ /api/forums/[courseId]                                                     0 B                0 B
+Γö£ ╞Æ /api/forums/lms/[lmsCourseId]                                              0 B                0 B
+Γö£ ╞Æ /api/forums/threads/[threadId]                                             0 B                0 B
+Γö£ ╞Æ /api/inventory                                                             0 B                0 B
+Γö£ ╞Æ /api/lms/courses/[id]/forum                                                0 B                0 B
+Γö£ ╞Æ /api/lms/courses/[id]/forum/[threadId]/posts                               0 B                0 B
+Γö£ ╞Æ /api/lms/courses/[id]/grades                                               0 B                0 B
+Γö£ ╞Æ /api/lms/learning-paths                                                    0 B                0 B
+Γö£ ╞Æ /api/parent/students                                                       0 B                0 B
+Γö£ ╞Æ /api/portfolio/[studentId]                                                 0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]                                     0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]/tasks                               0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]/tasks/[taskId]                      0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]/tasks/[taskId]/checklist            0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]/tasks/[taskId]/checklist/[itemId]   0 B                0 B
+Γö£ ╞Æ /api/projects/[teamSlug]/[projectSlug]/tasks/[taskId]/move                 0 B                0 B
+Γö£ ╞Æ /api/projects/dashboard/stats                                              0 B                0 B
+Γö£ ╞Æ /api/projects/dashboard/tasks                                              0 B                0 B
+Γö£ ╞Æ /api/projects/subteams/[subTeamId]/members                                 0 B                0 B
+Γö£ ╞Æ /api/projects/teams                                                        0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]                                               0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/files                                         0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/folders                                       0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/members                                       0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/projects                                      0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/subteams                                      0 B                0 B
+Γö£ ╞Æ /api/projects/teams/[teamId]/tasks                                         0 B                0 B
+Γö£ ╞Æ /api/student/assignments                                                   0 B                0 B
+Γö£ ╞Æ /api/student/assignments/[id]                                              0 B                0 B
+Γö£ ╞Æ /api/student/courses/[id]/progress                                         0 B                0 B
+Γö£ ╞Æ /api/student/portfolio                                                     0 B                0 B
+Γö£ ╞Æ /api/student/portfolio/[id]                                                0 B                0 B
+Γö£ ╞Æ /api/student/profile/achievements                                          0 B                0 B
+Γö£ ╞Æ /api/student/quizzes/[id]                                                  0 B                0 B
+Γö£ ╞Æ /api/student/quizzes/[id]/start                                            0 B                0 B
+Γö£ ╞Æ /api/student/quizzes/[id]/submit                                           0 B                0 B
+Γö£ ╞Æ /api/upload                                                                0 B                0 B
+Γö£ ╞Æ /api/upload/assignment                                                     0 B                0 B
+Γö£ ╞Æ /api/upload/receipt                                                        0 B                0 B
+Γö£ ╞Æ /api/wiki/folders                                                          0 B                0 B
+Γö£ ╞Æ /api/wiki/graph                                                            0 B                0 B
+Γö£ ╞Æ /api/wiki/move                                                             0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]                                                       0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/canvas                                                0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/comments                                              0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/comments/[commentId]                                  0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/content                                               0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/publish                                               0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/suggestions                                           0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/suggestions/[suggestionId]                            0 B                0 B
+Γö£ ╞Æ /api/wiki/nodes/[id]/title                                                 0 B                0 B
+Γö£ Γùï /blog                                                                      878 B           114 kB
+Γö£ ╞Æ /blog/[slug]                                                               1.9 kB          263 kB
+Γö£ Γùï /calendar                                                                  3.81 kB         111 kB
+Γö£ Γùï /contact                                                                   22.8 kB         145 kB
+Γö£ Γùï /courses                                                                   3.71 kB         117 kB
+Γö£ ╞Æ /courses/[slug]                                                            190 B           102 kB
+Γö£ Γùï /demo                                                                      878 B           114 kB
+Γö£ ╞Æ /events                                                                    2.95 kB         126 kB
+Γö£ ╞Æ /inventory                                                                 3.17 kB        97.5 kB
+Γö£ Γùï /join                                                                      4.45 kB         118 kB
+Γö£ ╞Æ /lms                                                                       240 B          96.5 kB
+Γö£ ╞Æ /lms/assignments                                                           152 B          87.7 kB
+Γö£ ╞Æ /lms/courses                                                               240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/announcements                                            240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/assessments                                              240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/assignments                                              240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/forum                                                    240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/forum/[threadId]                                         2.14 kB         105 kB
+Γö£ ╞Æ /lms/courses/[id]/forum/new                                                2.88 kB         106 kB
+Γö£ ╞Æ /lms/courses/[id]/grades                                                   240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/modules                                                  240 B          96.5 kB
+Γö£ ╞Æ /lms/courses/[id]/syllabus                                                 240 B          96.5 kB
+Γö£ ╞Æ /lms/grades                                                                241 B          96.5 kB
+Γö£ ╞Æ /lms/learning-paths                                                        2.84 kB         106 kB
+Γö£ ╞Æ /lms/progress                                                              240 B          96.5 kB
+Γö£ Γùï /login                                                                     1.72 kB         117 kB
+Γö£ ╞Æ /parent                                                                    7.19 kB         110 kB
+Γö£ ╞Æ /parent/invoices                                                           226 B           625 kB
+Γö£ ╞Æ /parent/invoices/[id]                                                      218 B           622 kB
+Γö£ ╞Æ /parent/students                                                           1.23 kB         107 kB
+Γö£ ╞Æ /parent/students/[studentId]                                               240 B          96.5 kB
+Γö£ ╞Æ /portal                                                                    240 B          96.5 kB
+Γö£ ╞Æ /portfolio/[studentId]                                                     2.6 kB         90.2 kB
+Γö£ ╞Æ /projects                                                                  3.38 kB         106 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]                                         3.56 kB         109 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]/board                                   4.53 kB         144 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]/files                                   4.33 kB         111 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]/gantt                                   1.91 kB        98.5 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]/list                                    3.85 kB         114 kB
+Γö£ ╞Æ /projects/[teamSlug]/[projectSlug]/settings                                3.52 kB        97.9 kB
+Γö£ ╞Æ /projects/teams                                                            3.34 kB         106 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]                                                 3.93 kB         107 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/files                                           6.51 kB         113 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/gantt                                           1.19 kB         122 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/members                                         5.29 kB         152 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/new-project                                     3.39 kB         106 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/settings                                        4.36 kB         111 kB
+Γö£ ╞Æ /projects/teams/[teamSlug]/subteams                                        4.33 kB         120 kB
+Γö£ ╞Æ /projects/teams/new                                                        2.93 kB         106 kB
+Γö£ Γùï /student/assignments                                                       2.9 kB          106 kB
+Γö£ ╞Æ /student/assignments/[id]                                                  4.01 kB        98.3 kB
+Γö£ ╞Æ /student/courses/[id]                                                      3.96 kB         107 kB
+Γö£ Γùï /student/portfolio                                                         4.58 kB        98.9 kB
+Γö£ ╞Æ /student/profile                                                           10.2 kB         105 kB
+Γö£ ╞Æ /student/quizzes/[id]/take                                                 3.79 kB        98.1 kB
+Γö£ ╞Æ /wiki                                                                      240 B          96.5 kB
+Γöö ╞Æ /wiki/[id]                                                                 127 kB          236 kB
++ First Load JS shared by all                                                  87.6 kB
+  Γö£ chunks/2117-e535c754fed1bea1.js                                            31.9 kB
+  Γö£ chunks/fd9d1056-d39367dec392ee34.js                                        53.6 kB
+  Γöö other shared chunks (total)                                                2.02 kB
 
-TypeError: Cannot read properties of undefined (reading 'clientModules')
-    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:17:24397
-    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:191:62
-    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:140:36
-    at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
-    at ContextAPI.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
-    at NoopTracer.startActiveSpan (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
-    at ProxyTracer.startActiveSpan (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854)
-    at C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\server\lib\trace\tracer.js:122:103
-    at NoopContextManager.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
-    at ContextAPI.with (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
- Γ¿» useSearchParams() should be wrapped in a suspense boundary at page "/calendar". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
-    at a (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\8958.js:1:32400)
-    at c (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\chunks\8958.js:1:43383)
-    at u (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\.next\server\app\calendar\page.js:1:2183)
-    at nj (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:46252)
-    at nM (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47572)
-    at nL (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
-    at nI (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47011)
-    at nM (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:47718)
-    at nM (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:61547)
-    at nL (C:\Users\Raymo\Documents\GitHub\New-PiRA-Platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
 
-Error occurred prerendering page "/calendar". Read more: https://nextjs.org/docs/messages/prerender-error
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
 
-   Generating static pages (69/92) 
- Γ£ô Generating static pages (92/92)
-
-> Export encountered errors on following paths:
-	/(demo)/page: /
-	/calendar/page: /calendar

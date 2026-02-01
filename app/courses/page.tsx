@@ -10,7 +10,7 @@ async function getCourses() {
       isActive: true,
       isDevelopment: false
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { displayOrder: 'asc' },
   });
 }
 
@@ -20,7 +20,7 @@ async function getDevelopmentCourses() {
       isActive: true,
       isDevelopment: true
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { displayOrder: 'asc' },
   });
 }
 

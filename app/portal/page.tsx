@@ -90,22 +90,22 @@ export default async function PortalPage() {
     const visibleApps = apps.filter(app => hasRole(app.allowedRoles));
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background pt-24 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user?.name}</h1>
-                    <p className="mt-2 text-lg text-gray-600">Select a portal to continue</p>
+                    <h1 className="text-3xl font-bold text-foreground">Welcome back, {user?.name}</h1>
+                    <p className="mt-2 text-lg text-muted-foreground">Select a portal to continue</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {visibleApps.map((app) => (
                         <Link key={app.name} href={app.href} className="group block">
-                            <Card className="h-full hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-sky-100 group-hover:-translate-y-1">
+                            <Card className="h-full hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-primary/20 group-hover:-translate-y-1">
                                 <CardHeader className="flex flex-row items-center gap-4 pb-2">
                                     <div className={`p-3 rounded-xl ${app.bg} ${app.color} transition-colors group-hover:scale-110 duration-200`}>
                                         <app.icon className="w-8 h-8" />
                                     </div>
-                                    <CardTitle className="text-xl text-gray-900 group-hover:text-sky-600 transition-colors">
+                                    <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
                                         {app.name}
                                     </CardTitle>
                                 </CardHeader>
@@ -121,7 +121,7 @@ export default async function PortalPage() {
 
                 <div className="flex justify-center mt-12">
                     <Link href="/">
-                        <Button variant="ghost" className="text-gray-500 hover:text-gray-900">
+                        <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
                             <Home className="w-4 h-4 mr-2" />
                             Back to Home
                         </Button>

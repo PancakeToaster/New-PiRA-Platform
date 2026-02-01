@@ -159,11 +159,11 @@ export default function CalendarView({
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-card rounded-lg border border-border overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center space-x-4">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-foreground">
             {viewMode === 'day'
               ? currentDate.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -190,30 +190,30 @@ export default function CalendarView({
         </div>
 
         <div className="flex items-center space-x-2">
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1.5 text-sm ${viewMode === 'month'
+              className={`px-3 py-1.5 text-sm transition-colors ${viewMode === 'month'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
             >
               Month
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-3 py-1.5 text-sm border-x border-gray-300 ${viewMode === 'week'
+              className={`px-3 py-1.5 text-sm border-x border-border transition-colors ${viewMode === 'week'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
             >
               Week
             </button>
             <button
               onClick={() => setViewMode('day')}
-              className={`px-3 py-1.5 text-sm ${viewMode === 'day'
+              className={`px-3 py-1.5 text-sm transition-colors ${viewMode === 'day'
                 ? 'bg-sky-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
             >
               Day
@@ -232,11 +232,11 @@ export default function CalendarView({
       {viewMode === 'month' && (
         <div>
           {/* Week day headers */}
-          <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+          <div className="grid grid-cols-7 border-b border-border bg-muted/50">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="px-2 py-3 text-center text-sm font-medium text-gray-500"
+                className="px-2 py-3 text-center text-sm font-medium text-muted-foreground"
               >
                 {day}
               </div>
@@ -244,7 +244,7 @@ export default function CalendarView({
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7">
+          <div className="grid grid-cols-7 bg-card">
             {days.map((date, index) => {
               const isToday =
                 date && date.toDateString() === today.toDateString();
@@ -256,7 +256,7 @@ export default function CalendarView({
                 <div
                   key={index}
                   onClick={() => date && onDateClick(date)}
-                  className={`min-h-[120px] border-b border-r border-gray-100 p-2 cursor-pointer hover:bg-gray-50 ${isWeekend ? 'bg-gray-50/50' : ''
+                  className={`min-h-[120px] border-b border-r border-border p-2 cursor-pointer transition-colors hover:bg-accent/50 ${isWeekend ? 'bg-muted/10' : ''
                     }`}
                 >
                   {date && (
@@ -264,7 +264,7 @@ export default function CalendarView({
                       <div
                         className={`text-sm font-medium mb-1 ${isToday
                           ? 'w-7 h-7 flex items-center justify-center bg-sky-500 text-white rounded-full'
-                          : 'text-gray-700'
+                          : 'text-foreground'
                           }`}
                       >
                         {date.getDate()}
@@ -289,7 +289,7 @@ export default function CalendarView({
                           </div>
                         ))}
                         {dayEvents.length > 3 && (
-                          <div className="text-xs text-gray-500 px-2">
+                          <div className="text-xs text-muted-foreground px-2">
                             +{dayEvents.length - 3} more
                           </div>
                         )}
@@ -305,9 +305,9 @@ export default function CalendarView({
 
       {/* Week View */}
       {viewMode === 'week' && (
-        <div className="overflow-auto max-h-[600px]">
-          <div className="grid grid-cols-8 border-b border-gray-200 bg-gray-50 sticky top-0 z-10">
-            <div className="px-2 py-3 text-center text-sm font-medium text-gray-500 border-r border-gray-200">
+        <div className="overflow-auto max-h-[600px] bg-card">
+          <div className="grid grid-cols-8 border-b border-border bg-muted/50 sticky top-0 z-10">
+            <div className="px-2 py-3 text-center text-sm font-medium text-muted-foreground border-r border-border">
               Time
             </div>
             {getWeekDates().map((date, i) => {
@@ -315,12 +315,12 @@ export default function CalendarView({
               return (
                 <div
                   key={i}
-                  className={`px-2 py-3 text-center border-r border-gray-200 ${isToday ? 'bg-sky-50' : ''
+                  className={`px-2 py-3 text-center border-r border-border ${isToday ? 'bg-sky-500/10' : ''
                     }`}
                 >
-                  <div className="text-xs text-gray-500">{weekDays[i]}</div>
+                  <div className="text-xs text-muted-foreground">{weekDays[i]}</div>
                   <div
-                    className={`text-lg font-medium ${isToday ? 'text-sky-600' : 'text-gray-700'
+                    className={`text-lg font-medium ${isToday ? 'text-sky-600 dark:text-sky-400' : 'text-foreground'
                       }`}
                   >
                     {date.getDate()}
@@ -331,8 +331,8 @@ export default function CalendarView({
           </div>
           <div className="relative">
             {hours.map((hour) => (
-              <div key={hour} className="grid grid-cols-8 border-b border-gray-100">
-                <div className="px-2 py-3 text-xs text-gray-400 border-r border-gray-200 text-right pr-3">
+              <div key={hour} className="grid grid-cols-8 border-b border-border">
+                <div className="px-2 py-3 text-xs text-muted-foreground border-r border-border text-right pr-3">
                   {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
                 </div>
                 {getWeekDates().map((date, i) => {
@@ -344,7 +344,7 @@ export default function CalendarView({
                   return (
                     <div
                       key={i}
-                      className="min-h-[50px] border-r border-gray-100 p-1 relative"
+                      className="min-h-[50px] border-r border-border p-1 relative hover:bg-accent/10 transition-colors"
                       onClick={() => onDateClick(date)}
                     >
                       {dayEvents.map((event) => (
@@ -376,7 +376,7 @@ export default function CalendarView({
 
       {/* Day View */}
       {viewMode === 'day' && (
-        <div className="overflow-auto max-h-[600px]">
+        <div className="overflow-auto max-h-[600px] bg-card">
           {hours.map((hour) => {
             const dayEvents = getEventsForDate(currentDate).filter((event) => {
               if (event.allDay) return hour === 0;
@@ -386,9 +386,9 @@ export default function CalendarView({
             return (
               <div
                 key={hour}
-                className="flex border-b border-gray-100 min-h-[60px]"
+                className="flex border-b border-border min-h-[60px] hover:bg-accent/5 transition-colors"
               >
-                <div className="w-20 px-2 py-3 text-xs text-gray-400 border-r border-gray-200 text-right pr-3 flex-shrink-0">
+                <div className="w-20 px-2 py-3 text-xs text-muted-foreground border-r border-border text-right pr-3 flex-shrink-0">
                   {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
                 </div>
                 <div className="flex-1 p-2">
@@ -419,47 +419,47 @@ export default function CalendarView({
       )}
 
       {/* Legend */}
-      <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 flex flex-wrap items-center gap-4 text-xs">
+      <div className="px-4 py-3 border-t border-border bg-muted/30 flex flex-wrap items-center gap-4 text-xs">
         {isPublicView ? (
           <>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#dc2626' }} />
-              <span className="text-gray-600">Center Closed</span>
+              <span className="text-muted-foreground">Center Closed</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#2563eb' }} />
-              <span className="text-gray-600">Events</span>
+              <span className="text-muted-foreground">Events</span>
             </div>
           </>
         ) : (
           <>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} />
-              <span className="text-gray-600">Competition</span>
+              <span className="text-muted-foreground">Competition</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#f97316' }} />
-              <span className="text-gray-600">Deadline</span>
+              <span className="text-muted-foreground">Deadline</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#8b5cf6' }} />
-              <span className="text-gray-600">Meeting</span>
+              <span className="text-muted-foreground">Meeting</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#0ea5e9' }} />
-              <span className="text-gray-600">Class</span>
+              <span className="text-muted-foreground">Class</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#22c55e' }} />
-              <span className="text-gray-600">Practice</span>
+              <span className="text-muted-foreground">Practice</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#dc2626' }} />
-              <span className="text-gray-600">Center Closed</span>
+              <span className="text-muted-foreground">Center Closed</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded" style={{ backgroundColor: '#2563eb' }} />
-              <span className="text-gray-600">Public Event</span>
+              <span className="text-muted-foreground">Public Event</span>
             </div>
           </>
         )}

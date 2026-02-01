@@ -80,7 +80,7 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
+        <div className="min-h-screen flex flex-col bg-background">
             <Navbar />
 
             <main className="flex-1 pt-20">
@@ -88,8 +88,8 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Events</h1>
-                            <p className="mt-1 text-gray-500">
+                            <h1 className="text-3xl font-bold text-foreground">Events</h1>
+                            <p className="mt-1 text-muted-foreground">
                                 Upcoming public events, classes, and center closures.
                             </p>
                         </div>
@@ -103,7 +103,7 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
 
                     {/* Upcoming Events Section */}
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Upcoming Events</h2>
+                        <h2 className="text-2xl font-bold text-foreground mb-6">Upcoming Events</h2>
                         {events.filter(e => new Date(e.startTime) >= new Date()).length > 0 ? (
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {events
@@ -113,30 +113,30 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                     .map((event) => (
                                         <div
                                             key={event.id}
-                                            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col"
+                                            className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col"
                                             onClick={() => handleEventClick(event)}
                                         >
                                             <div className="h-2 bg-sky-500" style={{ backgroundColor: event.color || undefined }}></div>
                                             <div className="p-6 flex flex-col flex-1">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${event.eventType === 'center_closed' ? 'bg-red-100 text-red-800' :
-                                                        event.eventType === 'public_event' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${event.eventType === 'center_closed' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                                                        event.eventType === 'public_event' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                                                            'bg-muted text-foreground'
                                                         }`}>
                                                         {getDisplayEventType(event.eventType)}
                                                     </span>
-                                                    <span className="text-sm text-gray-500">
+                                                    <span className="text-sm text-muted-foreground">
                                                         {new Date(event.startTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                     </span>
                                                 </div>
-                                                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                                <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
                                                     {event.title}
                                                 </h3>
-                                                <p className="text-gray-600 mb-4 line-clamp-3 text-sm flex-1">
+                                                <p className="text-muted-foreground mb-4 line-clamp-3 text-sm flex-1">
                                                     {event.description || 'No description available.'}
                                                 </p>
-                                                <div className="pt-4 border-t border-gray-100 mt-auto">
-                                                    <div className="flex items-center text-sm text-gray-500">
+                                                <div className="pt-4 border-t border-border mt-auto">
+                                                    <div className="flex items-center text-sm text-muted-foreground">
                                                         <span className="truncate">
                                                             {event.allDay ? 'All Day' : new Date(event.startTime).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                                                             {event.location && ` • ${event.location}`}
@@ -149,13 +149,13 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                 }
                             </div>
                         ) : (
-                            <div className="text-center py-10 bg-white rounded-xl border border-gray-200">
-                                <p className="text-gray-500">No upcoming events scheduled.</p>
+                            <div className="text-center py-10 bg-card rounded-xl border border-border">
+                                <p className="text-muted-foreground">No upcoming events scheduled.</p>
                             </div>
                         )}
                     </div>
 
-                    <div className="border-t border-gray-200 my-8"></div>
+                    <div className="border-t border-border my-8"></div>
 
                     {/* Calendar */}
                     <CalendarView
@@ -168,14 +168,14 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                     {/* Event Modal - Read Only */}
                     {showEventModal && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
-                                <div className="flex items-center justify-between px-6 py-4 border-b">
-                                    <h3 className="text-lg font-semibold text-gray-900">
+                            <div className="bg-card rounded-xl shadow-xl w-full max-w-lg mx-4 border border-border">
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                                    <h3 className="text-lg font-semibold text-foreground">
                                         Event Details
                                     </h3>
                                     <button
                                         onClick={() => setShowEventModal(false)}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-muted-foreground hover:text-foreground"
                                     >
                                         <span className="sr-only">Close</span>
                                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,15 +187,15 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                 {selectedEvent && (
                                     <div className="p-6 space-y-4">
                                         <div>
-                                            <h4 className="text-xl font-semibold text-gray-900">
+                                            <h4 className="text-xl font-semibold text-foreground">
                                                 {selectedEvent.title}
                                             </h4>
                                         </div>
                                         {selectedEvent.description && (
-                                            <p className="text-gray-600">{selectedEvent.description}</p>
+                                            <p className="text-muted-foreground">{selectedEvent.description}</p>
                                         )}
                                         <div className="space-y-2 text-sm">
-                                            <div className="flex items-center space-x-2 text-gray-600">
+                                            <div className="flex items-center space-x-2 text-muted-foreground">
                                                 <span className="font-medium">When:</span>
                                                 <span>
                                                     {selectedEvent.allDay
@@ -204,17 +204,17 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                                 </span>
                                             </div>
                                             {selectedEvent.location && (
-                                                <div className="flex items-center space-x-2 text-gray-600">
+                                                <div className="flex items-center space-x-2 text-muted-foreground">
                                                     <span className="font-medium">Where:</span>
                                                     <span>{selectedEvent.location}</span>
                                                 </div>
                                             )}
-                                            <div className="flex items-center space-x-2 text-gray-600">
+                                            <div className="flex items-center space-x-2 text-muted-foreground">
                                                 <span className="font-medium">Type:</span>
                                                 <span className="capitalize">{getDisplayEventType(selectedEvent.eventType)}</span>
                                             </div>
                                         </div>
-                                        <div className="flex space-x-2 pt-4 border-t">
+                                        <div className="flex space-x-2 pt-4 border-t border-border">
                                             <Button variant="outline" onClick={handleAddToGoogleCalendar}>
                                                 Add to Google Calendar
                                             </Button>
@@ -228,12 +228,12 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                     {/* Export Modal */}
                     {showExportModal && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-                                <div className="flex items-center justify-between px-6 py-4 border-b">
-                                    <h3 className="text-lg font-semibold text-gray-900">Export Events</h3>
+                            <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4 border border-border">
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                                    <h3 className="text-lg font-semibold text-foreground">Export Events</h3>
                                     <button
                                         onClick={() => setShowExportModal(false)}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-muted-foreground hover:text-foreground"
                                     >
                                         <span className="sr-only">Close</span>
                                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,7 +242,7 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                     </button>
                                 </div>
                                 <div className="p-6 space-y-4">
-                                    <p className="text-gray-600">
+                                    <p className="text-muted-foreground">
                                         Export public events to use in other calendar applications.
                                     </p>
                                     <div className="space-y-3">
@@ -250,7 +250,7 @@ export default function PublicEventsClient({ initialEvents, footer }: PublicEven
                                             <Download className="w-4 h-4 mr-2" />
                                             Download .ics file
                                         </Button>
-                                        <p className="text-sm text-gray-500 text-center">
+                                        <p className="text-sm text-muted-foreground text-center">
                                             Compatible with Google Calendar, Apple Calendar, Outlook, and more.
                                         </p>
                                     </div>

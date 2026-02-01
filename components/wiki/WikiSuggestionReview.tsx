@@ -69,27 +69,27 @@ export default function WikiSuggestionReview({ nodeId, currentContent }: WikiSug
 
     return (
         <div className="mb-8">
-            <h3 className="text-md font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <GitPullRequest className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center gap-2">
+                <GitPullRequest className="w-5 h-5 text-indigo-500" />
                 Pending Suggestions ({suggestions.length})
             </h3>
 
             <div className="space-y-4">
                 {suggestions.map((suggestion) => (
-                    <div key={suggestion.id} className="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+                    <div key={suggestion.id} className="bg-card border border-border rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                             <div>
-                                <span className="font-semibold text-indigo-900">
+                                <span className="font-semibold text-foreground">
                                     {suggestion.user.firstName} {suggestion.user.lastName}
                                 </span>
-                                <span className="text-indigo-700 text-sm ml-2">suggested a change:</span>
+                                <span className="text-muted-foreground text-sm ml-2">suggested a change:</span>
                             </div>
-                            <span className="text-xs text-indigo-400">
+                            <span className="text-xs text-muted-foreground">
                                 {new Date(suggestion.createdAt).toLocaleDateString()}
                             </span>
                         </div>
 
-                        <div className="bg-white/50 p-2 rounded text-sm text-indigo-800 italic mb-4 border border-indigo-100">
+                        <div className="bg-muted p-2 rounded text-sm text-foreground italic mb-4 border border-border">
                             "{suggestion.reason}"
                         </div>
 

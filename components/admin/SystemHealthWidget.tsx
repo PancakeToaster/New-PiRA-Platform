@@ -30,7 +30,12 @@ export default function SystemHealthWidget() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+
         const fetchData = async () => {
+            // Don't fetch if tab is hidden
+            if (document.hidden) return;
+
             try {
                 const response = await fetch('/api/admin/system/health');
                 if (response.ok) {
@@ -45,21 +50,34 @@ export default function SystemHealthWidget() {
         };
 
         fetchData();
-        const interval = setInterval(fetchData, 5000);
-        return () => clearInterval(interval);
+        intervalId = setInterval(fetchData, 30000); // 30 seconds
+
+        // Re-fetch when tab becomes visible
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchData();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(intervalId);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
 
     if (loading || !data) {
         return (
             <Card className="h-full min-h-[200px]">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-gray-900 flex items-center gap-2 text-base">
-                        <Activity className="w-4 h-4 text-sky-500" />
+                    <CardTitle className="text-foreground flex items-center gap-2 text-base">
+                        <Activity className="w-4 h-4 text-primary" />
                         System Live
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-center h-[140px]">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </CardContent>
             </Card>
         );
@@ -98,8 +116,8 @@ export default function SystemHealthWidget() {
     return (
         <Card className="h-full">
             <CardHeader className="pb-2 pt-4 px-4">
-                <CardTitle className="text-gray-900 flex items-center gap-2 text-base">
-                    <Activity className="w-4 h-4 text-sky-500" />
+                <CardTitle className="text-foreground flex items-center gap-2 text-base">
+                    <Activity className="w-4 h-4 text-primary" />
                     System Live
                 </CardTitle>
             </CardHeader>
@@ -109,20 +127,20 @@ export default function SystemHealthWidget() {
                 <div className="relative w-32 h-32">
                     <Doughnut data={cpuChartData} options={cpuOptions} />
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-2xl font-bold text-gray-900">{cpuLoad}%</span>
-                        <span className="text-xs text-gray-500 font-medium">CPU</span>
+                        <span className="text-2xl font-bold text-foreground">{cpuLoad}%</span>
+                        <span className="text-xs text-muted-foreground font-medium">CPU</span>
                     </div>
                 </div>
 
                 {/* Memory Bar */}
                 <div className="w-full px-2">
                     <div className="flex justify-between items-end mb-1">
-                        <span className="text-xs font-semibold text-emerald-600">Memory</span>
-                        <span className="text-xs font-bold text-gray-700">{memPercent}%</span>
+                        <span className="text-xs font-semibold text-primary">Memory</span>
+                        <span className="text-xs font-bold text-foreground">{memPercent}%</span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                         <div
-                            className="bg-emerald-500 h-2.5 rounded-full transition-all duration-500"
+                            className="bg-primary h-2.5 rounded-full transition-all duration-500"
                             style={{ width: `${memPercent}%` }}
                         ></div>
                     </div>

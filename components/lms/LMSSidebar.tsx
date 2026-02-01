@@ -54,9 +54,9 @@ export default function LMSSidebar({ courses, userRole }: LMSSidebarProps) {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
-            <div className="p-4 border-b border-gray-200">
-                <Link href="/lms/courses" className="flex items-center gap-2 text-lg font-semibold text-gray-900 hover:text-sky-600">
+        <aside className="w-72 bg-card border-r border-border overflow-y-auto">
+            <div className="p-4 border-b border-border">
+                <Link href="/lms/courses" className="flex items-center gap-2 text-lg font-semibold text-foreground hover:text-primary">
                     <Home className="w-5 h-5" />
                     My Courses
                 </Link>
@@ -64,7 +64,7 @@ export default function LMSSidebar({ courses, userRole }: LMSSidebarProps) {
 
             <nav className="p-2">
                 {courses.length === 0 ? (
-                    <div className="p-4 text-sm text-gray-500 text-center">
+                    <div className="p-4 text-sm text-muted-foreground text-center">
                         No courses enrolled
                     </div>
                 ) : (
@@ -75,7 +75,7 @@ export default function LMSSidebar({ courses, userRole }: LMSSidebarProps) {
                                 <div key={course.id}>
                                     <button
                                         onClick={() => toggleCourse(course.id)}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-accent rounded-lg transition-colors"
                                     >
                                         {isExpanded ? (
                                             <ChevronDown className="w-4 h-4 flex-shrink-0" />
@@ -99,8 +99,8 @@ export default function LMSSidebar({ courses, userRole }: LMSSidebarProps) {
                                                         key={page.path}
                                                         href={pagePath}
                                                         className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${isActive
-                                                                ? 'bg-sky-50 text-sky-700 font-medium'
-                                                                : 'text-gray-600 hover:bg-gray-100'
+                                                            ? 'bg-primary/10 text-primary font-medium'
+                                                            : 'text-muted-foreground hover:bg-accent'
                                                             }`}
                                                     >
                                                         <Icon className="w-4 h-4 flex-shrink-0" />

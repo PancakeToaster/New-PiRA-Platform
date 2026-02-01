@@ -28,6 +28,8 @@ declare module 'next-auth' {
         student?: string;
         teacher?: string;
       };
+      isTestMode?: boolean;
+      testRole?: string;
     };
   }
 }

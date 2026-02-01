@@ -247,23 +247,23 @@ export default function ListPage({
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      todo: 'bg-gray-100 text-gray-700',
-      in_progress: 'bg-blue-100 text-blue-700',
-      review: 'bg-purple-100 text-purple-700',
-      done: 'bg-green-100 text-green-700',
-      blocked: 'bg-red-100 text-red-700',
+      todo: 'bg-muted text-muted-foreground',
+      in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+      review: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+      done: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+      blocked: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     };
-    return colors[status] || 'bg-gray-100 text-gray-700';
+    return colors[status] || 'bg-muted text-muted-foreground';
   };
 
   const getPriorityBadge = (priority: string) => {
     const colors: Record<string, string> = {
-      urgent: 'bg-red-100 text-red-700',
-      high: 'bg-orange-100 text-orange-700',
-      medium: 'bg-yellow-100 text-yellow-700',
-      low: 'bg-gray-100 text-gray-500',
+      urgent: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+      high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+      medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+      low: 'bg-muted text-muted-foreground',
     };
-    return colors[priority] || 'bg-gray-100 text-gray-500';
+    return colors[priority] || 'bg-muted text-muted-foreground';
   };
 
   const getTaskTypeIcon = (taskType: string) => {
@@ -284,7 +284,7 @@ export default function ListPage({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -293,7 +293,7 @@ export default function ListPage({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-xl font-semibold text-gray-900">Task List</h2>
+        <h2 className="text-xl font-semibold text-foreground">Task List</h2>
         <Button onClick={() => setShowNewTaskModal(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Task
@@ -303,20 +303,20 @@ export default function ListPage({
       {/* Filters (unchanged) */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <input
             type="text"
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
           >
             <option value="all">All Status</option>
             <option value="todo">To Do</option>
@@ -328,7 +328,7 @@ export default function ListPage({
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
           >
             <option value="all">All Priority</option>
             <option value="urgent">Urgent</option>
@@ -339,7 +339,7 @@ export default function ListPage({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+            className="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
           >
             <option value="created">Sort by Created</option>
             <option value="priority">Sort by Priority</option>
@@ -350,34 +350,34 @@ export default function ListPage({
       </div>
 
       {/* Task Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Task
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Priority
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Due Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Assignees
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Progress
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {filteredTasks.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                   {tasks.length === 0
                     ? 'No tasks yet. Create your first task!'
                     : 'No tasks match your filters.'}
@@ -387,21 +387,21 @@ export default function ListPage({
               filteredTasks.map((task) => (
                 <tr
                   key={task.id}
-                  className="hover:bg-gray-50 cursor-pointer"
+                  className="hover:bg-muted/50 cursor-pointer"
                   onClick={() => setSelectedTask(task)} // Row Click
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       <span>{getTaskTypeIcon(task.taskType)}</span>
                       <div>
-                        <p className="font-medium text-gray-900">{task.title}</p>
+                        <p className="font-medium text-foreground">{task.title}</p>
                         {task.description && (
-                          <p className="text-sm text-gray-500 truncate max-w-md">
+                          <p className="text-sm text-muted-foreground truncate max-w-md">
                             {task.description}
                           </p>
                         )}
                         {(task.checklistItems?.length ?? 0) > 0 && (
-                          <div className="flex items-center mt-1 space-x-1 text-xs text-gray-400">
+                          <div className="flex items-center mt-1 space-x-1 text-xs text-muted-foreground">
                             <CheckSquare className="w-3 h-3" />
                             <span>
                               {task.checklistItems?.filter(i => i.isCompleted).length}/{task.checklistItems?.length} subtasks
@@ -429,14 +429,14 @@ export default function ListPage({
                       {task.priority}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {task.dueDate ? (
                       <div className="flex items-center space-x-1">
                         <Calendar className="w-4 h-4" />
                         <span>{new Date(task.dueDate).toLocaleDateString()}</span>
                       </div>
                     ) : (
-                      <span className="text-gray-400">No due date</span>
+                      <span className="text-muted-foreground">No due date</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -445,7 +445,7 @@ export default function ListPage({
                         {task.assignees.slice(0, 3).map((assignee, index) => (
                           <div
                             key={index}
-                            className="w-7 h-7 rounded-full bg-sky-100 border-2 border-white flex items-center justify-center"
+                            className="w-7 h-7 rounded-full bg-sky-100 border-2 border-background flex items-center justify-center"
                             title={`${assignee.user.firstName} ${assignee.user.lastName}`}
                           >
                             <span className="text-xs font-medium text-sky-700">
@@ -454,27 +454,27 @@ export default function ListPage({
                           </div>
                         ))}
                         {task.assignees.length > 3 && (
-                          <div className="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-500">
+                          <div className="w-7 h-7 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                            <span className="text-xs font-medium text-muted-foreground">
                               +{task.assignees.length - 3}
                             </span>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <span className="text-gray-400 text-sm">Unassigned</span>
+                      <span className="text-muted-foreground text-sm">Unassigned</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="w-full max-w-[100px]">
                       <div className="flex items-center space-x-2">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div className="flex-1 bg-muted rounded-full h-2">
                           <div
                             className="bg-sky-500 h-2 rounded-full"
                             style={{ width: `${task.progress}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500">{task.progress}%</span>
+                        <span className="text-xs text-muted-foreground">{task.progress}%</span>
                       </div>
                     </div>
                   </td>
@@ -486,7 +486,7 @@ export default function ListPage({
       </div>
 
       {/* Summary */}
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-muted-foreground">
         Showing {filteredTasks.length} of {tasks.length} tasks
       </div>
 
@@ -503,13 +503,13 @@ export default function ListPage({
 
       {/* New Task Modal */}
       {showNewTaskModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">New Task</h3>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border border-border">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">New Task</h3>
               <button
                 onClick={() => setShowNewTaskModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -517,7 +517,7 @@ export default function ListPage({
 
             <form onSubmit={handleCreateTask} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Title *
                 </label>
                 <input
@@ -526,14 +526,14 @@ export default function ListPage({
                   onChange={(e) =>
                     setNewTask((prev) => ({ ...prev, title: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   placeholder="Task title"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Description
                 </label>
                 <textarea
@@ -542,14 +542,14 @@ export default function ListPage({
                     setNewTask((prev) => ({ ...prev, description: e.target.value }))
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   placeholder="Describe the task..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Start Date
                   </label>
                   <input
@@ -558,11 +558,11 @@ export default function ListPage({
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, startDate: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Due Date
                   </label>
                   <input
@@ -571,14 +571,14 @@ export default function ListPage({
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, dueDate: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Type
                   </label>
                   <select
@@ -586,7 +586,7 @@ export default function ListPage({
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, taskType: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   >
                     <option value="task">Task</option>
                     <option value="bug">Bug</option>
@@ -597,7 +597,7 @@ export default function ListPage({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Priority
                   </label>
                   <select
@@ -605,7 +605,7 @@ export default function ListPage({
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, priority: e.target.value }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>

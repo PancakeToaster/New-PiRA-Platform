@@ -3,16 +3,17 @@ import { getCurrentUser } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
+import { randomBytes } from 'crypto';
+
+function generateTempPassword(): string {
+    return randomBytes(12).toString('base64url').slice(0, 12) + 'A1!';
+}
 
 export async function POST(req: Request) {
     try {
         const admin = await getCurrentUser();
-        // Check if admin (implementing basic check here, ideally use permission lib)
         if (!admin || !admin.roles?.includes('Admin')) {
-            // Basic check based on typical structure, verify strict permissions if needed
-            // For now assuming getCurrentUser returns the full object with roles mapped if possible
-            // Actually getCurrentUser implementation might vary.
-            // Let's assume protection is sufficient or handled by middleware/utils.
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const { userId } = await req.json();
@@ -22,8 +23,8 @@ export async function POST(req: Request) {
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-        // Generate temp password
-        const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+        // Generate cryptographically secure temp password
+        const tempPassword = generateTempPassword();
         const hashedPassword = await hash(tempPassword, 12);
 
         // Update user
@@ -32,8 +33,8 @@ export async function POST(req: Request) {
             data: { password: hashedPassword }
         });
 
-        // Mock Send Email
-        console.log(`[EMAIL_RESEND] To: ${user.email}, New Password: ${tempPassword}`);
+        // TODO: Integrate real email service to send temp password to user
+        // Do not log passwords — send via email only
 
         return NextResponse.json({ success: true });
 

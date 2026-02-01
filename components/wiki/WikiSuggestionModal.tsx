@@ -49,13 +49,13 @@ export default function WikiSuggestionModal({ nodeId, initialContent, isOpen, on
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
-                <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+            <div className="bg-card rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden border border-border">
+                <div className="p-6 border-b border-border flex justify-between items-center bg-muted/30">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900">Suggest Changes</h2>
-                        <p className="text-sm text-gray-500 mt-1">Propose edits to this page. An admin will review them.</p>
+                        <h2 className="text-xl font-bold text-foreground">Suggest Changes</h2>
+                        <p className="text-sm text-muted-foreground mt-1">Propose edits to this page. An admin will review them.</p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
                         <span className="sr-only">Close</span>
                         ✕
                     </button>
@@ -69,7 +69,7 @@ export default function WikiSuggestionModal({ nodeId, initialContent, isOpen, on
                         </p>
                     </div>
 
-                    <div className="border rounded-md shadow-sm">
+                    <div className="border rounded-md shadow-sm border-border">
                         <div className="h-[400px] overflow-hidden">
                             <MarkdownEditor
                                 content={content}
@@ -79,18 +79,18 @@ export default function WikiSuggestionModal({ nodeId, initialContent, isOpen, on
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1"> Reason for Change <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-medium text-foreground mb-1"> Reason for Change <span className="text-red-500">*</span></label>
                         <textarea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="e.g., Fixed a typo, Updated outdated information..."
-                            className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full p-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-background text-foreground"
                             rows={3}
                         />
                     </div>
                 </div>
 
-                <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+                <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3">
                     <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
                         Cancel
                     </Button>

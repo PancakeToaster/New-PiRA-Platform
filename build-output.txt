@@ -1,0 +1,23 @@
+
+> robotics-academy-platform@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/admin/learning-paths/[id]/route.ts:80:46
+Type error: Property 'lmsCourse' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'. Did you mean 'lMSCourse'?
+
+  78 |       if (steps.length > 0) {
+  79 |         const courseIds = steps.map((s: { lmsCourseId: string }) => s.lmsCourseId);
+> 80 |         const existingCourses = await prisma.lmsCourse.findMany({
+     |                                              ^
+  81 |           where: { id: { in: courseIds } },
+  82 |           select: { id: true },
+  83 |         });
+Next.js build worker exited with code: 1 and signal: null

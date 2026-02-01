@@ -44,13 +44,13 @@ export default async function NewAssignmentPage({
             <div className="flex items-center gap-4">
                 <Link
                     href={`/admin/courses/${id}/assignments`}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-2 hover:bg-muted rounded-full transition-colors"
                 >
-                    <ArrowLeft className="w-5 h-5 text-gray-500" />
+                    <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">New Assignment</h1>
-                    <p className="text-gray-500 text-sm">Create an assignment for {course.name}</p>
+                    <h1 className="text-2xl font-bold text-foreground">New Assignment</h1>
+                    <p className="text-muted-foreground text-sm">Create an assignment for {course.name}</p>
                 </div>
             </div>
 

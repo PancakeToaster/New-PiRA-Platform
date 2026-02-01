@@ -23,7 +23,7 @@ export default async function ParentInvoicesPage() {
   if (!parentId) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Parent profile not found</p>
+        <p className="text-muted-foreground">Parent profile not found</p>
       </div>
     );
   }
@@ -41,10 +41,10 @@ export default async function ParentInvoicesPage() {
   });
 
   const statusColors = {
-    paid: 'bg-green-100 text-green-800',
-    unpaid: 'bg-yellow-100 text-yellow-800',
-    overdue: 'bg-red-100 text-red-800',
-    cancelled: 'bg-gray-100 text-gray-800',
+    paid: 'bg-green-500/10 text-green-500 dark:text-green-400',
+    unpaid: 'bg-yellow-500/10 text-yellow-500 dark:text-yellow-400',
+    overdue: 'bg-destructive/10 text-destructive dark:text-red-400',
+    cancelled: 'bg-muted text-muted-foreground',
   };
 
   return (
@@ -56,11 +56,11 @@ export default async function ParentInvoicesPage() {
       {invoices.length === 0 ? (
         <Card>
           <CardContent className="pt-6 text-center">
-            <p className="text-gray-600 mb-4">No invoices found.</p>
+            <p className="text-muted-foreground mb-4">No invoices found.</p>
             {studentCount === 0 && (
-              <div className="bg-sky-50 p-4 rounded-lg inline-block text-left max-w-md">
-                <h4 className="font-semibold text-sky-900 mb-1">Get Started</h4>
-                <p className="text-sm text-sky-700 mb-3">You don't have any students linked yet. Create an account for your child to get started.</p>
+              <div className="bg-primary/10 p-4 rounded-lg inline-block text-left max-w-md border border-primary/20">
+                <h4 className="font-semibold text-foreground mb-1">Get Started</h4>
+                <p className="text-sm text-muted-foreground mb-3">You don't have any students linked yet. Create an account for your child to get started.</p>
                 <StudentListActions isEmptyState />
               </div>
             )}
@@ -74,14 +74,14 @@ export default async function ParentInvoicesPage() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-xl font-bold mb-2">{invoice.invoiceNumber}</h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Created: {formatDate(invoice.createdAt)}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Due Date: {formatDate(invoice.dueDate)}
                     </p>
                     {invoice.paidDate && (
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Paid: {formatDate(invoice.paidDate)}
                       </p>
                     )}
@@ -102,7 +102,7 @@ export default async function ParentInvoicesPage() {
                   <div className="space-y-2">
                     {invoice.items.map((item) => (
                       <div key={item.id} className="flex justify-between text-sm">
-                        <span className="text-gray-700">
+                        <span className="text-muted-foreground">
                           {item.description} x {item.quantity}
                         </span>
                         <span className="font-medium">{formatCurrency(item.total)}</span>
@@ -128,8 +128,8 @@ export default async function ParentInvoicesPage() {
                   </div>
 
                   {invoice.notes && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                      <p className="text-sm text-gray-700">
+                    <div className="mt-4 p-3 bg-muted/50 rounded-md border border-border">
+                      <p className="text-sm text-muted-foreground">
                         <strong>Notes:</strong> {invoice.notes}
                       </p>
                     </div>

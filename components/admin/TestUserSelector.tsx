@@ -90,13 +90,13 @@ export default function TestUserSelector() {
 
   const getRoleBadgeColor = (roleName: string) => {
     switch (roleName) {
-      case 'Parent': return 'bg-purple-100 text-purple-700';
-      case 'Student': return 'bg-green-100 text-green-700';
-      case 'Teacher': return 'bg-blue-100 text-blue-700';
-      case 'Mentor': return 'bg-orange-100 text-orange-700';
-      case 'Team Captain': return 'bg-yellow-100 text-yellow-700';
-      case 'Team Member': return 'bg-sky-100 text-sky-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'Parent': return 'bg-purple-500/10 text-purple-600';
+      case 'Student': return 'bg-green-500/10 text-green-600';
+      case 'Teacher': return 'bg-blue-500/10 text-blue-600';
+      case 'Mentor': return 'bg-orange-500/10 text-orange-600';
+      case 'Team Captain': return 'bg-yellow-500/10 text-yellow-600';
+      case 'Team Member': return 'bg-sky-500/10 text-sky-600';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -105,12 +105,12 @@ export default function TestUserSelector() {
       <Button
         variant="outline"
         // If selectedRole is active, the className handles the styling.
-        className={`bg-white hover:bg-gray-50 text-gray-700 border-gray-200 ${selectedRole ? 'border-sky-500 text-sky-600 bg-sky-50' : ''}`}
+        className={`bg-card hover:bg-accent text-foreground border-border ${selectedRole ? 'border-primary text-primary bg-primary/10' : ''}`}
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
         title="Test Mode"
       >
-        <FlaskConical className={`w-4 h-4 mr-2 ${selectedRole ? 'text-sky-600' : 'text-gray-500'}`} />
+        <FlaskConical className={`w-4 h-4 mr-2 ${selectedRole ? 'text-primary' : 'text-muted-foreground'}`} />
         <span className="text-sm font-medium">
           {selectedRole ? `Test: ${selectedRole}` : 'Test Mode'}
         </span>
@@ -118,10 +118,10 @@ export default function TestUserSelector() {
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50 animate-in fade-in zoom-in-95 duration-200">
-          <div className="p-3 border-b border-gray-100 bg-gray-50 rounded-t-lg">
-            <h4 className="font-semibold text-sm text-gray-900 flex items-center gap-2">
-              <FlaskConical className="w-4 h-4 text-sky-500" />
+        <div className="absolute right-0 mt-2 w-72 bg-card rounded-lg shadow-xl border border-border z-50 animate-in fade-in zoom-in-95 duration-200">
+          <div className="p-3 border-b border-border bg-muted rounded-t-lg">
+            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <FlaskConical className="w-4 h-4 text-primary" />
               Select Role to Simulate
             </h4>
           </div>
@@ -132,33 +132,33 @@ export default function TestUserSelector() {
                 key={role.name}
                 onClick={() => enterTestMode(role)}
                 disabled={loadingRole === role.name}
-                className={`w-full text-left px-4 py-3 hover:bg-sky-50 transition-colors flex items-start justify-between group ${selectedRole === role.name ? 'bg-sky-50/50' : ''
+                className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors flex items-start justify-between group ${selectedRole === role.name ? 'bg-primary/10' : ''
                   }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-gray-900">{role.name}</span>
+                    <span className="font-medium text-sm text-foreground">{role.name}</span>
                     <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${getRoleBadgeColor(role.name)}`}>
                       {role.portal}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{role.description}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{role.description}</p>
                 </div>
                 {loadingRole === role.name ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-sky-500 shrink-0 mt-1" />
+                  <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0 mt-1" />
                 ) : selectedRole === role.name && (
-                  <Check className="w-4 h-4 text-sky-500 shrink-0 mt-1" />
+                  <Check className="w-4 h-4 text-primary shrink-0 mt-1" />
                 )}
               </button>
             ))}
           </div>
 
           {selectedRole && (
-            <div className="p-2 border-t border-gray-100 bg-gray-50 rounded-b-lg">
+            <div className="p-2 border-t border-border bg-muted rounded-b-lg">
               <button
                 onClick={exitTestMode}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center px-4 py-2 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+                className="w-full flex items-center justify-center px-4 py-2 text-xs font-medium text-destructive bg-destructive/10 hover:bg-destructive/20 rounded-md transition-colors"
               >
                 {isLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : null}
                 Exit Test Mode

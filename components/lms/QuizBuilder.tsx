@@ -133,7 +133,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                     <select
                         value={editQuestion.questionType}
                         onChange={(e) => setEditQuestion({ ...editQuestion, questionType: e.target.value as any })}
-                        className="w-full border rounded-md p-2"
+                        className="w-full border-input bg-background/50 text-foreground border rounded-md p-2"
                     >
                         <option value="multiple_choice">Multiple Choice</option>
                         <option value="true_false">True / False</option>
@@ -147,7 +147,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                     <textarea
                         value={editQuestion.question}
                         onChange={(e) => setEditQuestion({ ...editQuestion, question: e.target.value })}
-                        className="w-full border rounded-md p-2 h-24"
+                        className="w-full border-input bg-background/50 text-foreground border rounded-md p-2 h-24"
                         placeholder="Enter your question here..."
                     />
                 </div>
@@ -159,7 +159,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                         min="0"
                         value={editQuestion.points}
                         onChange={(e) => setEditQuestion({ ...editQuestion, points: parseFloat(e.target.value) })}
-                        className="w-full border rounded-md p-2"
+                        className="w-full border-input bg-background/50 text-foreground border rounded-md p-2"
                     />
                 </div>
 
@@ -186,7 +186,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                                         newOpts[idx].text = e.target.value;
                                         setEditQuestion({ ...editQuestion, options: newOpts });
                                     }}
-                                    className="flex-1 border rounded-md p-2"
+                                    className="flex-1 border-input bg-background/50 text-foreground border rounded-md p-2"
                                     placeholder={`Option ${idx + 1}`}
                                 />
                                 <Button
@@ -197,7 +197,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                                         setEditQuestion({ ...editQuestion, options: newOpts });
                                     }}
                                 >
-                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                    <Trash2 className="w-4 h-4 text-destructive" />
                                 </Button>
                             </div>
                         ))}
@@ -222,7 +222,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                         <select
                             value={String(editQuestion.correctAnswer)}
                             onChange={(e) => setEditQuestion({ ...editQuestion, correctAnswer: e.target.value === 'true' })}
-                            className="w-full border rounded-md p-2"
+                            className="w-full border-input bg-background/50 text-foreground border rounded-md p-2"
                         >
                             <option value="true">True</option>
                             <option value="false">False</option>
@@ -235,7 +235,7 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
                     <textarea
                         value={editQuestion.explanation || ''}
                         onChange={(e) => setEditQuestion({ ...editQuestion, explanation: e.target.value })}
-                        className="w-full border rounded-md p-2 h-20 text-sm"
+                        className="w-full border-input bg-background/50 text-foreground border rounded-md p-2 h-20 text-sm"
                         placeholder="Explain why the answer is correct (shown after grading)..."
                     />
                 </div>
@@ -247,8 +247,8 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
         <div className="max-w-4xl mx-auto py-8 px-4">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{quizTitle}</h1>
-                    <p className="text-gray-500">Edit Questions</p>
+                    <h1 className="text-2xl font-bold text-foreground">{quizTitle}</h1>
+                    <p className="text-muted-foreground">Edit Questions</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button variant="outline" onClick={handleAddQuestion}>
@@ -265,43 +265,43 @@ export default function QuizBuilder({ courseId, quizId, initialQuestions, quizTi
             <div className="space-y-4">
                 {questions.length === 0 ? (
                     <Card className="border-dashed">
-                        <CardContent className="py-12 text-center text-gray-500">
+                        <CardContent className="py-12 text-center text-muted-foreground">
                             No questions yet. Click "Add Question" to start building your quiz.
                         </CardContent>
                     </Card>
                 ) : (
                     questions.map((q, index) => (
-                        <Card key={q.id} className="cursor-move hover:border-sky-300 transition-colors group">
+                        <Card key={q.id} className="cursor-move hover:border-primary/50 transition-colors group">
                             <CardContent className="p-4 flex items-start gap-4">
-                                <div className="mt-2 text-gray-400 cursor-grab active:cursor-grabbing">
+                                <div className="mt-2 text-muted-foreground cursor-grab active:cursor-grabbing">
                                     <GripVertical className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-semibold text-gray-500">Q{index + 1}.</span>
-                                        <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600 uppercase font-medium flex items-center gap-1">
+                                        <span className="font-semibold text-muted-foreground">Q{index + 1}.</span>
+                                        <span className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground uppercase font-medium flex items-center gap-1">
                                             {getTypeIcon(q.questionType)}
                                             {q.questionType.replace('_', ' ')}
                                         </span>
-                                        <span className="text-xs text-gray-400">
+                                        <span className="text-xs text-muted-foreground">
                                             ({q.points} points)
                                         </span>
                                     </div>
-                                    <p className="text-gray-900 mb-2 line-clamp-2">{q.question}</p>
+                                    <p className="text-foreground mb-2 line-clamp-2">{q.question}</p>
 
                                     {/* Quick Preview of options/answer */}
                                     {q.questionType === 'multiple_choice' && (
-                                        <div className="text-sm text-gray-500 pl-4 border-l-2 border-gray-200">
+                                        <div className="text-sm text-muted-foreground pl-4 border-l-2 border-border">
                                             {q.options?.length || 0} Options
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Button variant="ghost" size="sm" onClick={() => handleEditQuestion(q)}>
-                                        <Settings className="w-4 h-4 text-gray-500" />
+                                        <Settings className="w-4 h-4 text-muted-foreground" />
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => handleDeleteQuestion(q.id)}>
-                                        <Trash2 className="w-4 h-4 text-red-500" />
+                                        <Trash2 className="w-4 h-4 text-destructive" />
                                     </Button>
                                 </div>
                             </CardContent>

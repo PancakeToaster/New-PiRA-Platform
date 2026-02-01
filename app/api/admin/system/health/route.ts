@@ -59,7 +59,7 @@ export async function GET() {
 
         let appSize = 0;
         try {
-            console.log('[System Health] Starting app size calculation for:', process.cwd());
+            // console.log('[System Health] Starting app size calculation for:', process.cwd());
             const startTime = Date.now();
 
             // Calculate with 10 second timeout
@@ -71,7 +71,7 @@ export async function GET() {
             appSize = await Promise.race([sizePromise, timeoutPromise]);
 
             const duration = Date.now() - startTime;
-            console.log(`[System Health] App size calculated: ${(appSize / 1024 / 1024).toFixed(2)} MB in ${duration}ms`);
+            // console.log(`[System Health] App size calculated: ${(appSize / 1024 / 1024).toFixed(2)} MB in ${duration}ms`);
         } catch (e) {
             console.error('[System Health] Failed to calculate app size:', e);
         }
@@ -84,7 +84,7 @@ export async function GET() {
             `;
             if (result && result[0]) {
                 dbSize = Number(result[0].size);
-                console.log(`[System Health] Database size: ${(dbSize / 1024 / 1024).toFixed(2)} MB`);
+                // console.log(`[System Health] Database size: ${(dbSize / 1024 / 1024).toFixed(2)} MB`);
             }
         } catch (e) {
             console.error('[System Health] Failed to calculate database size:', e);

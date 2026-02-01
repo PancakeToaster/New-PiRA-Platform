@@ -34,33 +34,33 @@ export default function CourseNavigation({ courseId, courseName, isTeacher, badg
         <Card className="overflow-hidden">
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-accent transition-colors"
             >
                 <div className="flex items-center gap-3">
                     {isExpanded ? (
-                        <ChevronDown className="w-5 h-5 text-gray-500" />
+                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
                     ) : (
-                        <ChevronRight className="w-5 h-5 text-gray-500" />
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
                     )}
                     <div className="text-left">
-                        <h3 className="font-semibold text-lg text-gray-900">{courseName}</h3>
-                        <p className="text-sm text-gray-500">{isTeacher ? 'Teaching' : 'Enrolled'}</p>
+                        <h3 className="font-semibold text-lg text-foreground">{courseName}</h3>
+                        <p className="text-sm text-muted-foreground">{isTeacher ? 'Teaching' : 'Enrolled'}</p>
                     </div>
                 </div>
                 {!isExpanded && (
                     <div className="flex gap-2">
                         {badges?.announcements && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                            <span className="px-2 py-1 bg-blue-500/10 text-blue-500 text-xs font-medium rounded-full">
                                 {badges.announcements} new
                             </span>
                         )}
                         {badges?.assignments && (
-                            <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
+                            <span className="px-2 py-1 bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full">
                                 {badges.assignments} due
                             </span>
                         )}
                         {badges?.forumUnread && (
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                            <span className="px-2 py-1 bg-purple-500/10 text-purple-500 text-xs font-medium rounded-full">
                                 {badges.forumUnread} unread
                             </span>
                         )}
@@ -69,7 +69,7 @@ export default function CourseNavigation({ courseId, courseName, isTeacher, badg
             </button>
 
             {isExpanded && (
-                <div className="border-t border-gray-200 bg-gray-50">
+                <div className="border-t border-border bg-muted/30">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 p-4">
                         {sections.map((section) => {
                             const Icon = section.icon;
@@ -77,16 +77,16 @@ export default function CourseNavigation({ courseId, courseName, isTeacher, badg
                                 <Link
                                     key={section.name}
                                     href={section.path}
-                                    className="flex items-center gap-3 px-4 py-3 bg-white rounded-lg hover:bg-sky-50 hover:border-sky-200 border border-gray-200 transition-all group"
+                                    className="flex items-center gap-3 px-4 py-3 bg-card rounded-lg hover:bg-primary/5 hover:border-primary/20 border border-border transition-all group"
                                 >
-                                    <Icon className="w-5 h-5 text-gray-400 group-hover:text-sky-600" />
+                                    <Icon className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
                                     <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-700 group-hover:text-sky-700">
+                                        <span className="text-sm font-medium text-foreground group-hover:text-primary">
                                             {section.name}
                                         </span>
                                     </div>
                                     {section.badge && (
-                                        <span className="px-2 py-0.5 bg-sky-100 text-sky-700 text-xs font-medium rounded-full">
+                                        <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
                                             {section.badge}
                                         </span>
                                     )}

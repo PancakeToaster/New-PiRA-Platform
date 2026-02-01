@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import Link from 'next/link';
 import { LogIn } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 
 interface LoginForm {
   email: string;
@@ -59,10 +60,10 @@ export default function LoginPage() {
         <div className="absolute w-[500px] h-[500px] rounded-full bg-white/10 bottom-0 -left-40 blur-3xl" />
       </div>
 
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 relative z-10">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 relative z-10 transition-all duration-300 dark:bg-card dark:text-foreground">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-gray-900">Robotics Academy</h1>
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+            <Logo width={240} height={60} className="justify-center" />
           </Link>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>

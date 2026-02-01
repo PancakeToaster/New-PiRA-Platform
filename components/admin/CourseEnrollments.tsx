@@ -122,7 +122,7 @@ export default function CourseEnrollments({ courseId }: { courseId: string }) {
         return (
             <Card>
                 <CardContent className="p-8 flex justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </CardContent>
             </Card>
         );
@@ -153,21 +153,21 @@ export default function CourseEnrollments({ courseId }: { courseId: string }) {
             </CardHeader>
             <CardContent className="space-y-4">
                 {isAdding && (
-                    <div className="p-4 bg-sky-50 border border-sky-200 rounded-lg space-y-3">
-                        <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2">
-                            <Search className="w-4 h-4 text-gray-400" />
+                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-3">
+                        <div className="flex items-center gap-2 bg-background border border-input rounded-lg px-3 py-2">
+                            <Search className="w-4 h-4 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Search students..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="flex-1 outline-none text-sm"
+                                className="flex-1 outline-none text-sm bg-transparent"
                             />
                         </div>
                         <select
                             value={selectedStudent}
                             onChange={(e) => setSelectedStudent(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                         >
                             <option value="">Select a student...</option>
                             {filteredStudents.map((student) => (
@@ -183,20 +183,20 @@ export default function CourseEnrollments({ courseId }: { courseId: string }) {
                 )}
 
                 {enrollments.length === 0 ? (
-                    <p className="text-gray-600 text-center py-8">No students enrolled yet.</p>
+                    <p className="text-muted-foreground text-center py-8">No students enrolled yet.</p>
                 ) : (
                     <div className="space-y-2">
                         {enrollments.map((enrollment) => (
                             <div
                                 key={enrollment.id}
-                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-accent transition-colors"
                             >
                                 <div>
-                                    <p className="font-medium text-gray-900">
+                                    <p className="font-medium text-foreground">
                                         {enrollment.student.user.firstName} {enrollment.student.user.lastName}
                                     </p>
-                                    <p className="text-sm text-gray-600">{enrollment.student.user.email}</p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-sm text-muted-foreground">{enrollment.student.user.email}</p>
+                                    <p className="text-xs text-muted-foreground/80">
                                         Enrolled: {new Date(enrollment.enrolledAt).toLocaleDateString()}
                                     </p>
                                 </div>

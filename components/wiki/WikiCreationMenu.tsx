@@ -12,19 +12,31 @@ import {
 import CreatePageDialog from './CreatePageDialog';
 import CreateFolderDialog from './CreateFolderDialog';
 
-export default function WikiCreationMenu() {
+import Link from 'next/link';
+
+// ...
+
+export default function WikiCreationMenu({ isAdmin }: { isAdmin: boolean }) {
     const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
     const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
 
+    if (!isAdmin) return (
+        <div className="flex items-center justify-between px-2 mb-2 group">
+            <Link href="/wiki" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors">
+                Documentation
+            </Link>
+        </div>
+    );
+
     return (
         <div className="flex items-center justify-between px-2 mb-2 group">
-            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <Link href="/wiki" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors">
                 Documentation
-            </div>
+            </Link>
 
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <button className="text-gray-400 hover:text-sky-600 hover:bg-sky-50 p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+                    <button className="text-gray-400 hover:text-sky-600 hover:bg-sky-50 p-0.5 rounded transition-colors">
                         <Plus className="w-4 h-4" />
                     </button>
                 </DropdownMenuTrigger>

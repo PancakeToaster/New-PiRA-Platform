@@ -113,8 +113,8 @@ export default function AssignmentSubmissionView({
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{assignment.title}</h1>
-                    <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                    <h1 className="text-3xl font-bold text-foreground">{assignment.title}</h1>
+                    <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                         {assignment.course && (
                             <span className="flex items-center gap-1">
                                 <FileText className="w-4 h-4" />
@@ -135,22 +135,22 @@ export default function AssignmentSubmissionView({
                 {/* Status Badge */}
                 <div className="flex-shrink-0">
                     {isGraded ? (
-                        <div className="px-4 py-2 bg-green-100 text-green-800 rounded-lg flex items-center gap-2 font-medium">
+                        <div className="px-4 py-2 bg-green-500/10 text-green-500 rounded-lg flex items-center gap-2 font-medium">
                             <CheckCircle className="w-5 h-5" />
                             Graded: {submission.grade}/{assignment.maxPoints}
                         </div>
                     ) : isSubmitted ? (
-                        <div className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg flex items-center gap-2 font-medium">
+                        <div className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-lg flex items-center gap-2 font-medium">
                             <CheckCircle className="w-5 h-5" />
                             Submitted
                         </div>
                     ) : isOverdue ? (
-                        <div className="px-4 py-2 bg-red-100 text-red-800 rounded-lg flex items-center gap-2 font-medium">
+                        <div className="px-4 py-2 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2 font-medium">
                             <AlertCircle className="w-5 h-5" />
                             Overdue
                         </div>
                     ) : (
-                        <div className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg flex items-center gap-2 font-medium">
+                        <div className="px-4 py-2 bg-muted text-muted-foreground rounded-lg flex items-center gap-2 font-medium">
                             <Clock className="w-5 h-5" />
                             In Progress
                         </div>
@@ -171,7 +171,7 @@ export default function AssignmentSubmissionView({
                     <h2 className="text-xl font-semibold text-gray-900">Your Submission</h2>
 
                     {error && (
-                        <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md flex items-center gap-2">
+                        <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md flex items-center gap-2">
                             <AlertCircle className="w-4 h-4" />
                             {error}
                         </div>
@@ -179,7 +179,7 @@ export default function AssignmentSubmissionView({
 
                     {/* Text Entry */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                             Online Text / Notes
                         </label>
                         <textarea
@@ -187,33 +187,33 @@ export default function AssignmentSubmissionView({
                             onChange={(e) => setContent(e.target.value)}
                             disabled={isSubmitted || isGraded}
                             rows={6}
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 disabled:bg-gray-50 disabled:text-gray-500"
+                            className="w-full rounded-md border-input bg-background border shadow-sm focus:border-primary focus:ring-primary disabled:opacity-50"
                             placeholder="Type your answer or add comments here..."
                         />
                     </div>
 
                     {/* File Attachments */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                             Attachments
                         </label>
 
                         {/* File List */}
                         <div className="space-y-2 mb-4">
                             {attachments.map((url, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                                <div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-white rounded border">
-                                            <FileText className="w-5 h-5 text-sky-600" />
+                                        <div className="p-2 bg-background rounded border border-border">
+                                            <FileText className="w-5 h-5 text-primary" />
                                         </div>
-                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-sky-600 hover:underline">
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:underline">
                                             {formatFileName(url)}
                                         </a>
                                     </div>
                                     {!isSubmitted && !isGraded && (
                                         <button
                                             onClick={() => removeAttachment(url)}
-                                            className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded transition-colors"
+                                            className="p-1 hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded transition-colors"
                                         >
                                             <X className="w-5 h-5" />
                                         </button>
@@ -234,19 +234,19 @@ export default function AssignmentSubmissionView({
                                 />
                                 <label
                                     htmlFor="file-upload"
-                                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-white transition-colors
-                    ${isUploading ? 'opacity-50 cursor-not-allowed' : 'border-gray-300 hover:border-sky-500'}`}
+                                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors
+                    ${isUploading ? 'opacity-50 cursor-not-allowed' : 'border-border hover:border-primary'}`}
                                 >
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                         {isUploading ? (
-                                            <Loader2 className="w-8 h-8 text-sky-500 animate-spin mb-2" />
+                                            <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
                                         ) : (
-                                            <UploadCloud className="w-8 h-8 text-gray-400 mb-2" />
+                                            <UploadCloud className="w-8 h-8 text-muted-foreground mb-2" />
                                         )}
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-sm text-muted-foreground">
                                             <span className="font-semibold">Click to upload</span> or drag and drop
                                         </p>
-                                        <p className="text-xs text-gray-500">PDF, DOCX, ZIP, Images (Max 5MB)</p>
+                                        <p className="text-xs text-muted-foreground">PDF, DOCX, ZIP, Images (Max 5MB)</p>
                                     </div>
                                 </label>
                             </div>
@@ -256,12 +256,12 @@ export default function AssignmentSubmissionView({
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-3 pt-4 border-t">
                         {isGraded ? (
-                            <div className="text-sm text-gray-500 italic">
+                            <div className="text-sm text-muted-foreground italic">
                                 This assignment has been graded.
                             </div>
                         ) : isSubmitted ? (
                             <>
-                                <div className="text-sm text-gray-500 italic mr-auto">
+                                <div className="text-sm text-muted-foreground italic mr-auto">
                                     Submitted on {new Date(submission.submittedAt).toLocaleString()}
                                 </div>
                                 <Button
@@ -299,11 +299,11 @@ export default function AssignmentSubmissionView({
             {submission?.feedback && (
                 <Card className="border-l-4 border-l-green-500">
                     <CardContent className="pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-green-600" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                            <FileText className="w-5 h-5 text-green-500" />
                             Teacher Feedback
                         </h3>
-                        <div className="prose bg-green-50 p-4 rounded-lg text-gray-800">
+                        <div className="prose dark:prose-invert bg-green-500/10 p-4 rounded-lg text-foreground">
                             {submission.feedback}
                         </div>
                     </CardContent>

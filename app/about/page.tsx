@@ -162,7 +162,7 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
       <main className="flex-1 pt-20">
@@ -194,7 +194,7 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
               ) : (
                 // Render HTML content (legacy)
                 <article
-                  className="prose prose-lg max-w-none"
+                  className="prose prose-lg max-w-none dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: aboutPage.content }}
                 />
               )}
@@ -206,22 +206,22 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
             <>
               {/* Mission Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-6 text-gray-900">Our Mission</h2>
-                <p className="text-lg text-gray-600 mb-4 leading-relaxed">
+                <h2 className="text-3xl font-bold mb-6 text-foreground">Our Mission</h2>
+                <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
                   {companyInfo.mission}
                 </p>
-                <p className="text-lg text-gray-600 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   {companyInfo.description}
                 </p>
               </section>
 
               {/* Vision Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-6 text-gray-900">Our Vision</h2>
-                <p className="text-xl text-gray-700 mb-4 italic border-l-4 border-sky-500 pl-6">
+                <h2 className="text-3xl font-bold mb-6 text-foreground">Our Vision</h2>
+                <p className="text-xl text-foreground/80 mb-4 italic border-l-4 border-sky-500 pl-6">
                   {companyInfo.vision}
                 </p>
-                <p className="text-lg text-gray-600 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   With {companyInfo.yearsFounded}, we have helped countless students develop their skills
                   in robotics, programming, and STEM education through hands-on learning experiences and
                   competitive opportunities.
@@ -230,13 +230,13 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
 
               {/* What We Offer Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-8 text-gray-900">What We Offer</h2>
+                <h2 className="text-3xl font-bold mb-8 text-foreground">What We Offer</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {services.map((service) => (
-                    <div key={service.id} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div key={service.id} className="bg-muted/30 p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow">
                       <div className="text-4xl mb-4">{service.icon}</div>
-                      <h3 className="text-xl font-bold mb-2 text-sky-600">{service.title}</h3>
-                      <p className="text-gray-600">{service.description}</p>
+                      <h3 className="text-xl font-bold mb-2 text-sky-600 dark:text-sky-400">{service.title}</h3>
+                      <p className="text-muted-foreground">{service.description}</p>
                     </div>
                   ))}
                 </div>
@@ -244,19 +244,19 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
 
               {/* Learning Process Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-4 text-gray-900">Our Learning Process</h2>
-                <p className="text-lg text-gray-600 mb-8">
+                <h2 className="text-3xl font-bold mb-4 text-foreground">Our Learning Process</h2>
+                <p className="text-lg text-muted-foreground mb-8">
                   We follow a proven four-step approach to robotics education:
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   {learningProcess.map((step) => (
                     <div key={step.id} className="text-center">
                       <div className="text-5xl mb-4">{step.icon}</div>
-                      <div className="inline-block px-3 py-1 bg-sky-100 text-sky-600 text-sm font-semibold rounded-full mb-2">
+                      <div className="inline-block px-3 py-1 bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400 text-sm font-semibold rounded-full mb-2">
                         Step {step.step}
                       </div>
-                      <h3 className="text-lg font-bold mb-2 text-gray-900">{step.title}</h3>
-                      <p className="text-gray-600 text-sm">{step.description}</p>
+                      <h3 className="text-lg font-bold mb-2 text-foreground">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm">{step.description}</p>
                     </div>
                   ))}
                 </div>
@@ -264,29 +264,29 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
 
               {/* Values Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-8 text-gray-900">Our Values</h2>
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Our Values</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-sky-50 to-white p-6 rounded-2xl border border-sky-100">
-                    <h3 className="text-xl font-bold mb-2 text-sky-600">Innovation</h3>
-                    <p className="text-gray-600">
+                  <div className="bg-gradient-to-br from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl border border-sky-100 dark:border-border">
+                    <h3 className="text-xl font-bold mb-2 text-sky-600 dark:text-sky-400">Innovation</h3>
+                    <p className="text-muted-foreground">
                       We encourage creative thinking and innovative solutions to real-world problems.
                     </p>
                   </div>
-                  <div className="bg-gradient-to-br from-sky-50 to-white p-6 rounded-2xl border border-sky-100">
-                    <h3 className="text-xl font-bold mb-2 text-sky-600">Excellence</h3>
-                    <p className="text-gray-600">
+                  <div className="bg-gradient-to-br from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl border border-sky-100 dark:border-border">
+                    <h3 className="text-xl font-bold mb-2 text-sky-600 dark:text-sky-400">Excellence</h3>
+                    <p className="text-muted-foreground">
                       We strive for excellence in everything we do, from curriculum design to student support.
                     </p>
                   </div>
-                  <div className="bg-gradient-to-br from-sky-50 to-white p-6 rounded-2xl border border-sky-100">
-                    <h3 className="text-xl font-bold mb-2 text-sky-600">Inclusivity</h3>
-                    <p className="text-gray-600">
+                  <div className="bg-gradient-to-br from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl border border-sky-100 dark:border-border">
+                    <h3 className="text-xl font-bold mb-2 text-sky-600 dark:text-sky-400">Inclusivity</h3>
+                    <p className="text-muted-foreground">
                       We believe robotics education should be accessible to all students.
                     </p>
                   </div>
-                  <div className="bg-gradient-to-br from-sky-50 to-white p-6 rounded-2xl border border-sky-100">
-                    <h3 className="text-xl font-bold mb-2 text-sky-600">Collaboration</h3>
-                    <p className="text-gray-600">
+                  <div className="bg-gradient-to-br from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 p-6 rounded-2xl border border-sky-100 dark:border-border">
+                    <h3 className="text-xl font-bold mb-2 text-sky-600 dark:text-sky-400">Collaboration</h3>
+                    <p className="text-muted-foreground">
                       We foster a collaborative learning environment where students learn from each other.
                     </p>
                   </div>
@@ -295,10 +295,10 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
 
               {/* Team Section */}
               <section className="mb-16">
-                <h2 className="text-3xl font-bold mb-8 text-gray-900">Our Team</h2>
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Our Team</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {teamMembers.map((member) => (
-                    <div key={member.id} className="bg-white border border-gray-200 rounded-2xl p-6 text-center hover:shadow-xl transition-shadow">
+                    <div key={member.id} className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-xl transition-shadow">
                       {member.image ? (
                         <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover" />
                       ) : (
@@ -308,9 +308,9 @@ export default async function AboutPage({ searchParams }: { searchParams: Promis
                           </span>
                         </div>
                       )}
-                      <h3 className="text-xl font-bold mb-1 text-gray-900">{member.name}</h3>
-                      <p className="text-sky-600 font-semibold mb-3">{member.role}</p>
-                      <p className="text-gray-600 text-sm">{member.bio}</p>
+                      <h3 className="text-xl font-bold mb-1 text-foreground">{member.name}</h3>
+                      <p className="text-sky-600 dark:text-sky-400 font-semibold mb-3">{member.role}</p>
+                      <p className="text-muted-foreground text-sm">{member.bio}</p>
                     </div>
                   ))}
                 </div>

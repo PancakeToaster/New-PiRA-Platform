@@ -170,7 +170,7 @@ export default function AdminBlogPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -181,7 +181,7 @@ export default function AdminBlogPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
+        <h1 className="text-3xl font-bold text-foreground">Blog Posts</h1>
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <PenSquare className="w-4 h-4 mr-2" />
           Create New Post
@@ -193,24 +193,24 @@ export default function AdminBlogPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{posts.length}</p>
-              <p className="text-sm text-gray-500">Total Posts</p>
+              <p className="text-3xl font-bold text-foreground">{posts.length}</p>
+              <p className="text-sm text-muted-foreground">Total Posts</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">{publishedCount}</p>
-              <p className="text-sm text-gray-500">Published</p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{publishedCount}</p>
+              <p className="text-sm text-muted-foreground">Published</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-600">{draftCount}</p>
-              <p className="text-sm text-gray-500">Drafts</p>
+              <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{draftCount}</p>
+              <p className="text-sm text-muted-foreground">Drafts</p>
             </div>
           </CardContent>
         </Card>
@@ -221,19 +221,19 @@ export default function AdminBlogPage() {
         <CardContent className="py-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by title..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              className="px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="all">All Status</option>
               <option value="published">Published</option>
@@ -250,56 +250,55 @@ export default function AdminBlogPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Slug
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Published
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredPosts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
                       No blog posts found
                     </td>
                   </tr>
                 ) : (
                   filteredPosts.map((post) => (
-                    <tr key={post.id} className="hover:bg-gray-50">
+                    <tr key={post.id} className="hover:bg-muted/50">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{post.title}</div>
+                        <div className="text-sm font-medium text-foreground">{post.title}</div>
                         {post.excerpt && (
-                          <div className="text-sm text-gray-500 line-clamp-1">{post.excerpt}</div>
+                          <div className="text-sm text-muted-foreground line-clamp-1">{post.excerpt}</div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">/{post.slug}</div>
+                        <div className="text-sm text-muted-foreground">/{post.slug}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            post.isDraft
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${post.isDraft
+                              ? 'bg-muted text-muted-foreground'
+                              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            }`}
                         >
                           {post.isDraft ? 'Draft' : 'Published'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {post.publishedAt
                           ? new Date(post.publishedAt).toLocaleDateString()
                           : 'N/A'}
@@ -341,7 +340,7 @@ export default function AdminBlogPage() {
       >
         <form onSubmit={handleCreatePost} className="space-y-4">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
               Title *
             </label>
             <input
@@ -355,24 +354,24 @@ export default function AdminBlogPage() {
                   slug: generateSlug(e.target.value),
                 });
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Post title"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
               Slug *
             </label>
             <div className="flex items-center">
-              <span className="text-gray-500 mr-1">/blog/</span>
+              <span className="text-muted-foreground mr-1">/blog/</span>
               <input
                 type="text"
                 id="slug"
                 value={createForm.slug}
                 onChange={(e) => setCreateForm({ ...createForm, slug: e.target.value })}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                className="flex-1 px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="post-slug"
                 required
               />
@@ -380,7 +379,7 @@ export default function AdminBlogPage() {
           </div>
 
           <div>
-            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="excerpt" className="block text-sm font-medium text-foreground mb-1">
               Excerpt
             </label>
             <textarea
@@ -388,20 +387,20 @@ export default function AdminBlogPage() {
               value={createForm.excerpt}
               onChange={(e) => setCreateForm({ ...createForm, excerpt: e.target.value })}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground resize-none"
               placeholder="Brief description of the post"
             />
           </div>
 
           {/* Media Upload Section */}
-          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+          <div className="border border-border rounded-lg p-4 bg-muted/50">
+            <label className="block text-sm font-medium text-foreground mb-3">
               Media Upload
             </label>
             <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                <Upload className="w-4 h-4 text-gray-600" />
-                <span className="text-sm text-gray-700">
+              <label className="flex items-center gap-2 px-4 py-2 bg-background border border-border rounded-lg cursor-pointer hover:bg-muted transition-colors">
+                <Upload className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground">
                   {isUploading ? 'Uploading...' : 'Upload Files'}
                 </span>
                 <input
@@ -413,42 +412,42 @@ export default function AdminBlogPage() {
                   className="hidden"
                 />
               </label>
-              {isUploading && <Loader2 className="w-5 h-5 animate-spin text-sky-600" />}
+              {isUploading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Images: JPEG, PNG, GIF, WebP (max 5MB) | Videos: MP4, WebM, OGG (max 100MB)
             </p>
 
             {/* Uploaded Media Preview */}
             {uploadedMedia.length > 0 && (
               <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium text-gray-700">Uploaded Files:</p>
+                <p className="text-sm font-medium text-foreground">Uploaded Files:</p>
                 <div className="grid grid-cols-2 gap-3">
                   {uploadedMedia.map((media, index) => (
                     <div
                       key={index}
-                      className="relative bg-white border border-gray-200 rounded-lg p-2 flex items-center gap-2"
+                      className="relative bg-card border border-border rounded-lg p-2 flex items-center gap-2"
                     >
                       {media.type === 'image' ? (
-                        <Image className="w-5 h-5 text-sky-600 flex-shrink-0" />
+                        <Image className="w-5 h-5 text-primary flex-shrink-0" />
                       ) : (
-                        <Video className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                        <Video className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                       )}
-                      <span className="text-xs text-gray-600 truncate flex-1">
+                      <span className="text-xs text-muted-foreground truncate flex-1">
                         {media.filename}
                       </span>
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => insertMediaToContent(media.url, media.type)}
-                          className="text-xs px-2 py-1 bg-sky-100 text-sky-700 rounded hover:bg-sky-200 transition-colors"
+                          className="text-xs px-2 py-1 bg-primary/10 text-primary rounded hover:bg-primary/20 transition-colors"
                         >
                           Insert
                         </button>
                         <button
                           type="button"
                           onClick={() => removeMedia(index)}
-                          className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                          className="p-1 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -462,7 +461,7 @@ export default function AdminBlogPage() {
 
           {/* Cover Image */}
           <div>
-            <label htmlFor="coverImage" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="coverImage" className="block text-sm font-medium text-foreground mb-1">
               Cover Image URL
             </label>
             <input
@@ -470,7 +469,7 @@ export default function AdminBlogPage() {
               id="coverImage"
               value={createForm.coverImage}
               onChange={(e) => setCreateForm({ ...createForm, coverImage: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="https://... or use uploaded image URL"
             />
             {uploadedMedia.filter(m => m.type === 'image').length > 0 && (
@@ -480,7 +479,7 @@ export default function AdminBlogPage() {
                     key={index}
                     type="button"
                     onClick={() => setCreateForm({ ...createForm, coverImage: media.url })}
-                    className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                    className="text-xs px-2 py-1 bg-muted text-foreground rounded hover:bg-muted/80 transition-colors"
                   >
                     Use {media.filename}
                   </button>
@@ -490,7 +489,7 @@ export default function AdminBlogPage() {
           </div>
 
           <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
               Content *
             </label>
             <textarea
@@ -498,7 +497,7 @@ export default function AdminBlogPage() {
               value={createForm.content}
               onChange={(e) => setCreateForm({ ...createForm, content: e.target.value })}
               rows={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-none"
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground resize-none"
               placeholder="Blog post content (HTML supported)"
               required
             />
@@ -510,14 +509,14 @@ export default function AdminBlogPage() {
               id="isDraft"
               checked={createForm.isDraft}
               onChange={(e) => setCreateForm({ ...createForm, isDraft: e.target.checked })}
-              className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+              className="h-4 w-4 text-primary focus:ring-primary border-input rounded bg-background"
             />
-            <label htmlFor="isDraft" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="isDraft" className="ml-2 block text-sm text-foreground">
               Save as draft
             </label>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-border">
             <Button
               type="button"
               variant="outline"

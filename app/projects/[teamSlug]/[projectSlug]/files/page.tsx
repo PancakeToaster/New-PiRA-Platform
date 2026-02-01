@@ -160,7 +160,7 @@ export default function ProjectFilesPage({ params }: { params: { teamSlug: strin
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Project Files</h2>
+                <h2 className="text-xl font-semibold text-foreground">Project Files</h2>
                 <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
                     <DialogTrigger asChild>
                         <Button>
@@ -173,18 +173,18 @@ export default function ProjectFilesPage({ params }: { params: { teamSlug: strin
                             <DialogTitle>Upload File</DialogTitle>
                         </DialogHeader>
                         <div className="py-6">
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer relative">
                                 <Input
                                     type="file"
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                                 />
                                 <div className="flex flex-col items-center justify-center space-y-2 pointer-events-none">
-                                    <UploadCloud className="w-10 h-10 text-gray-400" />
-                                    <p className="text-sm text-gray-600 font-medium">
+                                    <UploadCloud className="w-10 h-10 text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground font-medium">
                                         {selectedFile ? selectedFile.name : 'Click to select or drag file here'}
                                     </p>
-                                    <p className="text-xs text-gray-400">Max 50MB</p>
+                                    <p className="text-xs text-muted-foreground">Max 50MB</p>
                                 </div>
                             </div>
                         </div>
@@ -199,10 +199,10 @@ export default function ProjectFilesPage({ params }: { params: { teamSlug: strin
             </div>
 
             {files.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
-                    <FileIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No files yet</p>
-                    <p className="text-sm text-gray-400">Upload documents to share with the team</p>
+                <div className="text-center py-12 bg-card rounded-lg border border-dashed border-border">
+                    <FileIcon className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                    <p className="text-muted-foreground font-medium">No files yet</p>
+                    <p className="text-sm text-muted-foreground">Upload documents to share with the team</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -211,19 +211,19 @@ export default function ProjectFilesPage({ params }: { params: { teamSlug: strin
                             <CardContent className="p-4">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start space-x-3 overflow-hidden">
-                                        <div className="bg-gray-50 p-2 rounded-lg shrink-0">
+                                        <div className="bg-muted/50 p-2 rounded-lg shrink-0">
                                             {getFileIcon(file.type)}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium text-gray-900 truncate" title={file.name}>
+                                            <p className="font-medium text-foreground truncate" title={file.name}>
                                                 {file.name}
                                             </p>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-muted-foreground mt-1">
                                                 {formatFileSize(file.size)} • {new Date(file.createdAt).toLocaleDateString()}
                                             </p>
                                             <div className="flex items-center mt-2 space-x-2">
-                                                <div className="flex items-center text-xs text-gray-500">
-                                                    <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center mr-1 text-xs font-bold">
+                                                <div className="flex items-center text-xs text-muted-foreground">
+                                                    <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center mr-1 text-xs font-bold">
                                                         {file.uploader.avatar ? (
                                                             <img src={file.uploader.avatar} className="w-full h-full rounded-full" />
                                                         ) : (
@@ -237,14 +237,14 @@ export default function ProjectFilesPage({ params }: { params: { teamSlug: strin
                                     </div>
                                     <div className="flex space-x-1">
                                         <a href={file.url} download target="_blank" rel="noopener noreferrer">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-sky-600">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-sky-600">
                                                 <Download className="w-4 h-4" />
                                             </Button>
                                         </a>
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 text-gray-400 hover:text-red-600"
+                                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                             onClick={() => handleDelete(file.id)}
                                         >
                                             <Trash2 className="w-4 h-4" />

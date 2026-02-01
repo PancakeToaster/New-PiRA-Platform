@@ -19,6 +19,7 @@
   "dependencies": {
     "@craftjs/core": "^0.2.12",
     "@craftjs/utils": "^0.2.5",
+    "@google-analytics/data": "^5.2.1",
     "@headlessui/react": "^2.2.9",
     "@hello-pangea/dnd": "^18.0.1",
     "@prisma/client": "^5.19.0",
@@ -62,6 +63,7 @@
     "multer": "^1.4.5-lts.1",
     "next": "^14.2.0",
     "next-auth": "^4.24.0",
+    "next-themes": "^0.4.6",
     "react": "^18.3.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.0",
@@ -77,6 +79,7 @@
     "socket.io-client": "^4.7.0",
     "systeminformation": "^5.30.5",
     "tailwind-merge": "^2.5.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.0"
   },
   "devDependencies": {

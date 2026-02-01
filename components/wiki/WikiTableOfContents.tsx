@@ -13,9 +13,20 @@ interface WikiTableOfContentsProps {
     content: string; // Markdown or Tiptap JSON
 }
 
+const slugify = (str: string) => {
+    return str
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+};
+
 export default function WikiTableOfContents({ content }: WikiTableOfContentsProps) {
     const [headings, setHeadings] = useState<Heading[]>([]);
     const [activeId, setActiveId] = useState<string>('');
+
+    // ... (useEffect remains same) ...
 
     useEffect(() => {
         try {
@@ -85,14 +96,13 @@ export default function WikiTableOfContents({ content }: WikiTableOfContentsProp
 
         const headings: Heading[] = [];
         const lines = markdown.split('\n');
-        let headingCount = 0;
 
         lines.forEach((line) => {
             const match = line.match(/^(#{1,6})\s+(.+)$/);
             if (match) {
                 const level = match[1].length;
                 const text = match[2].trim();
-                const id = `heading-${headingCount++}`;
+                const id = slugify(text);
                 headings.push({ id, text, level });
             }
         });
@@ -110,9 +120,9 @@ export default function WikiTableOfContents({ content }: WikiTableOfContentsProp
     if (headings.length === 0) return null;
 
     return (
-        <div className="sticky top-20 w-64 hidden xl:block">
-            <div className="border-l border-gray-200 pl-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
+        <div className="sticky top-20 w-64 hidden xl:block self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">
+            <div className="border-l border-border pl-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
                     <List className="w-4 h-4" />
                     On this page
                 </div>
@@ -122,8 +132,8 @@ export default function WikiTableOfContents({ content }: WikiTableOfContentsProp
                             key={heading.id}
                             onClick={() => scrollToHeading(heading.id)}
                             className={`block text-left text-sm transition-colors w-full ${activeId === heading.id
-                                ? 'text-sky-600 font-medium'
-                                : 'text-gray-600 hover:text-gray-900'
+                                ? 'text-primary font-medium'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             style={{ paddingLeft: `${(heading.level - 1) * 12}px` }}
                         >

@@ -112,7 +112,7 @@ export default function WikiContentClient({
         return (
             <div>
                 {saveError && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 text-sm">
                         {saveError}
                     </div>
                 )}
@@ -137,10 +137,10 @@ export default function WikiContentClient({
 
                 {/* Teacher/Mentor Buttons */}
                 {(isTeacherOrMentor) && (
-                    <div className="mt-8 flex gap-3 border-t border-gray-100 pt-6">
+                    <div className="mt-8 flex gap-3 border-t border-border pt-6">
                         <button
                             onClick={() => setIsSuggestionModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium"
                         >
                             <Lightbulb className="w-4 h-4" />
                             Suggest Edit
@@ -170,13 +170,13 @@ export default function WikiContentClient({
 
     // Placeholder for other node types
     return (
-        <div className="p-8 bg-gray-50 rounded-lg text-center border-2 border-dashed border-gray-200">
-            <p className="text-gray-500">
+        <div className="p-8 bg-muted/30 rounded-lg text-center border-2 border-dashed border-border">
+            <p className="text-muted-foreground">
                 Visualization for <strong>{nodeType}</strong> is coming soon.
             </p>
-            {graphData && <p className="text-xs text-gray-400 mt-2">Graph data available</p>}
-            {mindmapData && <p className="text-xs text-gray-400 mt-2">Mindmap data available</p>}
-            {canvasData && <p className="text-xs text-gray-400 mt-2">Canvas data available</p>}
+            {graphData && <p className="text-xs text-muted-foreground mt-2">Graph data available</p>}
+            {mindmapData && <p className="text-xs text-muted-foreground mt-2">Mindmap data available</p>}
+            {canvasData && <p className="text-xs text-muted-foreground mt-2">Canvas data available</p>}
 
             {/* Comments for non-markdown types too */}
             <div className="text-left">

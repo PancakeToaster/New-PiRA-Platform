@@ -89,6 +89,7 @@ export default async function WikiNodePage({ params }: Props) {
         await prisma.pageView.create({
             data: {
                 path: `/wiki/${node.id}`,
+                pageTitle: node.title, // Include page title for analytics
                 userId: user.id,
                 userRole: 'user',
                 knowledgeNodeId: node.id,

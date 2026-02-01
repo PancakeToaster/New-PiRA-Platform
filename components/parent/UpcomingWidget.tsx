@@ -22,19 +22,19 @@ interface UpcomingWidgetProps {
 export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
     const getIcon = (type: string) => {
         switch (type) {
-            case 'competition': return <Trophy className="w-4 h-4 text-amber-500" />;
-            case 'assignment': return <Clock className="w-4 h-4 text-sky-500" />;
-            case 'invoice': return <DollarSign className="w-4 h-4 text-rose-500" />;
-            default: return <Calendar className="w-4 h-4 text-green-500" />;
+            case 'competition': return <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />;
+            case 'assignment': return <Clock className="w-4 h-4 text-sky-500 dark:text-sky-400" />;
+            case 'invoice': return <DollarSign className="w-4 h-4 text-rose-500 dark:text-rose-400" />;
+            default: return <Calendar className="w-4 h-4 text-green-500 dark:text-green-400" />;
         }
     };
 
     const getColorClass = (type: string) => {
         switch (type) {
-            case 'competition': return 'border-l-amber-500 bg-amber-50/50';
-            case 'assignment': return 'border-l-sky-500 bg-sky-50/50';
-            case 'invoice': return 'border-l-rose-500 bg-rose-50/50';
-            default: return 'border-l-green-500 bg-green-50/50';
+            case 'competition': return 'border-l-amber-500 bg-amber-500/10';
+            case 'assignment': return 'border-l-primary bg-primary/10';
+            case 'invoice': return 'border-l-rose-500 bg-rose-500/10';
+            default: return 'border-l-green-500 bg-green-500/10';
         }
     };
 
@@ -42,18 +42,18 @@ export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
         <div className="space-y-6">
             {/* Widget Header */}
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-sky-600" />
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
                     Upcoming
                 </h2>
-                <Link href="/calendar" className="text-sm font-medium text-sky-600 hover:text-sky-700">
+                <Link href="/calendar" className="text-sm font-medium text-primary hover:text-primary/80">
                     View Calendar
                 </Link>
             </div>
 
             {items.length === 0 ? (
                 <Card>
-                    <CardContent className="py-8 text-center text-gray-500 text-sm">
+                    <CardContent className="py-8 text-center text-muted-foreground text-sm">
                         No upcoming events or deadlines.
                     </CardContent>
                 </Card>
@@ -62,7 +62,7 @@ export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
                     {items.map((item) => (
                         <div
                             key={`${item.type}-${item.id}`}
-                            className={`relative p-4 rounded-r-lg border-l-4 shadow-sm bg-white hover:shadow-md transition-shadow ${getColorClass(item.type)}`}
+                            className={`relative p-4 rounded-r-lg border-l-4 shadow-sm bg-card hover:shadow-md transition-shadow ${getColorClass(item.type)}`}
                         >
                             <div className="flex justify-between items-start">
                                 <div className="flex-1 min-w-0 pr-4">
@@ -72,16 +72,16 @@ export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
                                             OVERDUE
                                         </div>
                                     )}
-                                    <h4 className="text-sm font-bold text-gray-900 truncate">
+                                    <h4 className="text-sm font-bold text-foreground truncate">
                                         {item.title}
                                     </h4>
-                                    <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                                         {item.description || item.type.charAt(0).toUpperCase() + item.type.slice(1)}
                                     </p>
                                 </div>
 
                                 <div className="flex flex-col items-end text-right shrink-0">
-                                    <div className="flex items-center text-xs font-medium text-gray-600 bg-white/80 px-2 py-1 rounded-md shadow-sm">
+                                    <div className="flex items-center text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded-md shadow-sm">
                                         {item.formattedDate}
                                     </div>
                                     <div className="mt-2">
@@ -96,7 +96,7 @@ export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
 
             <Link
                 href="/calendar"
-                className="block w-full py-2 text-center text-sm font-medium text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors dashed border border-gray-200"
+                className="block w-full py-2 text-center text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors dashed border border-border"
             >
                 See all events
             </Link>

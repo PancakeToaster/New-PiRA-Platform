@@ -17,6 +17,7 @@ import {
     Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 interface AppSwitcherProps {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -120,8 +121,8 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "p-2 rounded-lg transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500",
-                    isOpen ? "bg-gray-100 text-sky-600" : "text-gray-500"
+                    "p-2 rounded-lg transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary",
+                    isOpen ? "bg-accent text-primary" : "text-muted-foreground"
                 )}
                 title="Switch App"
             >
@@ -129,9 +130,10 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             </button>
 
             {isOpen && (
-                <div className="absolute bottom-full left-0 mb-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 p-4 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200 origin-bottom-left">
+                <div className="absolute bottom-full left-0 mb-2 w-72 bg-card rounded-xl shadow-xl border border-border p-4 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200 origin-bottom-left">
                     <div className="flex items-center justify-between mb-3 px-1">
-                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Apps</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Apps</span>
+                        <ThemeToggle />
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
@@ -140,12 +142,12 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
                                 key={app.name}
                                 href={app.href}
                                 onClick={() => setIsOpen(false)}
-                                className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors group text-center h-24"
+                                className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-accent transition-colors group text-center h-24"
                             >
                                 <div className={cn("p-2.5 rounded-full mb-2 group-hover:scale-110 transition-transform", app.bg)}>
                                     <app.icon className={cn("w-5 h-5", app.color)} />
                                 </div>
-                                <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900">
+                                <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground">
                                     {app.name}
                                 </span>
                             </Link>

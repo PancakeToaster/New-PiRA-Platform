@@ -52,8 +52,8 @@ export default function GanttPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">Gantt Chart</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-xl font-semibold text-foreground">Gantt Chart</h2>
+        <p className="text-sm text-muted-foreground">
           {tasks.filter((t) => t.startDate && t.dueDate).length} of {tasks.length} tasks have dates
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function GanttPage({
       <GanttChart tasks={tasks} onTaskClick={handleTaskClick} />
 
       {tasks.length > 0 && tasks.filter((t) => t.startDate && t.dueDate).length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-muted-foreground">
           <p>Add start and due dates to your tasks to see them on the Gantt chart.</p>
         </div>
       )}

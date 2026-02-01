@@ -8,7 +8,7 @@ export default function PageBanner({ title, description }: PageBannerProps) {
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div
-          className="relative overflow-hidden text-white py-12 px-8 rounded-2xl shadow-lg"
+          className="relative overflow-hidden text-white/90 py-12 px-8 rounded-2xl shadow-lg"
           style={{
             background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%)',
           }}

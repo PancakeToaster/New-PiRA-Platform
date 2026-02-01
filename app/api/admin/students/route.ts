@@ -43,16 +43,38 @@ export async function GET() {
                         grade: true,
                         school: true,
                         dateOfBirth: true,
+                        phoneNumber: true,
                         performanceDiscount: true,
                         parents: {
                             select: {
                                 parent: {
                                     select: {
+                                        id: true,
                                         user: {
                                             select: {
                                                 firstName: true,
                                                 lastName: true,
                                                 email: true,
+                                            },
+                                        },
+                                        invoices: {
+                                            select: {
+                                                id: true,
+                                                invoiceNumber: true,
+                                                status: true,
+                                                dueDate: true,
+                                                total: true,
+                                                items: {
+                                                    select: {
+                                                        id: true,
+                                                        description: true,
+                                                        total: true,
+                                                        studentId: true,
+                                                    },
+                                                },
+                                            },
+                                            orderBy: {
+                                                dueDate: 'desc',
                                             },
                                         },
                                     },
@@ -102,7 +124,7 @@ export async function PUT(req: Request) {
         }
 
         // Update StudentProfile fields
-        if (data.grade || data.school || data.dateOfBirth || data.performanceDiscount !== undefined) {
+        if (data.grade || data.school || data.dateOfBirth || data.phoneNumber || data.performanceDiscount !== undefined) {
             await prisma.studentProfile.upsert({
                 where: { userId },
                 create: {
@@ -110,12 +132,14 @@ export async function PUT(req: Request) {
                     grade: data.grade,
                     school: data.school,
                     dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+                    phoneNumber: data.phoneNumber,
                     performanceDiscount: parseFloat(data.performanceDiscount) || 0,
                 },
                 update: {
                     grade: data.grade,
                     school: data.school,
                     dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+                    phoneNumber: data.phoneNumber,
                     performanceDiscount: parseFloat(data.performanceDiscount) || 0,
                 }
             });

@@ -6,6 +6,30 @@ import { getCurrentUser, isAdmin } from '@/lib/permissions';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
+const ALLOWED_EXTENSIONS = new Set([
+  // Images
+  'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico',
+  // Documents
+  'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'rtf',
+  // Videos
+  'mp4', 'webm', 'mov', 'avi',
+  // Audio
+  'mp3', 'wav', 'ogg', 'm4a',
+  // Archives
+  'zip', 'tar', 'gz',
+  // Code / robotics
+  'ino', 'py', 'cpp', 'h', 'json', 'xml', 'stl', 'step',
+]);
+
+const ALLOWED_MIME_PREFIXES = [
+  'image/', 'video/', 'audio/', 'text/',
+  'application/pdf', 'application/msword',
+  'application/vnd.openxmlformats', 'application/vnd.ms-',
+  'application/zip', 'application/gzip',
+  'application/json', 'application/xml',
+  'application/octet-stream',
+];
+
 export async function POST(request: NextRequest) {
   const currentUser = await getCurrentUser();
 
@@ -22,9 +46,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    // Validate file extension
+    const extension = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!ALLOWED_EXTENSIONS.has(extension)) {
+      return NextResponse.json(
+        { error: `File type .${extension} is not allowed` },
+        { status: 400 }
+      );
+    }
+
+    // Validate MIME type
+    const mime = file.type;
+    const isMimeAllowed = ALLOWED_MIME_PREFIXES.some(prefix => mime.startsWith(prefix));
+    if (!isMimeAllowed) {
+      return NextResponse.json(
+        { error: 'File MIME type is not allowed' },
+        { status: 400 }
+      );
+    }
+
     // Determine category folder
     let uploadSubdir = 'misc';
-    const mime = file.type;
 
     if (mime.startsWith('image/')) uploadSubdir = 'images';
     else if (mime.startsWith('video/')) uploadSubdir = 'videos';
@@ -42,10 +84,9 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // Generate unique filename
+    // Generate unique filename with sanitized extension
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
-    const extension = file.name.split('.').pop() || 'bin';
     const filename = `${timestamp}-${randomStr}.${extension}`;
     const filepath = path.join(uploadDir, filename);
 

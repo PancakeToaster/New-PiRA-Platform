@@ -108,23 +108,23 @@ export default async function LMSDashboard() {
   const getEventTypeColor = (eventType: string) => {
     switch (eventType) {
       case 'competition':
-        return 'bg-red-500';
+        return 'bg-red-500 dark:bg-red-600';
       case 'deadline':
-        return 'bg-orange-500';
+        return 'bg-orange-500 dark:bg-orange-600';
       case 'meeting':
-        return 'bg-violet-500';
+        return 'bg-violet-500 dark:bg-violet-600';
       case 'class':
-        return 'bg-sky-500';
+        return 'bg-sky-500 dark:bg-sky-600';
       case 'practice':
-        return 'bg-green-500';
+        return 'bg-green-500 dark:bg-green-600';
       default:
-        return 'bg-gray-500';
+        return 'bg-gray-500 dark:bg-gray-600';
     }
   };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-8 text-foreground">
         {isTeacher ? 'Teacher Dashboard' : 'Student Dashboard'}
       </h1>
 
@@ -133,10 +133,10 @@ export default async function LMSDashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {isTeacher ? 'Your Courses' : 'Enrolled Courses'}
                 </p>
-                <p className="text-3xl font-bold">{stats.enrolledCourses}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.enrolledCourses}</p>
               </div>
               <GraduationCap className="w-12 h-12 text-sky-500 opacity-20" />
             </div>
@@ -147,10 +147,10 @@ export default async function LMSDashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {isTeacher ? 'Created Assignments' : 'Assignments'}
                 </p>
-                <p className="text-3xl font-bold">{stats.assignments}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.assignments}</p>
               </div>
               <ClipboardList className="w-12 h-12 text-blue-600 opacity-20" />
             </div>
@@ -163,8 +163,8 @@ export default async function LMSDashboard() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Completed</p>
-                    <p className="text-3xl font-bold">{stats.completedAssignments}</p>
+                    <p className="text-sm text-muted-foreground">Completed</p>
+                    <p className="text-3xl font-bold text-foreground">{stats.completedAssignments}</p>
                   </div>
                   <Award className="w-12 h-12 text-green-600 opacity-20" />
                 </div>
@@ -175,8 +175,8 @@ export default async function LMSDashboard() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Avg Progress</p>
-                    <p className="text-3xl font-bold">{stats.progress}%</p>
+                    <p className="text-sm text-muted-foreground">Avg Progress</p>
+                    <p className="text-3xl font-bold text-foreground">{stats.progress}%</p>
                   </div>
                   <TrendingUp className="w-12 h-12 text-purple-600 opacity-20" />
                 </div>
@@ -236,13 +236,13 @@ export default async function LMSDashboard() {
           </CardHeader>
           <CardContent>
             {upcomingEvents.length === 0 ? (
-              <p className="text-gray-600 text-center py-4">No upcoming events.</p>
+              <p className="text-muted-foreground text-center py-4">No upcoming events.</p>
             ) : (
               <div className="space-y-3">
                 {upcomingEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-start space-x-3 p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
                   >
                     <div
                       className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${getEventTypeColor(
@@ -250,8 +250,8 @@ export default async function LMSDashboard() {
                       )}`}
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">{event.title}</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-semibold text-foreground truncate">{event.title}</h3>
+                      <p className="text-sm text-muted-foreground">
                         {new Date(event.startTime).toLocaleDateString('en-US', {
                           weekday: 'short',
                           month: 'short',
@@ -265,7 +265,7 @@ export default async function LMSDashboard() {
                         )}
                       </p>
                       {event.location && (
-                        <p className="text-xs text-gray-500 mt-1">{event.location}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{event.location}</p>
                       )}
                     </div>
                   </div>
@@ -289,20 +289,20 @@ export default async function LMSDashboard() {
           </CardHeader>
           <CardContent>
             {recentNodes.length === 0 ? (
-              <p className="text-gray-600">No knowledge nodes yet.</p>
+              <p className="text-muted-foreground">No knowledge nodes yet.</p>
             ) : (
               <div className="space-y-3">
                 {recentNodes.map((node) => (
                   <Link
                     key={node.id}
                     href={`/wiki/${node.id}`}
-                    className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="block p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors"
                   >
-                    <h3 className="font-semibold">{node.title}</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-semibold text-foreground">{node.title}</h3>
+                    <p className="text-sm text-muted-foreground">
                       By {node.author.firstName} {node.author.lastName}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Updated {new Date(node.updatedAt).toLocaleDateString()}
                     </p>
                   </Link>
@@ -324,33 +324,33 @@ export default async function LMSDashboard() {
               <>
                 <Link
                   href="/wiki"
-                  className="block p-4 bg-sky-50 border-2 border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
+                  className="block p-4 bg-sky-50 border-2 border-sky-200 dark:bg-sky-900/20 dark:border-sky-800 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors"
                 >
-                  <h3 className="font-semibold text-sky-800">Create Knowledge Node</h3>
-                  <p className="text-sm text-sky-600">Go to Wiki to add content</p>
+                  <h3 className="font-semibold text-sky-800 dark:text-sky-300">Create Knowledge Node</h3>
+                  <p className="text-sm text-sky-600 dark:text-sky-400">Go to Wiki to add content</p>
                 </Link>
                 <Link
                   href="/admin/courses"
-                  className="block p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="block p-4 bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                 >
-                  <h3 className="font-semibold text-blue-900">Create Assignment</h3>
-                  <p className="text-sm text-blue-700">Select a course to add assignment</p>
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-300">Create Assignment</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-400">Select a course to add assignment</p>
                 </Link>
               </>
             )}
             <Link
               href="/wiki"
-              className="block p-4 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+              className="block p-4 bg-green-50 border-2 border-green-200 dark:bg-green-900/20 dark:border-green-800 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
             >
-              <h3 className="font-semibold text-green-900">Browse Knowledge Base</h3>
-              <p className="text-sm text-green-700">Explore learning materials</p>
+              <h3 className="font-semibold text-green-900 dark:text-green-300">Browse Knowledge Base</h3>
+              <p className="text-sm text-green-700 dark:text-green-400">Explore learning materials</p>
             </Link>
             <Link
               href="/lms/courses"
-              className="block p-4 bg-purple-50 border-2 border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
+              className="block p-4 bg-purple-50 border-2 border-purple-200 dark:bg-purple-900/20 dark:border-purple-800 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
             >
-              <h3 className="font-semibold text-purple-900">My Courses</h3>
-              <p className="text-sm text-purple-700">View enrolled courses</p>
+              <h3 className="font-semibold text-purple-900 dark:text-purple-300">My Courses</h3>
+              <p className="text-sm text-purple-700 dark:text-purple-400">View enrolled courses</p>
             </Link>
           </div>
         </CardContent>

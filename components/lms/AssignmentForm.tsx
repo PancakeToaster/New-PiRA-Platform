@@ -90,7 +90,7 @@ export default function AssignmentForm({
                         <textarea
                             id="description"
                             rows={5}
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                            className="w-full rounded-md border-input bg-background/50 text-foreground shadow-sm focus:border-primary focus:ring-primary"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             placeholder="Detailed instructions for the assignment..."
@@ -126,7 +126,7 @@ export default function AssignmentForm({
                         <Label htmlFor="lessonId">Link to Lesson (Optional)</Label>
                         <select
                             id="lessonId"
-                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                            className="w-full rounded-md border-input bg-background/50 text-foreground shadow-sm focus:border-primary focus:ring-primary"
                             value={formData.lessonId}
                             onChange={(e) => setFormData({ ...formData, lessonId: e.target.value })}
                         >
@@ -140,16 +140,16 @@ export default function AssignmentForm({
                     </div>
 
                     <div className="space-y-4 pt-4 border-t">
-                        <h3 className="font-medium text-gray-900">Submission Types</h3>
+                        <h3 className="font-medium text-foreground">Submission Types</h3>
                         <div className="flex items-center gap-6">
                             <label className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     checked={formData.allowTextEntry}
                                     onChange={(e) => setFormData({ ...formData, allowTextEntry: e.target.checked })}
-                                    className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                                    className="rounded border-input text-primary focus:ring-primary"
                                 />
-                                <span className="text-sm text-gray-700">Online Text Entry</span>
+                                <span className="text-sm text-muted-foreground">Online Text Entry</span>
                             </label>
 
                             <label className="flex items-center gap-2">
@@ -157,9 +157,9 @@ export default function AssignmentForm({
                                     type="checkbox"
                                     checked={formData.allowFileUpload}
                                     onChange={(e) => setFormData({ ...formData, allowFileUpload: e.target.checked })}
-                                    className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                                    className="rounded border-input text-primary focus:ring-primary"
                                 />
-                                <span className="text-sm text-gray-700">File Uploads</span>
+                                <span className="text-sm text-muted-foreground">File Uploads</span>
                             </label>
                         </div>
                     </div>

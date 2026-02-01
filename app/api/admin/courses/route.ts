@@ -12,7 +12,7 @@ export async function GET() {
 
   try {
     const courses = await prisma.course.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { displayOrder: 'asc' },
       include: {
         _count: {
           select: { interests: true },
@@ -72,6 +72,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get the highest displayOrder to add new course at the end
+    const lastCourse = await prisma.course.findFirst({
+      orderBy: { displayOrder: 'desc' },
+      select: { displayOrder: true },
+    });
+    const nextOrder = (lastCourse?.displayOrder ?? -1) + 1;
+
     const course = await prisma.course.create({
       data: {
         name,
@@ -87,6 +94,7 @@ export async function POST(request: NextRequest) {
         isHidden: isHidden ?? false,
         hidePrice: hidePrice ?? false,
         isDevelopment: isDevelopment ?? false,
+        displayOrder: nextOrder,
       },
     });
 

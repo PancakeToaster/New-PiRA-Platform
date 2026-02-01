@@ -44,17 +44,17 @@ export default function CreateFolderDialog({ isOpen, onClose, parentId }: Create
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-                <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+            <div className="bg-card rounded-lg shadow-lg w-full max-w-md p-6">
+                <div className="flex items-center gap-3 mb-6 border-b border-border pb-4">
                     <div className="p-2 bg-sky-100 rounded-lg">
                         <FolderPlus className="w-6 h-6 text-sky-600" />
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900">Create New Folder</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Create New Folder</h2>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">
-                        <label htmlFor="folderName" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="folderName" className="block text-sm font-medium text-foreground mb-2">
                             Folder Name
                         </label>
                         <input
@@ -62,7 +62,7 @@ export default function CreateFolderDialog({ isOpen, onClose, parentId }: Create
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-background text-foreground"
                             placeholder="e.g. Getting Started"
                             autoFocus
                             required

@@ -105,8 +105,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.roles = token.roles as string[];
-        session.user.permissions = token.permissions as any;
-        session.user.profiles = token.profiles as any;
+        session.user.permissions = token.permissions;
+        session.user.profiles = token.profiles;
 
         try {
           const cookieStore = cookies();
@@ -121,20 +121,14 @@ export const authOptions: NextAuthOptions = {
                 action: p.action
               }));
             } else {
-              // Fallback if config not found but role exists (e.g. simple UI switch)
               session.user.roles = [testModeRole];
             }
-            // @ts-ignore
             session.user.isTestMode = true;
-            // @ts-ignore
             session.user.testRole = testModeRole;
           }
         } catch (e) {
-          console.error('Session callback cookie error:', e);
-          // Ignore cookie errors
+          // Ignore cookie errors in non-request contexts
         }
-
-        console.log('Session Callback - Final Roles:', session.user.roles, 'Is Test Mode:', (session.user as any).isTestMode);
       }
       return session;
     },
@@ -145,7 +139,7 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

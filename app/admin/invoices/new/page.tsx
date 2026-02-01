@@ -269,7 +269,7 @@ export default function CreateInvoicePage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -281,8 +281,8 @@ export default function CreateInvoicePage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center gap-4 mb-6">
-                <Link href="/admin/invoices" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <Link href="/admin/invoices" className="p-2 hover:bg-muted rounded-full transition-colors">
+                    <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </Link>
                 <h1 className="text-2xl font-bold">Create New Invoice</h1>
             </div>
@@ -296,11 +296,11 @@ export default function CreateInvoicePage() {
 
                         {/* Parent Selection */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Select Parent *</label>
+                            <label className="text-sm font-medium text-foreground">Select Parent *</label>
                             <select
                                 value={parentId}
                                 onChange={(e) => setParentId(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
                                 required
                             >
                                 <option value="">-- Select Parent --</option>
@@ -313,9 +313,9 @@ export default function CreateInvoicePage() {
                         </div>
 
                         {/* Line Items */}
-                        <div className="border rounded-lg p-4 bg-gray-50/50">
+                        <div className="border border-border rounded-lg p-4 bg-muted/50">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-gray-900">Line Items</h3>
+                                <h3 className="font-semibold text-foreground">Line Items</h3>
                                 <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="gap-2">
                                     <Plus className="w-4 h-4" /> Add Item
                                 </Button>
@@ -327,15 +327,15 @@ export default function CreateInvoicePage() {
                                     const parentStudents = selectedParent?.parentProfile?.students || [];
 
                                     return (
-                                        <div key={item.id} className="flex gap-4 items-start flex-wrap bg-white p-3 rounded border">
+                                        <div key={item.id} className="flex gap-4 items-start flex-wrap bg-card p-3 rounded border border-border">
                                             {/* First Row: Student & Course */}
                                             <div className="w-full flex gap-4 mb-2">
                                                 <div className="flex-1">
-                                                    {index === 0 && <label className="text-xs text-gray-500 block mb-1">Student (Optional)</label>}
+                                                    {index === 0 && <label className="text-xs text-muted-foreground block mb-1">Student (Optional)</label>}
                                                     <select
                                                         value={item.studentId || ''}
                                                         onChange={(e) => handleItemChange(item.id, 'studentId', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                        className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground"
                                                         disabled={!parentId}
                                                     >
                                                         <option value="">-- No Student --</option>
@@ -347,11 +347,11 @@ export default function CreateInvoicePage() {
                                                     </select>
                                                 </div>
                                                 <div className="flex-1">
-                                                    {index === 0 && <label className="text-xs text-gray-500 block mb-1">Offering (Optional)</label>}
+                                                    {index === 0 && <label className="text-xs text-muted-foreground block mb-1">Offering (Optional)</label>}
                                                     <select
                                                         value={item.courseId || ''}
                                                         onChange={(e) => handleItemChange(item.id, 'courseId', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                        className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground"
                                                     >
                                                         <option value="">-- Custom Item --</option>
                                                         {courses.map(c => (
@@ -363,42 +363,42 @@ export default function CreateInvoicePage() {
 
                                             {/* Second Row: Description, Qty, Price */}
                                             <div className="flex-1 min-w-[200px] hover:grow">
-                                                {index === 0 && <label className="text-xs text-gray-500 block mb-1">Description</label>}
+                                                {index === 0 && <label className="text-xs text-muted-foreground block mb-1">Description</label>}
                                                 <input
                                                     type="text"
                                                     value={item.description}
                                                     onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
                                                     placeholder="Item description"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                    className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background text-foreground"
                                                     required
                                                 />
                                             </div>
                                             <div className="w-20">
-                                                {index === 0 && <label className="text-xs text-gray-500 block mb-1">Qty</label>}
+                                                {index === 0 && <label className="text-xs text-muted-foreground block mb-1">Qty</label>}
                                                 <input
                                                     type="number"
                                                     min="1"
                                                     step="0.01"
                                                     value={item.quantity}
                                                     onChange={(e) => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-right"
+                                                    className="w-full px-3 py-2 border border-input rounded-md text-sm text-right bg-background text-foreground"
                                                     required
                                                 />
                                             </div>
                                             <div className="w-28">
-                                                {index === 0 && <label className="text-xs text-gray-500 block mb-1">Unit Price</label>}
+                                                {index === 0 && <label className="text-xs text-muted-foreground block mb-1">Unit Price</label>}
                                                 <input
                                                     type="number"
                                                     min="0"
                                                     step="0.01"
                                                     value={item.unitPrice}
                                                     onChange={(e) => handleItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-right"
+                                                    className="w-full px-3 py-2 border border-input rounded-md text-sm text-right bg-background text-foreground"
                                                 />
                                             </div>
                                             <div className="w-24 pt-0.5">
-                                                {index === 0 && <label className="text-xs text-gray-500 w-full block text-right mb-1">Total</label>}
-                                                <div className="h-[38px] flex items-center justify-end text-sm font-medium text-gray-700">
+                                                {index === 0 && <label className="text-xs text-muted-foreground w-full block text-right mb-1">Total</label>}
+                                                <div className="h-[38px] flex items-center justify-end text-sm font-medium text-foreground">
                                                     ${(item.quantity * item.unitPrice).toFixed(2)}
                                                 </div>
                                             </div>
@@ -408,7 +408,7 @@ export default function CreateInvoicePage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleRemoveItem(item.id)}
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 px-2"
+                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2"
                                                     disabled={items.length === 1}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -425,19 +425,19 @@ export default function CreateInvoicePage() {
                             <div>
                                 {/* Notes */}
                                 <div className="space-y-2 mb-6">
-                                    <label className="text-sm font-medium text-gray-700">Notes (Optional)</label>
+                                    <label className="text-sm font-medium text-foreground">Notes (Optional)</label>
                                     <textarea
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
                                         placeholder="Add any additional notes..."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md min-h-[120px] text-sm"
+                                        className="w-full px-3 py-2 border border-input rounded-md min-h-[120px] text-sm bg-background text-foreground"
                                     />
                                 </div>
 
                                 {/* Payment Schedule Configuration */}
-                                <div className="border border-indigo-100 bg-indigo-50/50 rounded-lg p-4">
+                                <div className="border border-primary/20 bg-primary/5 rounded-lg p-4">
                                     <div className="flex justify-between items-center mb-4">
-                                        <h3 className="font-semibold text-indigo-900 flex items-center gap-2">
+                                        <h3 className="font-semibold text-primary flex items-center gap-2">
                                             <Calendar className="w-4 h-4" />
                                             Payment Schedule
                                         </h3>
@@ -447,9 +447,9 @@ export default function CreateInvoicePage() {
                                                 id="splitPayment"
                                                 checked={isSplitPayment}
                                                 onChange={(e) => setIsSplitPayment(e.target.checked)}
-                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                className="rounded border-input text-primary focus:ring-primary bg-background"
                                             />
-                                            <label htmlFor="splitPayment" className="text-gray-700 user-select-none cursor-pointer">
+                                            <label htmlFor="splitPayment" className="text-foreground user-select-none cursor-pointer">
                                                 Split into Installments
                                             </label>
                                         </div>
@@ -457,12 +457,12 @@ export default function CreateInvoicePage() {
 
                                     {!isSplitPayment ? (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-700">Due Date *</label>
+                                            <label className="text-sm font-medium text-foreground">Due Date *</label>
                                             <input
                                                 type="date"
                                                 value={singleDueDate}
                                                 onChange={(e) => setSingleDueDate(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
                                                 required={!isSplitPayment}
                                             />
                                         </div>
@@ -470,7 +470,7 @@ export default function CreateInvoicePage() {
                                         <div className="space-y-3">
                                             {installments.map((inst, idx) => (
                                                 <div key={inst.id} className="flex gap-3 items-center">
-                                                    <span className="text-xs font-bold text-gray-500 w-6">#{idx + 1}</span>
+                                                    <span className="text-xs font-bold text-muted-foreground w-6">#{idx + 1}</span>
                                                     <div className="flex-1">
                                                         <input
                                                             type="number"
@@ -478,7 +478,7 @@ export default function CreateInvoicePage() {
                                                             step="0.01"
                                                             value={inst.amount}
                                                             onChange={(e) => handleInstallmentChange(inst.id, 'amount', parseFloat(e.target.value) || 0)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                                            className="w-full px-2 py-1.5 border border-input rounded text-sm bg-background text-foreground"
                                                             placeholder="Amount"
                                                         />
                                                     </div>
@@ -487,7 +487,7 @@ export default function CreateInvoicePage() {
                                                             type="date"
                                                             value={inst.dueDate}
                                                             onChange={(e) => handleInstallmentChange(inst.id, 'dueDate', e.target.value)}
-                                                            className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                                            className="w-full px-2 py-1.5 border border-input rounded text-sm bg-background text-foreground"
                                                         />
                                                     </div>
                                                     <Button
@@ -496,7 +496,7 @@ export default function CreateInvoicePage() {
                                                         size="sm"
                                                         onClick={() => handleRemoveInstallment(inst.id)}
                                                         disabled={installments.length <= 2}
-                                                        className="h-8 w-8 p-0 text-red-500"
+                                                        className="h-8 w-8 p-0 text-destructive"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
@@ -527,12 +527,12 @@ export default function CreateInvoicePage() {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 p-6 rounded-lg space-y-3 h-fit">
-                                <div className="flex justify-between text-sm text-gray-600">
+                            <div className="bg-muted/30 border border-border p-6 rounded-lg space-y-3 h-fit">
+                                <div className="flex justify-between text-sm text-foreground">
                                     <span>Subtotal</span>
                                     <span>{formatCurrency(calculateSubtotal())}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-sm text-gray-600">
+                                <div className="flex justify-between items-center text-sm text-foreground">
                                     <span>Tax Amount</span>
                                     <input
                                         type="number"
@@ -540,10 +540,10 @@ export default function CreateInvoicePage() {
                                         step="0.01"
                                         value={tax}
                                         onChange={(e) => setTax(parseFloat(e.target.value) || 0)}
-                                        className="w-24 px-2 py-1 border border-gray-300 rounded text-right bg-white"
+                                        className="w-24 px-2 py-1 border border-input rounded text-right bg-background text-foreground"
                                     />
                                 </div>
-                                <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
+                                <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3">
                                     <span>Total Due</span>
                                     <span>{formatCurrency(calculateTotal())}</span>
                                 </div>

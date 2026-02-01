@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">CRM & Users</h1>
+        <h1 className="text-3xl font-bold text-foreground">CRM & Users</h1>
         <Link href="/admin/users/new">
           <Button>
             <UserPlus className="w-4 h-4 mr-2" />
@@ -232,64 +232,64 @@ export default function AdminUsersPage() {
       {/* Stats Cards - Click to switch tabs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card
-          className={`cursor-pointer transition-all ${activeTab === 'all' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          className={`cursor-pointer transition-all ${activeTab === 'all' ? 'ring-2 ring-primary shadow-md' : 'hover:bg-muted/50'}`}
           onClick={() => setActiveTab('all')}
         >
           <CardContent className="pt-6 text-center">
-            <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
-            <p className="text-sm text-gray-500">Total Users</p>
+            <p className="text-3xl font-bold text-foreground">{stats.total}</p>
+            <p className="text-sm text-muted-foreground">Total Users</p>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-all ${activeTab === 'students' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          className={`cursor-pointer transition-all ${activeTab === 'students' ? 'ring-2 ring-primary shadow-md' : 'hover:bg-muted/50'}`}
           onClick={() => setActiveTab('students')}
         >
           <CardContent className="pt-6 text-center">
-            <p className="text-3xl font-bold text-sky-600">{stats.students}</p>
-            <p className="text-sm text-gray-500">Students</p>
+            <p className="text-3xl font-bold text-primary">{stats.students}</p>
+            <p className="text-sm text-muted-foreground">Students</p>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-all ${activeTab === 'parents' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          className={`cursor-pointer transition-all ${activeTab === 'parents' ? 'ring-2 ring-primary shadow-md' : 'hover:bg-muted/50'}`}
           onClick={() => setActiveTab('parents')}
         >
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-green-600">{stats.parents}</p>
-            <p className="text-sm text-gray-500">Parents</p>
+            <p className="text-sm text-muted-foreground">Parents</p>
           </CardContent>
         </Card>
         <Card
-          className={`cursor-pointer transition-all ${activeTab === 'teachers' ? 'ring-2 ring-sky-500 shadow-md' : 'hover:bg-gray-50'}`}
+          className={`cursor-pointer transition-all ${activeTab === 'teachers' ? 'ring-2 ring-primary shadow-md' : 'hover:bg-muted/50'}`}
           onClick={() => setActiveTab('teachers')}
         >
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold text-purple-600">{stats.teachers}</p>
-            <p className="text-sm text-gray-500">Teachers</p>
+            <p className="text-sm text-muted-foreground">Teachers</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="flex items-center gap-4 bg-white p-4 rounded-lg border shadow-sm">
-        <Search className="text-gray-400 w-5 h-5" />
+      <div className="flex items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
+        <Search className="text-muted-foreground w-5 h-5" />
         <input
           type="text"
           placeholder="Search by name or email..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 outline-none text-sm"
+          className="flex-1 outline-none text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
         />
       </div>
 
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border border-gray-200 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 animate-in slide-in-from-bottom-4 duration-300">
-          <span className="text-sm font-medium text-gray-700 flex items-center whitespace-nowrap">
-            <div className="bg-sky-100 text-sky-700 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 font-bold">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 animate-in slide-in-from-bottom-4 duration-300">
+          <span className="text-sm font-medium text-foreground flex items-center whitespace-nowrap">
+            <div className="bg-primary/10 text-primary rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2 font-bold">
               {selectedIds.size}
             </div>
             Selected
           </span>
 
-          <div className="h-6 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-border" />
 
           <div className="flex items-center gap-2">
             {/* Add Role */}
@@ -369,22 +369,22 @@ export default function AdminUsersPage() {
 
           {/* --- STUDENTS TAB --- */}
           {activeTab === 'students' && (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
                   <th className="px-6 py-3 text-left">
                     <input type="checkbox"
                       checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      className="rounded border-input text-primary focus:ring-primary"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent(s)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referrals</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Student</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Parent(s)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Referrals</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Discount</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -394,33 +394,33 @@ export default function AdminUsersPage() {
                       <input type="checkbox"
                         checked={selectedIds.has(user.id)}
                         onChange={() => toggleSelection(user.id)}
-                        className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                        className="rounded border-input text-primary focus:ring-primary"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold mr-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold mr-3">
                           {user.firstName[0]}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">{user.firstName} {user.lastName}</div>
-                          <div className="text-xs text-gray-500">{user.email}</div>
+                          <div className="font-medium text-foreground">{user.firstName} {user.lastName}</div>
+                          <div className="text-xs text-muted-foreground">{user.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {user.studentProfile?.parents.map(p => (
-                        <div key={p.parent.user.firstName} className="text-sm text-gray-600">
+                        <div key={p.parent.user.firstName} className="text-sm text-muted-foreground">
                           {p.parent.user.firstName} {p.parent.user.lastName}
                         </div>
                       ))}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         {user.studentProfile?.referrals.length || 0} Students
                       </div>
                       {user.studentProfile?.referredBy && (
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground/80">
                           Referred by: {user.studentProfile.referredBy.user.firstName}
                         </div>
                       )}
@@ -459,24 +459,24 @@ export default function AdminUsersPage() {
 
           {/* --- PARENTS TAB --- */}
           {activeTab === 'parents' && (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
                   <th className="px-6 py-3 text-left">
                     <input type="checkbox"
                       checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      className="rounded border-input text-primary focus:ring-primary"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Children</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Parent</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Children</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Payment Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredUsers.map(user => {
                   const overdueInvoices = user.parentProfile?.invoices.filter(i => {
                     // Simple check for now, can improve
@@ -494,18 +494,18 @@ export default function AdminUsersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
+                          <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 font-bold mr-3">
                             {user.firstName[0]}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-900">{user.firstName} {user.lastName}</div>
-                            <div className="text-xs text-gray-500">{user.email}</div>
+                            <div className="font-medium text-foreground">{user.firstName} {user.lastName}</div>
+                            <div className="text-xs text-muted-foreground">{user.email}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         {user.parentProfile?.students.map(s => (
-                          <span key={s.student.user.firstName} className="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs text-gray-700 mr-2 mb-1">
+                          <span key={s.student.user.firstName} className="inline-block bg-muted/50 rounded-full px-2 py-1 text-xs text-muted-foreground mr-2 mb-1">
                             {s.student.user.firstName} {s.student.user.lastName}
                           </span>
                         ))}
@@ -546,76 +546,76 @@ export default function AdminUsersPage() {
 
           {/* --- ALL / TEACHERS TAB --- */}
           {(activeTab === 'all' || activeTab === 'teachers') && (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
                   <th className="px-6 py-3 text-left">
                     <input type="checkbox"
                       checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
                       onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      className="rounded border-input text-primary focus:ring-primary"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Roles
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Joined
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                       No users found
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-muted/50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input type="checkbox"
                           checked={selectedIds.has(user.id)}
                           onChange={() => toggleSelection(user.id)}
-                          className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                          className="rounded border-input text-primary focus:ring-primary"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-sky-100 rounded-full flex items-center justify-center">
-                            <span className="text-sky-600 font-medium">
+                          <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-primary font-medium">
                               {user.firstName[0]}{user.lastName[0]}
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-foreground">
                               {user.firstName} {user.lastName}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm text-muted-foreground">{user.email}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
                           {user.roles.map((role) => (
                             <span
                               key={role.role.id}
-                              className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-sky-100 text-sky-800"
+                              className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary/10 text-primary"
                             >
                               {role.role.name}
                             </span>
@@ -634,7 +634,7 @@ export default function AdminUsersPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">

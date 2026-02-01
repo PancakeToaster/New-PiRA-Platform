@@ -45,39 +45,39 @@ export default function GradingInterface({ courseId, assignment, submission, stu
     };
 
     return (
-        <div className="h-[calc(100vh-4rem)] flex flex-col md:flex-row bg-gray-50 -m-6 p-6 gap-6">
+        <div className="h-[calc(100vh-4rem)] flex flex-col md:flex-row bg-background -m-6 p-6 gap-6">
             {/* Left Side: Submission Viewer */}
             <div className="flex-1 flex flex-col min-h-0">
                 <div className="mb-4 flex items-center justify-between">
                     <Link href={`/admin/courses/${courseId}/assignments/${assignment.id}/submissions`}>
-                        <Button variant="ghost" size="sm" className="pl-0 hover:bg-transparent">
+                        <Button variant="ghost" size="sm" className="pl-0 hover:bg-transparent text-muted-foreground hover:text-foreground">
                             <ChevronLeft className="w-4 h-4 mr-1" />
                             Back to Submissions
                         </Button>
                     </Link>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                         Submitted: {new Date(submission.submittedAt).toLocaleString()}
                     </div>
                 </div>
 
                 <Card className="flex-1 flex flex-col min-h-0 overflow-hidden shadow-md">
-                    <CardHeader className="bg-white border-b py-3 px-4">
+                    <CardHeader className="bg-card border-b border-border py-3 px-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-sky-500" />
+                            <h2 className="font-semibold text-foreground flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-primary" />
                                 {student.user.firstName}'s Submission
                             </h2>
-                            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full font-medium text-gray-600 uppercase">
+                            <span className="text-xs px-2 py-1 bg-muted rounded-full font-medium text-muted-foreground uppercase">
                                 {submission.submissionType}
                             </span>
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-1 overflow-y-auto p-0 bg-gray-100/50">
+                    <CardContent className="flex-1 overflow-y-auto p-0 bg-muted/20">
                         {submission.submissionType === 'file' ? (
                             <div className="p-8 flex flex-col items-center justify-center h-full text-center">
-                                <FileText className="w-16 h-16 text-gray-300 mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">File Submission</h3>
-                                <p className="text-gray-500 mb-6 max-w-sm">
+                                <FileText className="w-16 h-16 text-muted-foreground/50 mb-4" />
+                                <h3 className="text-lg font-medium text-foreground mb-2">File Submission</h3>
+                                <p className="text-muted-foreground mb-6 max-w-sm">
                                     The student uploaded a file for this assignment.
                                     Preview functionality would go here, or download to view.
                                 </p>
@@ -91,12 +91,12 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                                 )}
                             </div>
                         ) : (
-                            <div className="p-6 prose max-w-none">
-                                <div className="bg-white p-6 rounded-lg shadow-sm border min-h-[300px]">
+                            <div className="p-6 prose dark:prose-invert max-w-none">
+                                <div className="bg-card p-6 rounded-lg shadow-sm border border-border min-h-[300px]">
                                     {submission.content ? (
                                         <div dangerouslySetInnerHTML={{ __html: submission.content }} />
                                     ) : (
-                                        <p className="text-gray-400 italic">No content provided.</p>
+                                        <p className="text-muted-foreground italic">No content provided.</p>
                                     )}
                                 </div>
                             </div>
@@ -105,7 +105,7 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                         {/* Attachments Section if any */}
                         {submission.attachments?.length > 0 && (
                             <div className="p-6 pt-0">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Attachments</h4>
+                                <h4 className="text-sm font-semibold text-foreground mb-2">Attachments</h4>
                                 <div className="space-y-2">
                                     {submission.attachments.map((att: any, idx: number) => (
                                         <a
@@ -113,10 +113,10 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                                             href={att.url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="flex items-center gap-2 p-2 bg-white border rounded hover:bg-gray-50 transition-colors text-sm"
+                                            className="flex items-center gap-2 p-2 bg-card border border-border rounded hover:bg-accent transition-colors text-sm"
                                         >
-                                            <Download className="w-4 h-4 text-gray-500" />
-                                            <span className="text-blue-600 hover:underline">{att.name || 'Attachment'}</span>
+                                            <Download className="w-4 h-4 text-muted-foreground" />
+                                            <span className="text-primary hover:underline">{att.name || 'Attachment'}</span>
                                         </a>
                                     ))}
                                 </div>
@@ -134,21 +134,21 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                     </CardHeader>
                     <CardContent className="flex-1 overflow-y-auto p-6 space-y-6">
                         {/* Student Info */}
-                        <div className="flex items-center gap-3 pb-6 border-b">
-                            <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold">
+                        <div className="flex items-center gap-3 pb-6 border-b border-border">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                                 {student.user.firstName[0]}{student.user.lastName[0]}
                             </div>
                             <div>
-                                <div className="font-semibold text-gray-900">
+                                <div className="font-semibold text-foreground">
                                     {student.user.firstName} {student.user.lastName}
                                 </div>
-                                <div className="text-sm text-gray-500">{student.user.email}</div>
+                                <div className="text-sm text-muted-foreground">{student.user.email}</div>
                             </div>
                         </div>
 
                         {/* Grade Input */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Grade (Max: {assignment.maxPoints})
                             </label>
                             <div className="relative">
@@ -158,36 +158,36 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                                     max={assignment.maxPoints}
                                     value={grade}
                                     onChange={(e) => setGrade(e.target.value)}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-lg p-3 border"
+                                    className="block w-full rounded-md border-input bg-background border shadow-sm focus:border-primary focus:ring-primary sm:text-lg p-3"
                                     placeholder="Enter score..."
                                 />
                                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span className="text-gray-500 text-sm">/ {assignment.maxPoints}</span>
+                                    <span className="text-muted-foreground text-sm">/ {assignment.maxPoints}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Feedback Input */}
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Feedback
                             </label>
                             <textarea
                                 rows={8}
                                 value={feedback}
                                 onChange={(e) => setFeedback(e.target.value)}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-3 border resize-none"
+                                className="block w-full rounded-md border-input bg-background border shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-3 resize-none"
                                 placeholder="Write feedback for the student..."
                             />
                         </div>
 
                         {/* Status Info */}
-                        <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-600">
-                            Current Status: <span className="font-semibold capitalize">{submission.status}</span>
+                        <div className="bg-muted p-3 rounded-md text-sm text-muted-foreground">
+                            Current Status: <span className="font-semibold capitalize text-foreground">{submission.status}</span>
                         </div>
                     </CardContent>
 
-                    <div className="p-4 border-t bg-gray-50 space-y-3">
+                    <div className="p-4 border-t border-border bg-muted/30 space-y-3">
                         <Button
                             onClick={() => handleSave('graded')}
                             className="w-full"
