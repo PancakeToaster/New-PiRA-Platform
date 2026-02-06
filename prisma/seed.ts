@@ -224,15 +224,15 @@ async function main() {
   const pages = [
     {
       slug: 'home',
-      title: 'Welcome to Robotics Academy',
-      content: '<h1>Welcome to Robotics Academy</h1><p>Empowering the next generation of innovators through hands-on robotics education.</p>',
+      title: 'Welcome to PiRA',
+      content: '<h1>Welcome to PiRA</h1><p>Empowering the next generation of innovators through hands-on robotics education.</p>',
       isDraft: false,
       publishedAt: new Date(),
     },
     {
       slug: 'about',
       title: 'About Us',
-      content: `<h2>Welcome to PLAYIDEAs Robotics Academy</h2>
+      content: `<h2>Welcome to PiRA</h2>
 <p>At PLAYIDEAs, we believe that <strong>play is the key to infinite potential</strong>. Our mission is to create transformative learning experiences that inspire creativity and innovation in young minds.</p>
 <h3>Our Story</h3>
 <p>With over 10 years of competitive robotics education experience, we have helped countless students develop their skills in robotics, programming, and STEM education through hands-on learning experiences and competitive opportunities.</p>

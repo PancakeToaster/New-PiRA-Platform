@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Home, FileText, Users, Menu, X, LogOut } from 'lucide-react';
 import AppSwitcher from '@/components/layout/AppSwitcher';
+import { Logo } from '@/components/ui/Logo';
 
 export default function ParentAppShell({
     children,
@@ -51,7 +52,7 @@ export default function ParentAppShell({
                     {/* Logo/Title */}
                     <div className="flex items-center h-16 px-4 border-b border-border">
                         <Link href="/parent" className="flex items-center space-x-2">
-                            <span className="text-xl font-bold text-foreground">Robotics Academy</span>
+                            <Logo width={160} height={40} />
                         </Link>
                     </div>
 

@@ -170,7 +170,8 @@ const styles = StyleSheet.create({
 });
 
 interface InvoicePDFProps {
-    invoice: any; // Using any for simplicity as strict types might need full Partial<Invoice> mapping
+    invoice: any;
+    logoSrc?: string;
 }
 
 const formatCurrency = (amount: number) => {
@@ -182,7 +183,7 @@ const formatDate = (date: any) => {
     return new Date(date).toLocaleDateString();
 };
 
-export default function InvoicePDF({ invoice }: InvoicePDFProps) {
+export default function InvoicePDF({ invoice, logoSrc = '/images/logo.png' }: InvoicePDFProps) {
     const parentName = invoice.parent
         ? `${invoice.parent.user.firstName} ${invoice.parent.user.lastName}`
         : 'Parent';
@@ -200,11 +201,7 @@ export default function InvoicePDF({ invoice }: InvoicePDFProps) {
                 {/* Header */}
                 <View style={styles.header}>
                     <View>
-                        {/* Assuming standard Next.js public folder structure, but absolute URL often needed for PDF. 
-                            Trying base path, if fails might need full URL in production */}
-                        {/* <Image src="/logo.png" style={styles.logo} /> */}
-                        {/* Text fallback for now to avoid broken image during dev */}
-                        <Text style={[styles.invoiceTitle, { fontSize: 20, marginBottom: 5 }]}>PiRA</Text>
+                        <Image src={logoSrc} style={styles.logo} />
                         <Text style={styles.slogan}>No limits, Just imagination.</Text>
                     </View>
                     <View style={styles.companyInfo}>

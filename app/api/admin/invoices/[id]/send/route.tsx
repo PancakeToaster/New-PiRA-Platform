@@ -46,7 +46,14 @@ export async function POST(req: NextRequest, { params }: Props) {
         }
 
         // Generate PDF Buffer
-        const pdfBuffer = await renderToBuffer(<InvoicePDF invoice={invoice} />);
+        // Server-side PDF generation needs absolute path or buffer for images
+        const fs = require('fs');
+        const path = require('path');
+        const logoPath = path.join(process.cwd(), 'public', 'images', 'logo.png');
+        const logoBuffer = fs.readFileSync(logoPath);
+        const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+
+        const pdfBuffer = await renderToBuffer(<InvoicePDF invoice={invoice} logoSrc={logoBase64} />);
 
         // Send Email
         const { data, error } = await resend.emails.send({

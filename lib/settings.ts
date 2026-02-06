@@ -19,7 +19,7 @@ export interface SiteSettings {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Robotics Academy',
+  siteName: 'PiRA',
   siteDescription: 'Learn robotics and programming through hands-on courses',
   contactEmail: 'info@roboticsacademy.com',
   enableAnalytics: true,

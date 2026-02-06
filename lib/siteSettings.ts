@@ -44,8 +44,8 @@ export async function getCompanyInfo(): Promise<CompanyInfo> {
     if (!setting) {
         // Fallback to default values if not seeded yet
         return {
-            name: 'PLAYIDEAs',
-            altName: 'PiRA',
+            name: 'PiRA',
+            altName: 'Playideas Robotics Academy',
             tagline: 'No Limits, Just Imagination',
             mission: 'Creating transformative learning experiences',
             vision: 'Play is the key to Infinite Potential',
