@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSetting } from '@/lib/settings';
 
 export async function GET(
     request: NextRequest,
@@ -11,6 +12,25 @@ export async function GET(
         });
 
         if (!setting) {
+            // Try to get default value
+            // We use getSetting from lib/settings which handles defaults
+            // But getSetting is async and might look up DB again. 
+            // However, we know it's missing here. 
+            // We can just rely on getSetting to do the right thing (it returns default if missing)
+            // Or we can import defaultSettings directly but it's not exported.
+
+            // Let's use getSetting which encapsulates the fallback logic
+            // Note: casting key to any because params.key is string but getSetting expects keyof SiteSettings
+            const value = await getSetting(params.key as any);
+
+            // If we got a value back (default or otherwise), return it
+            if (value !== undefined) {
+                return NextResponse.json({
+                    key: params.key,
+                    value: value,
+                });
+            }
+
             return NextResponse.json({ error: 'Setting not found' }, { status: 404 });
         }
 

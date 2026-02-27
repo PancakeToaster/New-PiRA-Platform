@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createCalendarEventSchema } from '@/lib/validations/system';
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -86,6 +87,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    const parsed = createCalendarEventSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
     const {
       title,
       description,
@@ -97,14 +107,7 @@ export async function POST(request: NextRequest) {
       color,
       isPublic,
       teamId,
-    } = body;
-
-    if (!title || !eventType || !startTime) {
-      return NextResponse.json(
-        { error: 'Title, event type, and start time are required' },
-        { status: 400 }
-      );
-    }
+    } = parsed.data;
 
     const event = await prisma.calendarEvent.create({
       data: {

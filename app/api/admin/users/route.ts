@@ -3,21 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-
-const createUserSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required').max(100),
-  lastName: z.string().min(1, 'Last name is required').max(100),
-  roles: z.array(z.string()).optional(),
-  dateOfBirth: z.string().optional().nullable(),
-  grade: z.string().optional().nullable(),
-  school: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
-  address: z.string().optional().nullable(),
-  bio: z.string().optional().nullable(),
-  specialization: z.string().optional().nullable(),
-});
+import { createUserSchema } from '@/lib/validations/user';
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -128,14 +114,7 @@ export async function POST(request: NextRequest) {
       password,
       firstName,
       lastName,
-      roles: roleNames,
-      dateOfBirth,
-      grade,
-      school,
-      phone,
-      address,
-      bio,
-      specialization,
+      roleIds: roleNames,
     } = parsed.data;
 
     // Normalize email
@@ -192,13 +171,13 @@ export async function POST(request: NextRequest) {
       // Create profile based on role
       const roleNamesList = roleNames?.map((r: string) => r.toLowerCase()) || [];
 
+      // Profiles are created empty initially when using the centralized schema
+      // Specific details like dateOfBirth etc are populated via PUT/PATCH
+
       if (roleNamesList.includes('student')) {
         await tx.studentProfile.create({
           data: {
             userId: user.id,
-            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-            grade,
-            school,
           },
         });
       }
@@ -207,8 +186,6 @@ export async function POST(request: NextRequest) {
         await tx.parentProfile.create({
           data: {
             userId: user.id,
-            phone,
-            address,
           },
         });
       }
@@ -217,8 +194,6 @@ export async function POST(request: NextRequest) {
         await tx.teacherProfile.create({
           data: {
             userId: user.id,
-            bio,
-            specialization,
           },
         });
       }

@@ -44,7 +44,7 @@ export default async function DueSoonWidget({ studentId }: DueSoonWidgetProps) {
 
     if (dueAssignments.length === 0) {
         return (
-            <p className="text-gray-600 text-center py-4">No assignments due soon. Great job staying on top of things!</p>
+            <p className="text-muted-foreground text-center py-4">No assignments due soon. Great job staying on top of things!</p>
         );
     }
 
@@ -59,17 +59,17 @@ export default async function DueSoonWidget({ studentId }: DueSoonWidgetProps) {
                     <Link
                         key={assignment.id}
                         href={`/lms/courses/${assignment.lmsCourseId}/assignments`}
-                        className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="block p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
-                                <p className="text-sm text-gray-600">
+                                <h3 className="font-semibold text-foreground">{assignment.title}</h3>
+                                <p className="text-sm text-muted-foreground">
                                     {assignment.lmsCourse?.code || assignment.lmsCourse?.name}
                                 </p>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <Calendar className="w-3 h-3 text-gray-400" />
-                                    <p className="text-xs text-gray-500">
+                                    <Calendar className="w-3 h-3 text-muted-foreground" />
+                                    <p className="text-xs text-muted-foreground">
                                         Due {assignment.dueDate.toLocaleDateString()} ({daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''})
                                     </p>
                                 </div>

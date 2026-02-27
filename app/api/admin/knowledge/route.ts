@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin, hasPermission } from '@/lib/permissions';
 import { slugify } from '@/lib/utils';
+import { createKnowledgeNodeSchema } from '@/lib/validations/system';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -65,21 +66,28 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, content, nodeType, folderId, tags, isPublished } = body;
+    const parsed = createKnowledgeNodeSchema.safeParse({
+      ...body,
+      slug: body.slug || slugify(body.title || '') + '-' + Date.now().toString().slice(-6),
+      authorId: currentUser.id
+    });
 
-    if (!title || !content) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Title and content are required' },
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
         { status: 400 }
       );
     }
 
+    const { title, slug, content, nodeType, folderId, isPublished } = parsed.data;
+    const { tags } = body;
+
     const node = await prisma.knowledgeNode.create({
       data: {
         title,
-        slug: slugify(title) + '-' + Date.now().toString().slice(-6), // Ensure uniqueness
-        content,
-        nodeType: nodeType || 'markdown',
+        slug,
+        content: content || '',
+        nodeType: nodeType as any,
         authorId: currentUser.id,
         folderId: folderId || null,
         tags: tags || [],

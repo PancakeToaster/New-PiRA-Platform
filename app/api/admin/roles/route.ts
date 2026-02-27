@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createRoleSchema } from '@/lib/validations/user';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -38,11 +39,16 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, description } = body;
+    const parsed = createRoleSchema.safeParse(body);
 
-    if (!name) {
-      return NextResponse.json({ error: 'Role name is required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
     }
+
+    const { name, description, permissionIds } = parsed.data;
 
     const existingRole = await prisma.role.findUnique({
       where: { name },
@@ -56,6 +62,9 @@ export async function POST(request: Request) {
       data: {
         name,
         description,
+        permissions: permissionIds ? {
+          create: permissionIds.map(id => ({ permissionId: id }))
+        } : undefined
       },
     });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { canManageInventory } from '@/lib/finance-permissions';
+import { createInventoryItemSchema } from '@/lib/validations/inventory';
 
 // GET: List all inventory items
 export async function GET(req: NextRequest) {
@@ -41,7 +42,16 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
-        const { name, sku, category, description, quantity, location, unitCost, reorderLevel, imageUrl } = body;
+        const parsed = createInventoryItemSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
+        const { name, sku, category, description, quantity, location, unitCost, reorderLevel, imageUrl } = parsed.data;
 
         const item = await prisma.inventoryItem.create({
             data: {
@@ -49,10 +59,10 @@ export async function POST(req: NextRequest) {
                 sku,
                 category,
                 description,
-                quantity: parseInt(quantity || '0'),
+                quantity: quantity || 0,
                 location,
-                unitCost: unitCost ? parseFloat(unitCost) : null,
-                reorderLevel: parseInt(reorderLevel || '5'),
+                unitCost: unitCost || null,
+                reorderLevel: reorderLevel || 5,
                 imageUrl
             }
         });

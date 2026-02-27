@@ -175,7 +175,7 @@ export function StudentPaymentModal({
                                                 </span>
                                             </div>
                                         </div>
-                                        <Link href={`/admin/invoices/${invoice.id}`} target="_blank">
+                                        <Link href={`/admin/finance/invoices/${invoice.id}`} target="_blank">
                                             <Button size="sm" variant="outline">
                                                 <ExternalLink className="w-4 h-4 mr-1" />
                                                 View

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/lib/logging';
+import { updateUserSchema } from '@/lib/validations/user';
 
 export async function GET(
   request: NextRequest,
@@ -70,21 +71,28 @@ export async function PUT(
 
   try {
     const body = await request.json();
+    const parsed = updateUserSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
     const {
       email,
       username,
-      password,
       firstName,
       lastName,
-      roles: roleNames,
-      dateOfBirth,
-      grade,
-      school,
-      phone,
-      address,
-      bio,
-      specialization,
-    } = body;
+      roleIds: roleNames,
+      studentProfile,
+      parentProfile,
+      teacherProfile,
+    } = parsed.data;
+
+    // Separate extraction for backwards-compatibility or internal fields
+    const { password, studentIds } = body;
 
     // Check if email is taken by another user
     if (email) {
@@ -182,54 +190,52 @@ export async function PUT(
       // Update profiles
       const roleNamesList = roleNames?.map((r: string) => r.toLowerCase()) || [];
 
-      if (roleNamesList.includes('student')) {
+      if (roleNamesList.includes('student') && studentProfile) {
         await tx.studentProfile.upsert({
           where: { userId: id },
           create: {
             userId: id,
-            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-            grade,
-            school,
-            performanceDiscount: body.performanceDiscount ? parseFloat(body.performanceDiscount) : 0,
-            referredById: body.referredById || null,
+            dateOfBirth: studentProfile.dateOfBirth ? new Date(studentProfile.dateOfBirth) : null,
+            grade: studentProfile.grade,
+            school: studentProfile.school,
+            performanceDiscount: studentProfile.performanceDiscount,
+            referredById: studentProfile.referredById,
+            referralSource: studentProfile.referralSource,
           },
           update: {
-            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-            grade,
-            school,
-            performanceDiscount: body.performanceDiscount ? parseFloat(body.performanceDiscount) : 0,
-            referredById: body.referredById || null,
+            dateOfBirth: studentProfile.dateOfBirth ? new Date(studentProfile.dateOfBirth) : null,
+            grade: studentProfile.grade,
+            school: studentProfile.school,
+            performanceDiscount: studentProfile.performanceDiscount,
+            referredById: studentProfile.referredById,
+            referralSource: studentProfile.referralSource,
           },
         });
       }
 
       if (roleNamesList.includes('parent')) {
-        const parentProfile = await tx.parentProfile.upsert({
+        const pProfile = await tx.parentProfile.upsert({
           where: { userId: id },
           create: {
             userId: id,
-            phone,
-            address,
+            phone: parentProfile?.phone,
+            address: parentProfile?.address,
           },
           update: {
-            phone,
-            address,
+            phone: parentProfile?.phone,
+            address: parentProfile?.address,
           },
         });
 
         // Update Children Links
-        // We expect body.studentIds to be an array of StudentProfile IDs
-        if (body.studentIds && Array.isArray(body.studentIds)) {
-          // Delete existing links
+        if (studentIds && Array.isArray(studentIds)) {
           await tx.parentStudent.deleteMany({
-            where: { parentId: parentProfile.id }
+            where: { parentId: pProfile.id }
           });
-
-          // Create new links
-          if (body.studentIds.length > 0) {
+          if (studentIds.length > 0) {
             await tx.parentStudent.createMany({
-              data: body.studentIds.map((sid: string) => ({
-                parentId: parentProfile.id,
+              data: studentIds.map((sid: string) => ({
+                parentId: pProfile.id,
                 studentId: sid
               }))
             });
@@ -237,17 +243,17 @@ export async function PUT(
         }
       }
 
-      if (roleNamesList.includes('teacher')) {
+      if (roleNamesList.includes('teacher') && teacherProfile) {
         await tx.teacherProfile.upsert({
           where: { userId: id },
           create: {
             userId: id,
-            bio,
-            specialization,
+            bio: teacherProfile.bio,
+            specialization: teacherProfile.specialization,
           },
           update: {
-            bio,
-            specialization,
+            bio: teacherProfile.bio,
+            specialization: teacherProfile.specialization,
           },
         });
       }

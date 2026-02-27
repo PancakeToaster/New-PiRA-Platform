@@ -33,7 +33,7 @@ export default async function RecentGradesWidget({ studentId }: RecentGradesWidg
 
     if (recentGrades.length === 0) {
         return (
-            <p className="text-gray-600 text-center py-4">No graded assignments yet.</p>
+            <p className="text-muted-foreground text-center py-4">No graded assignments yet.</p>
         );
     }
 
@@ -56,22 +56,22 @@ export default async function RecentGradesWidget({ studentId }: RecentGradesWidg
                     <Link
                         key={submission.id}
                         href={`/lms/courses/${submission.assignment.lmsCourseId}/grades`}
-                        className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="block p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900">{submission.assignment.title}</h3>
-                                <p className="text-sm text-gray-600">
+                                <h3 className="font-semibold text-foreground">{submission.assignment.title}</h3>
+                                <p className="text-sm text-muted-foreground">
                                     {submission.assignment.lmsCourse?.code || submission.assignment.lmsCourse?.name}
                                 </p>
                                 {submission.feedback && (
-                                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                         <FileText className="w-3 h-3 inline mr-1" />
                                         {submission.feedback}
                                     </p>
                                 )}
                                 {submission.gradedAt && (
-                                    <p className="text-xs text-gray-400 mt-1">
+                                    <p className="text-xs text-muted-foreground mt-1">
                                         Graded {new Date(submission.gradedAt).toLocaleDateString()}
                                     </p>
                                 )}
@@ -80,7 +80,7 @@ export default async function RecentGradesWidget({ studentId }: RecentGradesWidg
                                 <span className={`px-2 py-1 ${gradeColor} text-sm font-bold rounded`}>
                                     {percentage}%
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-muted-foreground">
                                     {submission.grade}/{submission.assignment.maxPoints}
                                 </span>
                             </div>

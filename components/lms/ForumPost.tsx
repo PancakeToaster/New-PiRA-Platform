@@ -40,7 +40,7 @@ export default function ForumPost({ post, currentUserId, canManage }: ForumPostP
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                             <div>
-                                <span className="font-semibold text-gray-900">
+                                <span className="font-semibold text-foreground">
                                     {post.author.firstName} {post.author.lastName}
                                 </span>
                                 {isAuthor && (
@@ -49,12 +49,12 @@ export default function ForumPost({ post, currentUserId, canManage }: ForumPostP
                                     </span>
                                 )}
                             </div>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-muted-foreground">
                                 {new Date(post.createdAt).toLocaleString()}
                             </span>
                         </div>
                         <div className="prose prose-sm max-w-none">
-                            <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
+                            <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
                         </div>
                     </div>
                 </div>

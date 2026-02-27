@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/Table';
-import { Plus, Download, FileText, Search } from 'lucide-react';
+import { Plus, Download, FileText, Search, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function ExpenseListPage() {
@@ -18,26 +18,39 @@ export default async function ExpenseListPage() {
     // Fetch expenses
     const expenses = await prisma.expense.findMany({
         orderBy: { date: 'desc' },
-        take: 50, // Pagination later if needed
+        take: 50,
         include: {
             incurredBy: { select: { firstName: true, lastName: true } },
             project: { select: { name: true } },
             inventoryItem: { select: { name: true } },
-        }
+        },
     });
+
+    const recurringCount = expenses.filter(e => e.isRecurring).length;
 
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center flex-wrap gap-3">
                 <h1 className="text-3xl font-bold text-foreground">Expense Management</h1>
-                <Link href="/admin/finance/expenses/new">
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Log Expense
-                    </Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link href="/admin/finance/expenses/recurring">
+                        <Button variant="outline" className="gap-2">
+                            <RefreshCw className="w-4 h-4" />
+                            Recurring Schedules
+                            {recurringCount > 0 && (
+                                <span className="ml-1 text-xs bg-sky-500 text-white px-1.5 py-0.5 rounded-full">{recurringCount}</span>
+                            )}
+                        </Button>
+                    </Link>
+                    <Link href="/admin/finance/expenses/new">
+                        <Button>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Log Expense
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* Stats - matching Invoices layout */}

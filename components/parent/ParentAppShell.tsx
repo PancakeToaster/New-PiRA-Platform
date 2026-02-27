@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Home, FileText, Users, Menu, X, LogOut } from 'lucide-react';
+import { Home, FileText, Users, Menu, X, LogOut, Calendar } from 'lucide-react';
 import AppSwitcher from '@/components/layout/AppSwitcher';
 import { Logo } from '@/components/ui/Logo';
 
@@ -25,6 +25,7 @@ export default function ParentAppShell({
         { name: 'Dashboard', href: '/parent', icon: Home },
         { name: 'Invoices', href: '/parent/invoices', icon: FileText },
         { name: 'My Students', href: '/parent/students', icon: Users },
+        { name: 'Calendar', href: '/parent/calendar', icon: Calendar },
     ];
 
     return (

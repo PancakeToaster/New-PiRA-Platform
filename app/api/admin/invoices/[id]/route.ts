@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import { logActivity } from '@/lib/logging';
+import { updateInvoiceSchema } from '@/lib/validations/finance';
 
 export async function GET(
   request: NextRequest,
@@ -30,7 +31,20 @@ export async function GET(
             },
           },
         },
-        items: true,
+        items: {
+          include: {
+            student: {
+              include: {
+                user: {
+                  select: {
+                    firstName: true,
+                    lastName: true
+                  }
+                }
+              }
+            }
+          }
+        },
       },
     });
 
@@ -59,7 +73,16 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { status, paidDate, dueDate, notes, tax, items } = body;
+    const parsed = updateInvoiceSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { status, paidDate, dueDate, notes, tax, items } = parsed.data;
 
     const updateData: Record<string, unknown> = {};
     if (status !== undefined) updateData.status = status;
@@ -82,12 +105,14 @@ export async function PUT(
       updateData.total = subtotal + (tax || 0);
 
       await prisma.invoiceItem.createMany({
-        data: items.map((item: { description: string; quantity: number; unitPrice: number }) => ({
+        data: items.map((item: { description: string; quantity: number; unitPrice: number; studentId?: string | null; courseId?: string | null }) => ({
           invoiceId: id,
           description: item.description,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           total: item.quantity * item.unitPrice,
+          studentId: item.studentId,
+          courseId: item.courseId,
         })),
       });
     }
@@ -107,7 +132,20 @@ export async function PUT(
             },
           },
         },
-        items: true,
+        items: {
+          include: {
+            student: {
+              include: {
+                user: {
+                  select: {
+                    firstName: true,
+                    lastName: true
+                  }
+                }
+              }
+            }
+          }
+        },
       },
     });
 

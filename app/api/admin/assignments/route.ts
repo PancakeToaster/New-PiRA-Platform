@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createAssignmentSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/assignments - Fetch all assignments
 export async function GET(request: NextRequest) {
@@ -72,6 +73,15 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
+        const parsed = createAssignmentSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             lessonId,
             courseId,
@@ -83,7 +93,7 @@ export async function POST(request: NextRequest) {
             allowTextEntry,
             allowFileUpload,
             studentId,
-        } = body;
+        } = parsed.data;
 
         const assignment = await prisma.assignment.create({
             data: {

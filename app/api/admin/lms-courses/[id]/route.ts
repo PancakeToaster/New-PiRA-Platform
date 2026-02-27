@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { updateLMSCourseSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/lms-courses/[id] - Get a specific LMS course
 export async function GET(
@@ -62,32 +63,42 @@ export async function PUT(
         }
 
         const { id } = await params;
-        const { name, code, description, instructorId, isActive } = await req.json();
+        const body = await req.json();
+        const parsed = updateLMSCourseSchema.safeParse(body);
 
-        if (!name || !code) {
-            return new NextResponse('Name and code are required', { status: 400 });
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
         }
 
-        // Check if code already exists for another course
-        const existing = await prisma.lMSCourse.findFirst({
-            where: {
-                code,
-                NOT: { id },
-            },
-        });
+        const { name, code, description, instructorId, isActive, gradingWeights, gradingScale } = parsed.data;
 
-        if (existing) {
-            return new NextResponse('Course code already exists', { status: 400 });
+        // Check if code already exists for another course (only if code is changing)
+        if (code) {
+            const existing = await prisma.lMSCourse.findFirst({
+                where: {
+                    code,
+                    NOT: { id },
+                },
+            });
+
+            if (existing) {
+                return new NextResponse('Course code already exists', { status: 400 });
+            }
         }
 
         const course = await prisma.lMSCourse.update({
             where: { id },
             data: {
-                name,
-                code,
-                description: description || null,
-                instructorId: instructorId || null,
-                isActive: isActive ?? true,
+                ...(name !== undefined && { name }),
+                ...(code !== undefined && { code }),
+                ...(description !== undefined && { description }),
+                ...(instructorId !== undefined && { instructorId }),
+                ...(isActive !== undefined && { isActive }),
+                ...(gradingWeights !== undefined && { gradingWeights }),
+                ...(gradingScale !== undefined && { gradingScale }),
             },
             include: {
                 instructor: {

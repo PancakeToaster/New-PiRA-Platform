@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { updateKnowledgeNodeSchema } from '@/lib/validations/system';
 
 export async function GET(
   request: NextRequest,
@@ -58,10 +59,21 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, content, nodeType, folderId, tags, isPublished } = body;
+    const parsed = updateKnowledgeNodeSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { title, slug, content, nodeType, folderId, isPublished } = parsed.data;
+    const { tags } = body;
 
     const updateData: Record<string, unknown> = {};
     if (title !== undefined) updateData.title = title;
+    if (slug !== undefined) updateData.slug = slug;
     if (content !== undefined) updateData.content = content;
     if (nodeType !== undefined) updateData.nodeType = nodeType;
     if (folderId !== undefined) updateData.folderId = folderId;

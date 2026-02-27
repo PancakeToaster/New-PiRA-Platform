@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PageBanner from '@/components/layout/PageBanner';
@@ -8,6 +9,21 @@ import PageBuilder from '@/components/admin/PageBuilder';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Edit } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about PiRA - our mission, vision, team, and commitment to transformative robotics education for students of all ages.',
+  openGraph: {
+    title: 'About Us | PiRA',
+    description: 'Learn about PiRA - our mission, vision, team, and commitment to transformative robotics education.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'About Us | PiRA',
+    description: 'Learn about PiRA - our mission, vision, team, and commitment to transformative robotics education.',
+  }
+};
 
 // Import PageViewer as client-only to avoid hydration issues with dangerouslySetInnerHTML
 const PageViewer = dynamic(() => import('@/components/admin/PageViewer'), {

@@ -93,6 +93,8 @@ export async function POST(request: NextRequest) {
                 shuffleQuestions: shuffleQuestions ?? false,
                 shuffleAnswers: shuffleAnswers ?? false,
                 showResults: showResults ?? true,
+                showCorrectAnswers: body.showCorrectAnswers ?? true,
+                gradeCategory: body.gradeCategory || null,
                 isPublished: isPublished ?? false,
             },
             include: {

@@ -26,6 +26,7 @@ interface Course {
     id: string;
     name: string;
     code: string;
+    progress?: number;
 }
 
 export default function LMSAppShell({
@@ -146,9 +147,24 @@ export default function LMSAppShell({
                                                 ) : (
                                                     <ChevronRight className="w-4 h-4 flex-shrink-0" />
                                                 )}
-                                                <span className="truncate flex-1 text-left">
-                                                    {course.code || course.name}
-                                                </span>
+                                                <div className="flex-1 text-left min-w-0">
+                                                    <div className="truncate text-sm font-medium">
+                                                        {course.code || course.name}
+                                                    </div>
+                                                    {typeof course.progress === 'number' && (
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <div className="h-1 w-full bg-muted/50 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className="h-full bg-sky-500 rounded-full transition-all duration-500"
+                                                                    style={{ width: `${course.progress}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="text-[10px] text-muted-foreground tabular-nums">
+                                                                {course.progress}%
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </button>
 
                                             {isExpanded && (
@@ -213,7 +229,7 @@ export default function LMSAppShell({
             </aside>
 
             {/* Main content */}
-            <main className="lg:pl-64 pt-14 lg:pt-0">
+            <main className="lg:pl-72 pt-14 lg:pt-0">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {children}
                 </div>

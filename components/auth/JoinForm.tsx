@@ -36,9 +36,20 @@ export default function JoinForm() {
         childDateOfBirth: '',
         childEmail: '', // Added for completeness if needed based on previous steps
         interests: [] as string[],
+        referralSource: '',
         noChildEmail: false, // For parent registration flow
         childUsername: '', // For display
     });
+
+    const referralSourceOptions = [
+        { value: 'friend', label: 'Friend or Family' },
+        { value: 'student', label: 'Current/Former Student' },
+        { value: 'social_media', label: 'Social Media' },
+        { value: 'search', label: 'Google/Search Engine' },
+        { value: 'school', label: 'School/Teacher' },
+        { value: 'event', label: 'Event/Competition' },
+        { value: 'other', label: 'Other' },
+    ];
 
     const interestOptions = [
         'Robotics',
@@ -519,6 +530,22 @@ export default function JoinForm() {
                                         </div>
                                     </>
                                 )}
+
+                                <div>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        How did you hear about us?
+                                    </label>
+                                    <select
+                                        value={formData.referralSource}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, referralSource: e.target.value }))}
+                                        className="w-full px-4 py-2.5 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent text-foreground"
+                                    >
+                                        <option value="">Select one (optional)</option>
+                                        {referralSourceOptions.map((opt) => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-foreground mb-2">

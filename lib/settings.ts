@@ -16,6 +16,8 @@ export interface SiteSettings {
   twoFactorAuth: boolean;
   sessionTimeout: number;
   passwordMinLength: number;
+  home_content: any; // Using any for flexibility with JSON structure
+  history_content: any; // Using any for Awards and Alumni data
 }
 
 const defaultSettings: SiteSettings = {
@@ -34,6 +36,48 @@ const defaultSettings: SiteSettings = {
   twoFactorAuth: false,
   sessionTimeout: 60,
   passwordMinLength: 8,
+  home_content: {
+    stats: {
+      studentsTaught: "5,000+",
+      yearsExperience: "15+",
+      awardsWon: "50+",
+      programLevels: "3"
+    },
+    handsOn: {
+      title: "Hands-On Learning",
+      description: "Real-world projects and competitions that develop critical thinking and problem-solving skills."
+    },
+    competition: {
+      title: "Competing & Winning",
+      description: "Our teams consistently excel in robotics competitions and innovation challenges."
+    },
+    programs: {
+      title: "Featured Programs",
+      description: "Comprehensive robotics education designed for every skill level"
+    },
+    events: {
+      title: "Upcoming Events",
+      description: "Join us for workshops and competitions"
+    },
+    cta: {
+      title: "Ready to Start Your Journey?",
+      description: "Join our community of young innovators and start building the future today",
+      buttonText: "Get Started Today"
+    }
+  },
+  history_content: {
+    awards: [
+      { date: "2025-05", competition: "Regional Robotics Championship", titles: "First Place in Innovation", image: "" },
+      { date: "2024-11", competition: "National Coding Challenge", titles: "Gold Medalist Team", image: "" },
+      { date: "2023-04", competition: "State STEM Fair", titles: "Best Engineering Project", image: "" }
+    ],
+    alumni: [
+      { name: "Alex Johnson", year: "2023", college: "MIT", major: "Computer Science" },
+      { name: "Sarah Lee", year: "2022", college: "Stanford", major: "Robotics Engineering" },
+      { name: "Michael Chen", year: "2021", college: "Carnegie Mellon", major: "Artificial Intelligence" },
+      { name: "Emily Davis", year: "2020", college: "Georgia Tech", major: "Mechanical Engineering" }
+    ]
+  }
 };
 
 function parseValue(value: string, type: string): string | boolean | number {

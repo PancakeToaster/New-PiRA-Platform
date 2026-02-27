@@ -17,7 +17,7 @@ export function Logo({ className = '', width = 150, height = 40, showText = true
                 fill
                 className="object-contain"
                 priority
-                sizes={`${width}px`}
+                sizes="(max-width: 768px) 100px, 150px"
             />
         </div>
     );

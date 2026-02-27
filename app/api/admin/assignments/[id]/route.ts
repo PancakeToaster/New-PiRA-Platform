@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { updateAssignmentSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/assignments/[id] - Fetch single assignment with submissions
 export async function GET(
@@ -92,6 +93,15 @@ export async function PUT(
 
     try {
         const body = await request.json();
+        const parsed = updateAssignmentSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             title,
             description,
@@ -100,7 +110,7 @@ export async function PUT(
             attachments,
             allowTextEntry,
             allowFileUpload,
-        } = body;
+        } = parsed.data;
 
         const assignment = await prisma.assignment.update({
             where: { id },

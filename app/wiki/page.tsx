@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import { BookOpen, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import BasicCard from '@/components/ui/BasicCard';
+
+export const metadata: Metadata = {
+  title: 'Knowledge Base',
+  description: 'Browse the PiRA knowledge base - tutorials, guides, and reference materials for robotics and programming.',
+  openGraph: {
+    title: 'Knowledge Base',
+    description: 'Tutorials, guides, and reference materials for robotics and programming.',
+  },
+};
 
 export default async function WikiPage() {
     const recentNodes = await prisma.knowledgeNode.findMany({

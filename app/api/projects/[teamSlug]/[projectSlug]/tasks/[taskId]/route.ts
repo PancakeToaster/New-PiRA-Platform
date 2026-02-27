@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
 import { logActivity } from '@/lib/logging';
+import { updateTaskSchema } from '@/lib/validations/project';
 
 export async function GET(
     request: NextRequest,
@@ -59,6 +60,15 @@ export async function PATCH(
 
     try {
         const body = await request.json();
+        const parsed = updateTaskSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             title,
             description,
@@ -69,7 +79,7 @@ export async function PATCH(
             startDate,
             estimatedHours,
             assigneeIds,
-        } = body;
+        } = parsed.data;
 
         const task = await prisma.task.findUnique({
             where: { id: taskId },

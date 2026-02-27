@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { updateRubricSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/rubrics/[id]
 export async function GET(
@@ -56,7 +57,16 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, description, criteria } = body;
+    const parsed = updateRubricSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { title, description, criteria } = parsed.data;
 
     // Update rubric
     await prisma.rubric.update({
@@ -67,26 +77,11 @@ export async function PUT(
       },
     });
 
-    // Replace criteria if provided
     if (Array.isArray(criteria)) {
-      // Validate criteria
-      for (const c of criteria) {
-        if (!c.title || typeof c.title !== 'string' || c.title.trim().length === 0) {
-          return NextResponse.json({ error: 'Each criterion must have a title' }, { status: 400 });
-        }
-        const points = Number(c.maxPoints);
-        if (!Number.isFinite(points) || points <= 0 || points > 1000) {
-          return NextResponse.json(
-            { error: `maxPoints must be between 1 and 1000 (got "${c.maxPoints}")` },
-            { status: 400 }
-          );
-        }
-      }
-
       await prisma.rubricCriterion.deleteMany({ where: { rubricId: id } });
       await prisma.rubricCriterion.createMany({
         data: criteria.map(
-          (c: { title: string; description?: string; maxPoints: number }, index: number) => ({
+          (c: { title: string; description?: string | null; maxPoints: number }, index: number) => ({
             rubricId: id,
             title: c.title.trim(),
             description: c.description || null,

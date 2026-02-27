@@ -14,14 +14,31 @@ export async function generateMetadata({ params }: Props) {
 
     const node = await prisma.knowledgeNode.findUnique({
         where: { id },
+        select: { title: true, content: true },
     });
 
     if (!node) {
         return { title: 'Node Not Found' };
     }
 
+    // Extract a plain-text description from content (strip HTML tags, limit to 160 chars)
+    const plainText = node.content
+        ? node.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 160)
+        : undefined;
+
     return {
-        title: `${node.title} - Wiki`,
+        title: `${node.title} | PiRA Knowledge Base`,
+        description: plainText || 'View this article on the Premier Robotics Academy knowledge base.',
+        openGraph: {
+            title: node.title,
+            description: plainText || 'View this article on the Premier Robotics Academy knowledge base.',
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary',
+            title: node.title,
+            description: plainText || 'View this article on the Premier Robotics Academy knowledge base.',
+        }
     };
 }
 

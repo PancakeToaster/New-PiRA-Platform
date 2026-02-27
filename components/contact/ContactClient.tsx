@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import PageBanner from '@/components/layout/PageBanner';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
@@ -11,9 +10,19 @@ interface ContactForm {
     name: string;
     email: string;
     phone?: string;
+    referralSource?: string;
     message: string;
-
 }
+
+const referralSourceOptions = [
+    { value: 'friend', label: 'Friend or Family' },
+    { value: 'student', label: 'Current/Former Student' },
+    { value: 'social_media', label: 'Social Media' },
+    { value: 'search', label: 'Google/Search Engine' },
+    { value: 'school', label: 'School/Teacher' },
+    { value: 'event', label: 'Event/Competition' },
+    { value: 'other', label: 'Other' },
+];
 
 interface ContactInfo {
     phone: string;
@@ -29,9 +38,10 @@ interface ContactInfo {
 
 interface ContactClientProps {
     contactInfo: ContactInfo;
+    footer: React.ReactNode;
 }
 
-export default function ContactClient({ contactInfo }: ContactClientProps) {
+export default function ContactClient({ contactInfo, footer }: ContactClientProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
 
@@ -142,6 +152,22 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                                     </div>
 
                                     <div>
+                                        <label htmlFor="referralSource" className="block text-sm font-medium text-foreground mb-2">
+                                            How did you hear about us? (optional)
+                                        </label>
+                                        <select
+                                            id="referralSource"
+                                            {...register('referralSource')}
+                                            className="w-full px-4 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-foreground"
+                                        >
+                                            <option value="">Select one...</option>
+                                            {referralSourceOptions.map((opt) => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
                                         <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
                                             Message *
                                         </label>
@@ -239,7 +265,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                 </div>
             </main>
 
-            <Footer />
+            {footer}
         </div>
     );
 }

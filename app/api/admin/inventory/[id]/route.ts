@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { canManageInventory } from '@/lib/finance-permissions';
+import { updateInventoryItemSchema } from '@/lib/validations/inventory';
 
 // GET: Single item detail
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -37,7 +38,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     try {
         const body = await req.json();
-        const { name, sku, category, description, quantity, location, unitCost, reorderLevel, imageUrl } = body;
+        const parsed = updateInventoryItemSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
+        const { name, sku, category, description, quantity, location, unitCost, reorderLevel, imageUrl } = parsed.data;
 
         const item = await prisma.inventoryItem.update({
             where: { id },
@@ -46,10 +56,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 sku,
                 category,
                 description,
-                quantity: quantity !== undefined ? parseInt(quantity) : undefined,
+                quantity,
                 location,
-                unitCost: unitCost !== undefined ? parseFloat(unitCost) : undefined,
-                reorderLevel: reorderLevel !== undefined ? parseInt(reorderLevel) : undefined,
+                unitCost,
+                reorderLevel,
                 imageUrl
             }
         });

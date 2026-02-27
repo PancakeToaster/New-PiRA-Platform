@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { Label } from '@/components/ui/Label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { ArrowLeft, Save, Loader2, Users, Trash2 } from 'lucide-react';
 
@@ -179,10 +180,11 @@ export default function ManageLMSCoursePage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
+                                <Label htmlFor="name" className="mb-2 block">
                                     Course Name *
-                                </label>
+                                </Label>
                                 <input
+                                    id="name"
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -193,10 +195,11 @@ export default function ManageLMSCoursePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
+                                <Label htmlFor="code" className="mb-2 block">
                                     Course Code *
-                                </label>
+                                </Label>
                                 <input
+                                    id="code"
                                     type="text"
                                     value={formData.code}
                                     onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
@@ -208,47 +211,49 @@ export default function ManageLMSCoursePage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <Label htmlFor="description" className="mb-2 block">
                                 Description
-                            </label>
+                            </Label>
                             <textarea
+                                id="description"
                                 value={formData.description}
                                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                 rows={4}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                                 placeholder="Describe what students will learn in this course..."
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <Label htmlFor="instructor" className="mb-2 block">
                                 Instructor
-                            </label>
+                            </Label>
                             <select
+                                id="instructor"
                                 value={formData.instructorId}
                                 onChange={(e) => setFormData(prev => ({ ...prev, instructorId: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900"
+                                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                             >
-                                <option value="">No instructor assigned</option>
+                                <option value="" className="bg-background text-foreground">No instructor assigned</option>
                                 {teachers.map((teacher) => (
-                                    <option key={teacher.id} value={teacher.id}>
+                                    <option key={teacher.id} value={teacher.id} className="bg-background text-foreground">
                                         {teacher.firstName} {teacher.lastName} ({teacher.email})
                                     </option>
                                 ))}
                             </select>
                         </div>
 
-                        <div className="flex items-center">
+                        <div className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
                                 id="isActive"
                                 checked={formData.isActive}
                                 onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
+                                className="h-4 w-4 text-primary focus:ring-primary border-input rounded bg-background"
                             />
-                            <label htmlFor="isActive" className="ml-2 text-sm text-foreground">
+                            <Label htmlFor="isActive">
                                 Active (visible to students)
-                            </label>
+                            </Label>
                         </div>
 
                         <div className="flex justify-end space-x-4 pt-4 border-t">

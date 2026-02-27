@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { ArrowLeft, Save, Loader2, LayoutTemplate, FileText } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, LayoutTemplate, FileText, X } from 'lucide-react';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 
 export default function EditBlogPage({ params }: { params: { id: string } }) {
@@ -14,6 +14,9 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [tags, setTags] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -24,14 +27,23 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
         isDraft: true,
         editorType: 'html', // 'html' or 'builder'
         builderData: null,
+        authorId: '',
+        categoryId: '',
+        tags: [] as string[],
     });
 
     useEffect(() => {
-        async function fetchPost() {
+        async function fetchData() {
             try {
-                const response = await fetch(`/api/admin/blog/${id}`);
-                if (response.ok) {
-                    const { post } = await response.json();
+                const [postRes, catsRes, tagsRes, usersRes] = await Promise.all([
+                    fetch(`/api/admin/blog/${id}`),
+                    fetch('/api/admin/blog/categories'),
+                    fetch('/api/admin/blog/tags'),
+                    fetch('/api/admin/users') // Assuming this endpoint exists
+                ]);
+
+                if (postRes.ok) {
+                    const { post } = await postRes.json();
                     setFormData({
                         title: post.title || '',
                         slug: post.slug || '',
@@ -41,17 +53,34 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                         isDraft: post.isDraft,
                         editorType: post.editorType || 'html',
                         builderData: post.builderData ? JSON.parse(post.builderData) : null,
+                        authorId: post.authorId || '',
+                        categoryId: post.categoryId || '',
+                        tags: post.tags?.map((t: any) => t.id) || [],
                     });
                 } else {
                     setError('Post not found');
                 }
+
+                if (catsRes.ok) {
+                    const data = await catsRes.json();
+                    setCategories(data.categories);
+                }
+                if (tagsRes.ok) {
+                    const data = await tagsRes.json();
+                    setTags(data.tags);
+                }
+                if (usersRes.ok) {
+                    const data = await usersRes.json();
+                    setUsers(data.users);
+                }
+
             } catch (err) {
-                setError('Failed to fetch post');
+                setError('Failed to fetch data');
             } finally {
                 setIsFetching(false);
             }
         }
-        fetchPost();
+        fetchData();
     }, [id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -232,6 +261,73 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                                         required
                                     />
                                     <p className="text-xs text-muted-foreground mt-1">/blog/{formData.slug}</p>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="categoryId" className="block text-sm font-medium text-foreground mb-1">
+                                        Category
+                                    </label>
+                                    <select
+                                        id="categoryId"
+                                        value={formData.categoryId}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                                    >
+                                        <option value="">Select Category</option>
+                                        {categories.map((cat) => (
+                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="authorId" className="block text-sm font-medium text-foreground mb-1">
+                                        Author
+                                    </label>
+                                    <select
+                                        id="authorId"
+                                        value={formData.authorId}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, authorId: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                                    >
+                                        <option value="">Default (Current User)</option>
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>{user.firstName} {user.lastName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        Tags
+                                    </label>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {formData.tags?.map(tagId => {
+                                            const tag = tags.find(t => t.id === tagId);
+                                            return tag ? (
+                                                <span key={tag.id} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary">
+                                                    {tag.name}
+                                                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, tags: prev.tags.filter(id => id !== tagId) }))} className="ml-1 text-primary hover:text-primary/80">
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </span>
+                                            ) : null;
+                                        })}
+                                    </div>
+                                    <select
+                                        value=""
+                                        onChange={(e) => {
+                                            if (e.target.value && !formData.tags.includes(e.target.value)) {
+                                                setFormData(prev => ({ ...prev, tags: [...prev.tags, e.target.value] }));
+                                            }
+                                        }}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                                    >
+                                        <option value="">Add a tag...</option>
+                                        {tags.filter(t => !formData.tags.includes(t.id)).map((tag) => (
+                                            <option key={tag.id} value={tag.id}>{tag.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div className="flex items-center pt-2">

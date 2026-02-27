@@ -16,6 +16,7 @@ import {
   BarChart3,
 } from 'lucide-react';
 import GanttChart, { GanttTask } from '@/components/projects/GanttChart';
+import MilestonesClient from './MilestonesClient';
 
 interface Project {
   id: string;
@@ -228,6 +229,9 @@ export default function ProjectOverviewPage({
           onTaskClick={(task) => console.log('Task clicked', task)}
         />
       </div>
+
+      {/* Milestones */}
+      <MilestonesClient projectId={project.id} teamSlug={teamSlug} />
 
       {/* Progress */}
       <Card>

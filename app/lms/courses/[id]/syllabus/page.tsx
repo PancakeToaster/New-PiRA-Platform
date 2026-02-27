@@ -55,7 +55,7 @@ export default async function CourseSyllabusPage({
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold">{course.name}</h1>
-                    <p className="text-gray-600">Course Syllabus</p>
+                    <p className="text-muted-foreground">Course Syllabus</p>
                 </div>
             </div>
 
@@ -63,13 +63,13 @@ export default async function CourseSyllabusPage({
                 <CardContent className="p-6 space-y-6">
                     <div>
                         <h2 className="text-xl font-semibold mb-2">Course Description</h2>
-                        <p className="text-gray-700">{course.description}</p>
+                        <p className="text-muted-foreground">{course.description}</p>
                     </div>
 
                     {course.instructor && (
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Instructor</h2>
-                            <p className="text-gray-700">
+                            <p className="text-muted-foreground">
                                 {course.instructor.firstName} {course.instructor.lastName}
                             </p>
                         </div>
@@ -89,10 +89,10 @@ export default async function CourseSyllabusPage({
                                             Module {idx + 1}: {module.title}
                                         </h3>
                                         {module.description && (
-                                            <p className="text-gray-600 text-sm mt-1">{module.description}</p>
+                                            <p className="text-muted-foreground text-sm mt-1">{module.description}</p>
                                         )}
                                         {module.lessons.length > 0 && (
-                                            <ul className="mt-2 space-y-1 text-sm text-gray-700">
+                                            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
                                                 {module.lessons.map((lesson) => (
                                                     <li key={lesson.id}>• {lesson.title}</li>
                                                 ))}

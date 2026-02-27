@@ -67,6 +67,7 @@ model User {
   // Finance
   incurredExpenses Expense[]
   payrollItems     PayrollItem[]
+  staffSalaries    StaffSalary[]
 
   // System Monitoring
   activityLogs ActivityLog[]
@@ -84,9 +85,13 @@ model User {
   subTeamMemberships     SubTeamMember[]
   assignedSubTeamMembers SubTeamMember[] @relation("SubTeamAssigner")
 
+  // Blog Authorship
+  authoredBlogs Blog[] @relation("BlogAuthor")
+
   // Messaging & notifications
-  announcementReads          AnnouncementRead[]
-  createdRubrics             Rubric[]                   @relation("CreatedRubrics")
+  announcementReads AnnouncementRead[]
+  createdRubrics    Rubric[]            @relation("CreatedRubrics")
+  InventoryCheckout InventoryCheckout[]
 
   @@index([email])
 }
@@ -188,6 +193,7 @@ model StudentProfile {
 
   performanceDiscount Float            @default(0) // Percentage (0-100)
   referredById        String?
+  referralSource      String? // "friend", "student", "social_media", "search", "school", "event", "other"
   referredBy          StudentProfile?  @relation("Referrals", fields: [referredById], references: [id])
   referrals           StudentProfile[] @relation("Referrals")
 
@@ -266,16 +272,48 @@ model Blog {
   builderData String?   @db.Text // Craft.js JSON data
   editorType  String    @default("html") // "html" or "builder"
   coverImage  String?
-  isDraft     Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isDraft     Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   publishedAt DateTime?
 
+  authorId    String?
+  author      User?         @relation("BlogAuthor", fields: [authorId], references: [id])
+  categoryId  String?
+  category    BlogCategory? @relation("BlogCategory", fields: [categoryId], references: [id])
+  
+  tags     BlogTag[]
   comments BlogComment[]
   views    PageView[]
 
   @@index([slug])
   @@index([publishedAt])
+  @@index([authorId])
+  @@index([categoryId])
+}
+
+model BlogCategory {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blogs Blog[] @relation("BlogCategory")
+
+  @@index([slug])
+}
+
+model BlogTag {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blogs Blog[]
+
+  @@index([slug])
 }
 
 model BlogComment {
@@ -334,13 +372,17 @@ model LMSCourse {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  instructor   User?              @relation("LMSInstructor", fields: [instructorId], references: [id])
-  enrollments  CourseEnrollment[] @relation("LMSEnrollments")
-  lessons      Lesson[]           @relation("LMSLessons")
-  modules      Module[]           @relation("LMSModules")
-  assignments  Assignment[]       @relation("LMSAssignments")
-  quizzes      Quiz[]             @relation("LMSQuizzes")
-  certificates Certificate[]      @relation("LMSCertificates")
+  instructor  User?              @relation("LMSInstructor", fields: [instructorId], references: [id])
+  enrollments CourseEnrollment[] @relation("LMSEnrollments")
+  lessons     Lesson[]           @relation("LMSLessons")
+  modules     Module[]           @relation("LMSModules")
+  assignments Assignment[]       @relation("LMSAssignments")
+  quizzes     Quiz[]             @relation("LMSQuizzes")
+
+  // Grading Configuration
+  gradingScale   Json? // Array of { label: string, minParams: number }
+  gradingWeights Json? // Object of { [category]: number } (0.0 - 1.0)
+  certificates   Certificate[]      @relation("LMSCertificates")
   forumThreads   ForumThread[]      @relation("LMSForumThreads")
   classSessions  ClassSession[]     @relation("LMSClassSessions")
   pathSteps      LearningPathStep[] @relation("LMSPathSteps")
@@ -365,14 +407,15 @@ model Activity {
 }
 
 model ContactSubmission {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  message   String   @db.Text
-  status    String   @default("new") // new, read, replied, archived
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  referralSource String? // "friend", "student", "social_media", "search", "school", "event", "other"
+  message        String   @db.Text
+  status         String   @default("new") // new, read, replied, archived
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
@@ -582,6 +625,7 @@ model Assignment {
   allowFileUpload Boolean  @default(true)
   teacherId       String
   studentId       String? // null = assigned to all students in course
+  gradeCategory   String? // e.g., "Homework", "Exam"
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -616,8 +660,8 @@ model AssignmentSubmission {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  assignment Assignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignment   Assignment     @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student      StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   grader       User?          @relation("GradedSubmissions", fields: [gradedBy], references: [id])
   rubricScores RubricScore[]
 
@@ -670,16 +714,16 @@ model Module {
 model PageView {
   id              String   @id @default(cuid())
   path            String
-  pageTitle       String?  // Page title for better display in analytics
+  pageTitle       String? // Page title for better display in analytics
   userId          String?
   userRole        String?
   pageId          String?
   blogId          String?
   knowledgeNodeId String?
-  referrer        String?  // Full referrer URL
-  referrerDomain  String?  // Extracted domain for grouping
-  userAgent       String?  // Browser/device info
-  ipAddress       String?  // For unique visitor tracking
+  referrer        String? // Full referrer URL
+  referrerDomain  String? // Extracted domain for grouping
+  userAgent       String? // Browser/device info
+  ipAddress       String? // For unique visitor tracking
   viewedAt        DateTime @default(now())
   sessionId       String?
 
@@ -736,12 +780,13 @@ model Team {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members  TeamMember[]
-  projects Project[]
-  events   CalendarEvent[]
-  files    TeamFile[]
-  folders  TeamFolder[]
-  SubTeam  SubTeam[]
+  members           TeamMember[]
+  projects          Project[]
+  events            CalendarEvent[]
+  files             TeamFile[]
+  folders           TeamFolder[]
+  SubTeam           SubTeam[]
+  InventoryCheckout InventoryCheckout[]
 
   @@index([slug])
   @@index([isActive])
@@ -847,11 +892,12 @@ model Project {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  tasks      Task[]
-  milestones Milestone[]
-  tags       ProjectTag[]
-  expenses   Expense[]
+  team               Team                @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  tasks              Task[]
+  milestones         Milestone[]
+  tags               ProjectTag[]
+  expenses           Expense[]
+  inventoryCheckouts InventoryCheckout[]
 
   @@unique([teamId, slug])
   @@index([teamId])
@@ -1111,25 +1157,25 @@ model CourseInterest {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
-  lmsCourseId String
-  moduleId    String? // Optional - for modular courses
-  title       String
-  description String?  @db.Text
-  content     String?  @db.Text
-  contentType String   @default("text") // text, video, code, document
-  lessonType  String   @default("reading") // reading, video, assignment, quiz
-  videoUrl    String?
-  attachmentUrl String? // File attachment URL
+  id             String   @id @default(cuid())
+  lmsCourseId    String
+  moduleId       String? // Optional - for modular courses
+  title          String
+  description    String?  @db.Text
+  content        String?  @db.Text
+  contentType    String   @default("text") // text, video, code, document
+  lessonType     String   @default("reading") // reading, video, assignment, quiz
+  videoUrl       String?
+  attachmentUrl  String? // File attachment URL
   attachmentName String? // Original filename
   attachmentType String? // MIME type
-  wikiPageId  String? // Optional link to wiki page
-  order       Int      @default(0)
-  duration    Int? // in minutes
-  isPublished Boolean  @default(false)
-  isFree      Boolean  @default(false) // Preview lessons
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  wikiPageId     String? // Optional link to wiki page
+  order          Int      @default(0)
+  duration       Int? // in minutes
+  isPublished    Boolean  @default(false)
+  isFree         Boolean  @default(false) // Preview lessons
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   lmsCourse       LMSCourse        @relation("LMSLessons", fields: [lmsCourseId], references: [id], onDelete: Cascade)
   module          Module?          @relation(fields: [moduleId], references: [id])
@@ -1142,7 +1188,6 @@ model Lesson {
   @@index([order])
   @@index([wikiPageId])
 }
-
 
 model LessonProgress {
   id          String    @id @default(cuid())
@@ -1221,21 +1266,23 @@ model PublicStaff {
 }
 
 model Quiz {
-  id               String   @id @default(cuid())
-  lessonId         String?  @unique // Link to lesson if part of course
-  lmsCourseId      String? // Denormalized for easier querying
-  title            String
-  description      String?  @db.Text
-  instructions     String?  @db.Text
-  timeLimit        Int? // in minutes, null = no limit
-  passingScore     Float    @default(70) // percentage
-  maxAttempts      Int? // null = unlimited
-  shuffleQuestions Boolean  @default(false)
-  shuffleAnswers   Boolean  @default(false)
-  showResults      Boolean  @default(true) // Show results immediately after submission
-  isPublished      Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  lessonId           String?  @unique // Link to lesson if part of course
+  lmsCourseId        String? // Denormalized for easier querying
+  title              String
+  description        String?  @db.Text
+  instructions       String?  @db.Text
+  timeLimit          Int? // in minutes, null = no limit
+  passingScore       Float    @default(70) // percentage
+  maxAttempts        Int? // null = unlimited
+  shuffleQuestions   Boolean  @default(false)
+  shuffleAnswers     Boolean  @default(false)
+  showResults        Boolean  @default(true) // Show results immediately after submission
+  showCorrectAnswers Boolean  @default(true) // Show correct answers in review
+  gradeCategory      String? // e.g., "Homework", "Exam"
+  isPublished        Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   lesson    Lesson?        @relation(fields: [lessonId], references: [id])
   lmsCourse LMSCourse?     @relation("LMSQuizzes", fields: [lmsCourseId], references: [id])
@@ -1361,12 +1408,14 @@ model Certificate {
 }
 
 model StudentCertificate {
-  id            String   @id @default(cuid())
-  studentId     String
-  certificateId String
-  awardedAt     DateTime @default(now())
-  awardedBy     String? // User ID of teacher/admin
-  code          String   @unique // Verification code
+  id             String    @id @default(cuid())
+  studentId      String
+  certificateId  String
+  awardedAt      DateTime  @default(now())
+  awardedBy      String? // User ID of teacher/admin
+  code           String    @unique // Verification code
+  shareToken     String?   @unique // Time-limited share link token
+  shareExpiresAt DateTime? // When the share link expires
 
   student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   certificate Certificate    @relation(fields: [certificateId], references: [id], onDelete: Cascade)
@@ -1422,24 +1471,28 @@ model InventoryItem {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  expenses Expense[]
+  expenses  Expense[]
+  checkouts InventoryCheckout[]
 
   @@index([category])
 }
 
 model Expense {
-  id              String   @id @default(cuid())
-  amount          Float
-  date            DateTime @default(now())
-  vendor          String
-  description     String?  @db.Text
-  category        String // e.g., "Hardware", "Travel", "Food"
-  receiptUrl      String?
-  status          String   @default("pending") // pending, approved, paid
-  incurredById    String
-  projectId       String?
-  inventoryItemId String?
-  quarter         String? // e.g., "Q1 2024"
+  id                 String    @id @default(cuid())
+  amount             Float
+  date               DateTime  @default(now())
+  vendor             String
+  description        String?   @db.Text
+  category           String // e.g., "Hardware", "Travel", "Food"
+  receiptUrl         String?
+  status             String    @default("pending") // pending, approved, paid
+  incurredById       String
+  projectId          String?
+  inventoryItemId    String?
+  quarter            String? // e.g., "Q1 2024"
+  isRecurring        Boolean   @default(false)
+  recurringFrequency String? // "monthly", "quarterly", "yearly"
+  nextRecurringDate  DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1484,6 +1537,57 @@ model PayrollItem {
 
   @@index([payrollRunId])
   @@index([userId])
+}
+
+// Staff salary records — tracks individual salary, tax rate, and deductions
+model StaffSalary {
+  id               String    @id @default(cuid())
+  userId           String
+  title            String? // e.g., "Head Instructor"
+  annualSalary     Float
+  taxRate          Float     @default(0) // e.g., 0.25 = 25%
+  healthDeduction  Float     @default(0)
+  otherDeductions  Float     @default(0)
+  paymentFrequency String    @default("monthly") // weekly, biweekly, monthly
+  effectiveDate    DateTime  @default(now())
+  endDate          DateTime?
+  notes            String?   @db.Text
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// --------------------------------------------
+// Inventory Checkout
+// --------------------------------------------
+
+model InventoryCheckout {
+  id              String    @id @default(cuid())
+  inventoryItemId String
+  projectId       String? // Optional: Link to specific project
+  teamId          String // Link to the team checking it out
+  userId          String // The person who checked it out
+  quantity        Int       @default(1)
+  checkoutDate    DateTime  @default(now())
+  expectedReturn  DateTime?
+  returnDate      DateTime?
+  status          String    @default("active") // active, returned, overdue, lost
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  item    InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  project Project?      @relation(fields: [projectId], references: [id])
+  team    Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id])
+
+  @@index([inventoryItemId])
+  @@index([teamId])
+  @@index([projectId])
+  @@index([status])
 }
 
 // ============================================

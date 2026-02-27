@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { updateCourseSchema } from '@/lib/validations/lms';
 
 export async function GET(
   request: NextRequest,
@@ -44,7 +45,16 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isHidden, hidePrice, isDevelopment } = body;
+    const parsed = updateCourseSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isHidden, hidePrice, isDevelopment } = parsed.data;
 
     // Check if slug is taken by another course
     if (slug) {
@@ -80,7 +90,8 @@ export async function PUT(
         level,
         duration,
         ageRange,
-        price: price !== undefined ? (price ? parseFloat(price) : null) : undefined,
+        price,
+        topics,
         image,
         isActive,
         isHidden,

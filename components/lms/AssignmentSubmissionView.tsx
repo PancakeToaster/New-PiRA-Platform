@@ -37,6 +37,7 @@ export default function AssignmentSubmissionView({
 
     const isGraded = submission?.status === 'graded';
     const isSubmitted = submission?.status === 'submitted';
+    const isReturned = submission?.status === 'returned';
     const isOverdue = new Date(assignment.dueDate) < new Date();
 
     // Handle File Upload
@@ -143,6 +144,11 @@ export default function AssignmentSubmissionView({
                         <div className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-lg flex items-center gap-2 font-medium">
                             <CheckCircle className="w-5 h-5" />
                             Submitted
+                        </div>
+                    ) : isReturned ? (
+                        <div className="px-4 py-2 bg-purple-500/10 text-purple-600 rounded-lg flex items-center gap-2 font-medium">
+                            <AlertCircle className="w-5 h-5" />
+                            Returned for Revision
                         </div>
                     ) : isOverdue ? (
                         <div className="px-4 py-2 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2 font-medium">
@@ -259,6 +265,26 @@ export default function AssignmentSubmissionView({
                             <div className="text-sm text-muted-foreground italic">
                                 This assignment has been graded.
                             </div>
+                        ) : isReturned ? (
+                            <>
+                                <div className="text-sm text-purple-600 italic mr-auto font-medium">
+                                    Please revise and resubmit based on feedback.
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => handleSubmit('draft')}
+                                    disabled={isSubmitting || isUploading}
+                                >
+                                    Save Draft
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={() => handleSubmit('submitted')}
+                                    disabled={isSubmitting || isUploading || (!content && attachments.length === 0)}
+                                >
+                                    Resubmit Assignment
+                                </Button>
+                            </>
                         ) : isSubmitted ? (
                             <>
                                 <div className="text-sm text-muted-foreground italic mr-auto">

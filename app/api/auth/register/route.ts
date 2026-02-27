@@ -24,6 +24,7 @@ const registerSchema = z.object({
   childAge: z.union([z.string(), z.number()]).optional().nullable(),
   childDateOfBirth: z.string().optional().nullable(),
   interests: z.array(z.string()).optional(),
+  referralSource: z.string().optional(),
   parentName: z.string().optional(),
   parentEmail: z.string().email().optional().nullable(),
   parentPhone: z.string().optional().nullable(),
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest) {
       childAge,
       childDateOfBirth,
       interests,
+      referralSource,
     } = parsed.data;
 
     // Check if user already exists
@@ -118,6 +120,7 @@ export async function POST(request: NextRequest) {
             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
             grade,
             school,
+            referralSource: referralSource || null,
           },
         });
 
@@ -228,6 +231,7 @@ export async function POST(request: NextRequest) {
                 userId: childUser.id,
                 grade: childAge ? `Age ${childAge}` : null,
                 dateOfBirth: childDateOfBirth ? new Date(childDateOfBirth) : undefined,
+                referralSource: referralSource || null,
               },
             });
 

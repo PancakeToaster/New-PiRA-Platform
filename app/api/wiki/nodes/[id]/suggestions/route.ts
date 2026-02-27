@@ -1,23 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getCurrentUser, hasPermission } from '@/lib/permissions';
 
 // GET /api/wiki/nodes/[id]/suggestions
+// Only Admin and Teacher can view pending suggestions
 export async function GET(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const user = await getCurrentUser();
+    if (!user) {
         return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    // Only users who can review or create suggestions can see them
+    const canComment = await hasPermission('knowledge', 'comment');
+    if (!canComment) {
+        return new NextResponse('Forbidden', { status: 403 });
     }
 
     try {
         const suggestions = await prisma.knowledgeSuggestion.findMany({
             where: {
                 nodeId: params.id,
-                status: 'pending', // Usually we only care about pending initially
+                status: 'pending',
             },
             include: {
                 user: {
@@ -42,13 +48,19 @@ export async function GET(
 }
 
 // POST /api/wiki/nodes/[id]/suggestions
+// Any user with 'knowledge:suggest' permission can create a suggestion
 export async function POST(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const user = await getCurrentUser();
+    if (!user) {
         return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    const canSuggest = await hasPermission('knowledge', 'suggest');
+    if (!canSuggest) {
+        return new NextResponse('Forbidden', { status: 403 });
     }
 
     try {
@@ -64,7 +76,7 @@ export async function POST(
                 content,
                 reason,
                 nodeId: params.id,
-                userId: session.user.id,
+                userId: user.id,
                 status: 'pending',
             },
         });

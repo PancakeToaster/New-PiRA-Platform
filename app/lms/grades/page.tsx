@@ -52,11 +52,11 @@ export default async function GradesPage() {
 
   const getGradeColor = (grade: number, maxPoints: number) => {
     const percentage = (grade / maxPoints) * 100;
-    if (percentage >= 90) return 'text-green-600 bg-green-50';
-    if (percentage >= 80) return 'text-blue-600 bg-blue-50';
-    if (percentage >= 70) return 'text-yellow-600 bg-yellow-50';
-    if (percentage >= 60) return 'text-orange-600 bg-orange-50';
-    return 'text-red-600 bg-red-50';
+    if (percentage >= 90) return 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20';
+    if (percentage >= 80) return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
+    if (percentage >= 70) return 'text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/20';
+    if (percentage >= 60) return 'text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20';
+    return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
   };
 
   const getLetterGrade = (grade: number, maxPoints: number) => {
@@ -85,7 +85,7 @@ export default async function GradesPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Average Grade</p>
+                <p className="text-sm text-muted-foreground">Average Grade</p>
                 <p className="text-3xl font-bold">{stats.averageGrade}%</p>
               </div>
               <TrendingUp className="w-12 h-12 text-sky-500 opacity-20" />
@@ -97,7 +97,7 @@ export default async function GradesPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Graded Assignments</p>
+                <p className="text-sm text-muted-foreground">Graded Assignments</p>
                 <p className="text-3xl font-bold">{stats.totalGraded}</p>
               </div>
               <Award className="w-12 h-12 text-green-500 opacity-20" />
@@ -109,7 +109,7 @@ export default async function GradesPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Pending Grades</p>
+                <p className="text-sm text-muted-foreground">Pending Grades</p>
                 <p className="text-3xl font-bold">{stats.pendingGrades}</p>
               </div>
               <Clock className="w-12 h-12 text-yellow-500 opacity-20" />
@@ -126,8 +126,8 @@ export default async function GradesPage() {
         <CardContent>
           {submissions.length === 0 ? (
             <div className="text-center py-8">
-              <FileText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-600">No submitted assignments yet.</p>
+              <FileText className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
+              <p className="text-muted-foreground">No submitted assignments yet.</p>
               <Link
                 href="/lms/assignments"
                 className="inline-block mt-4 text-sky-500 hover:text-sky-600 font-medium"
@@ -139,44 +139,44 @@ export default async function GradesPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Assignment</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Submitted</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Due Date</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Grade</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 px-4 font-semibold text-foreground">Assignment</th>
+                    <th className="text-left py-3 px-4 font-semibold text-foreground">Submitted</th>
+                    <th className="text-left py-3 px-4 font-semibold text-foreground">Due Date</th>
+                    <th className="text-left py-3 px-4 font-semibold text-foreground">Status</th>
+                    <th className="text-right py-3 px-4 font-semibold text-foreground">Grade</th>
                   </tr>
                 </thead>
                 <tbody>
                   {submissions.map((submission) => (
-                    <tr key={submission.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={submission.id} className="border-b border-border hover:bg-muted/50">
                       <td className="py-3 px-4">
                         <Link
                           href={`/lms/assignments/${submission.assignmentId}`}
-                          className="font-medium text-gray-900 hover:text-sky-600"
+                          className="font-medium text-foreground hover:text-sky-600"
                         >
                           {submission.assignment.title}
                         </Link>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
+                      <td className="py-3 px-4 text-sm text-muted-foreground">
                         {new Date(submission.submittedAt).toLocaleDateString()}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
+                      <td className="py-3 px-4 text-sm text-muted-foreground">
                         {submission.assignment.dueDate
                           ? new Date(submission.assignment.dueDate).toLocaleDateString()
                           : 'No due date'}
                       </td>
                       <td className="py-3 px-4">
                         {submission.status === 'graded' ? (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                          <span className="px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 text-xs rounded-full">
                             Graded
                           </span>
                         ) : submission.status === 'submitted' ? (
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
+                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs rounded-full">
                             Pending
                           </span>
                         ) : (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                          <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                             {submission.status}
                           </span>
                         )}
@@ -192,12 +192,12 @@ export default async function GradesPage() {
                             >
                               {getLetterGrade(submission.grade, submission.assignment.maxPoints || 100)}
                             </span>
-                            <span className="text-gray-600">
+                            <span className="text-muted-foreground">
                               {submission.grade}/{submission.assignment.maxPoints || 100}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-gray-400">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                     </tr>
@@ -221,14 +221,14 @@ export default async function GradesPage() {
                 .filter((s) => s.status === 'graded' && s.feedback)
                 .slice(0, 5)
                 .map((submission) => (
-                  <div key={submission.id} className="p-4 bg-gray-50 rounded-lg">
+                  <div key={submission.id} className="p-4 bg-muted/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium">{submission.assignment.title}</h3>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {new Date(submission.gradedAt || submission.submittedAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">{submission.feedback}</p>
+                    <p className="text-sm text-muted-foreground">{submission.feedback}</p>
                   </div>
                 ))}
             </div>

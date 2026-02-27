@@ -1,9 +1,19 @@
+import type { Metadata } from 'next';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PageBanner from '@/components/layout/PageBanner';
 import { prisma } from '@/lib/prisma';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'Read the latest news, tutorials, and stories from PiRA. Stay up to date with robotics education insights and student achievements.',
+  openGraph: {
+    title: 'Blog',
+    description: 'Latest news, tutorials, and stories from PiRA. Robotics education insights and student achievements.',
+  },
+};
 
 export default async function BlogPage() {
   const posts = await prisma.blog.findMany({
@@ -20,44 +30,47 @@ export default async function BlogPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-20 pb-20">
         <PageBanner
           title="Blog"
           description="Latest news, updates, and insights from our robotics academy"
         />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
           {posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {posts.map((post) => (
-                <article
+                <Link
                   key={post.id}
-                  className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                  href={`/blog/${post.slug}`}
+                  className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col h-full"
                 >
                   {/* Post Header */}
-                  <div className="h-48 bg-gradient-to-br from-sky-400 to-sky-600 relative flex items-center justify-center">
+                  <div className="h-40 bg-muted relative flex items-center justify-center overflow-hidden">
                     {post.coverImage ? (
                       <img
                         src={post.coverImage}
                         alt={post.title}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <span className="text-6xl">📝</span>
+                      <span className="text-5xl select-none">📝</span>
                     )}
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
                   </div>
 
                   {/* Post Content */}
-                  <div className="p-6">
-                    <h2 className="text-xl font-bold mb-2 text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                  <div className="p-4 flex flex-col flex-1">
+                    <h2 className="text-lg font-bold mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-2">
                       {post.title}
                     </h2>
-                    {post.excerpt && (
-                      <p className="text-muted-foreground mb-4 line-clamp-2">{post.excerpt}</p>
-                    )}
 
-                    <div className="flex items-center justify-between text-sm border-t border-border pt-4">
+                    <div className="flex-1">
+                      {post.excerpt && (
+                        <p className="text-muted-foreground mb-3 line-clamp-3 text-xs">{post.excerpt}</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs border-t border-border pt-3 mt-auto">
                       <span className="text-muted-foreground">
                         {post.publishedAt
                           ? new Date(post.publishedAt).toLocaleDateString('en-US', {
@@ -67,17 +80,14 @@ export default async function BlogPage() {
                           })
                           : 'Draft'}
                       </span>
-                    </div>
 
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="mt-4 inline-flex items-center text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 font-semibold text-sm"
-                    >
-                      Read More
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
+                      <span className="inline-flex items-center text-primary hover:text-primary/80 font-semibold">
+                        Read More
+                        <ArrowRight className="ml-1 w-3 h-3" />
+                      </span>
+                    </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           ) : (

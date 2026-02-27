@@ -28,6 +28,7 @@ export default function NewQuizPage({ params }: NewQuizPageProps) {
         maxAttempts: '',
         shuffleQuestions: false,
         showResults: true,
+        showCorrectAnswers: true,
         isPublished: false
     });
 
@@ -48,6 +49,8 @@ export default function NewQuizPage({ params }: NewQuizPageProps) {
                     maxAttempts: formData.maxAttempts ? parseInt(formData.maxAttempts) : null,
                     shuffleQuestions: formData.shuffleQuestions,
                     showResults: formData.showResults,
+                    showCorrectAnswers: (formData as any).showCorrectAnswers,
+                    gradeCategory: (formData as any).gradeCategory,
                     isPublished: formData.isPublished
                 })
             });
@@ -170,6 +173,18 @@ export default function NewQuizPage({ params }: NewQuizPageProps) {
                                 id="results"
                                 checked={formData.showResults}
                                 onCheckedChange={(checked) => setFormData({ ...formData, showResults: checked })}
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between py-2 border-t">
+                            <div>
+                                <Label htmlFor="correctAnswers" className="text-base">Show Correct Answers in Review</Label>
+                                <p className="text-xs text-gray-500">Allow students to see correct answers after submission</p>
+                            </div>
+                            <Switch
+                                id="correctAnswers"
+                                checked={(formData as any).showCorrectAnswers !== false} // Default true
+                                onCheckedChange={(checked) => setFormData({ ...formData, showCorrectAnswers: checked } as any)}
                             />
                         </div>
 

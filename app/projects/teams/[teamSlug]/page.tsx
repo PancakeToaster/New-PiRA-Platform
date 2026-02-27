@@ -264,6 +264,24 @@ export default function TeamPage({ params }: { params: { teamSlug: string } }) {
             </CardContent>
           </Card>
         </Link>
+        <Link href={`/projects/teams/${team.slug}/inventory`}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                    <FolderKanban className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Inventory Checkouts</p>
+                    <p className="text-sm text-muted-foreground">Manage hardware</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Projects */}

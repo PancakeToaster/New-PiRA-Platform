@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
+import { updateProjectSchema } from '@/lib/validations/project';
 
 export async function GET(
   request: NextRequest,
@@ -151,7 +152,16 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, description, status, priority, color, startDate, endDate } = body;
+    const parsed = updateProjectSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { name, description, status, priority, color, startDate, endDate } = parsed.data;
 
     const project = await prisma.project.update({
       where: {

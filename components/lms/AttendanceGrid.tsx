@@ -90,7 +90,7 @@ export default function AttendanceGrid({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-foreground">
           {students.length} student{students.length !== 1 ? 's' : ''}
         </span>
         <Button
@@ -106,35 +106,35 @@ export default function AttendanceGrid({
       </div>
 
       {sortedStudents.length === 0 ? (
-        <div className="text-center py-8 text-gray-500 text-sm">
+        <div className="text-center py-8 text-muted-foreground text-sm">
           No students enrolled in this course.
         </div>
       ) : (
         <div className="overflow-x-auto border rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted/50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Student
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Note
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-background divide-y divide-border">
               {sortedStudents.map((student) => {
                 const record = getRecord(student.id);
                 const status = record?.status || 'present';
                 const note = record?.note || '';
 
                 return (
-                  <tr key={student.id} className="hover:bg-gray-50">
+                  <tr key={student.id} className="hover:bg-muted/50">
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         {student.user.lastName}, {student.user.firstName}
                       </span>
                     </td>
@@ -145,9 +145,8 @@ export default function AttendanceGrid({
                           updateRecord(student.id, 'status', e.target.value)
                         }
                         disabled={disabled}
-                        className={`text-sm rounded-md border border-gray-300 px-2 py-1.5 focus:ring-2 focus:ring-sky-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                          STATUS_OPTIONS.find((o) => o.value === status)?.color || ''
-                        }`}
+                        className={`text-sm rounded-md border border-gray-300 px-2 py-1.5 focus:ring-2 focus:ring-sky-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${STATUS_OPTIONS.find((o) => o.value === status)?.color || ''
+                          }`}
                       >
                         {STATUS_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>

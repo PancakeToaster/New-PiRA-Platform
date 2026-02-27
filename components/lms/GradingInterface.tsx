@@ -213,6 +213,14 @@ export default function GradingInterface({ courseId, assignment, submission, stu
                         >
                             Save Draft
                         </Button>
+                        <Button
+                            onClick={() => handleSave('returned')}
+                            variant="danger"
+                            className="w-full"
+                            disabled={isSaving}
+                        >
+                            Return to Student
+                        </Button>
                     </div>
                 </Card>
             </div>

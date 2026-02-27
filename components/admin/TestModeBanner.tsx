@@ -181,7 +181,7 @@ export default function TestModeBanner({ roleName }: TestModeBannerProps) {
             <button
               onClick={exitTestMode}
               disabled={isExiting}
-              className="w-full flex items-center justify-center space-x-2 bg-foreground text-yellow-400 px-4 py-2 rounded-lg hover:bg-foreground/90 transition-colors disabled:opacity-50 font-semibold text-sm"
+              className="w-full flex items-center justify-center space-x-2 bg-slate-900 text-yellow-400 dark:bg-yellow-500/10 dark:text-yellow-500 px-4 py-2 rounded-lg hover:bg-slate-800 dark:hover:bg-yellow-500/20 transition-colors disabled:opacity-50 font-semibold text-sm"
             >
               <X className="w-4 h-4" />
               <span>{isExiting ? 'Exiting...' : 'Exit Test Mode'}</span>

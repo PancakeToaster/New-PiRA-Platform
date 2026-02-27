@@ -13,12 +13,22 @@ export default function Navbar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // User Dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  // Join Dropdown
   const [isJoinDropdownOpen, setIsJoinDropdownOpen] = useState(false);
   const [isJoinDropdownVisible, setIsJoinDropdownVisible] = useState(false);
+
+  // About Dropdown
+  const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
+  const [isAboutDropdownVisible, setIsAboutDropdownVisible] = useState(false);
+
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const joinCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const aboutCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const user = session?.user;
 
@@ -77,7 +87,6 @@ export default function Navbar() {
       closeTimeoutRef.current = null;
     }
     setIsDropdownOpen(true);
-    // Small delay to trigger CSS transition
     setTimeout(() => setIsDropdownVisible(true), 10);
   };
 
@@ -86,7 +95,7 @@ export default function Navbar() {
     setIsDropdownVisible(false);
     closeTimeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
-    }, 300); // Wait for fade out animation to complete
+    }, 300);
   };
 
   // Handle join dropdown open
@@ -107,6 +116,24 @@ export default function Navbar() {
     }, 300);
   };
 
+  // Handle about dropdown open
+  const handleAboutDropdownOpen = () => {
+    if (aboutCloseTimeoutRef.current) {
+      clearTimeout(aboutCloseTimeoutRef.current);
+      aboutCloseTimeoutRef.current = null;
+    }
+    setIsAboutDropdownOpen(true);
+    setTimeout(() => setIsAboutDropdownVisible(true), 10);
+  };
+
+  // Handle about dropdown close with delay
+  const handleAboutDropdownClose = () => {
+    setIsAboutDropdownVisible(false);
+    aboutCloseTimeoutRef.current = setTimeout(() => {
+      setIsAboutDropdownOpen(false);
+    }, 300);
+  };
+
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
@@ -115,6 +142,9 @@ export default function Navbar() {
       }
       if (joinCloseTimeoutRef.current) {
         clearTimeout(joinCloseTimeoutRef.current);
+      }
+      if (aboutCloseTimeoutRef.current) {
+        clearTimeout(aboutCloseTimeoutRef.current);
       }
     };
   }, []);
@@ -156,12 +186,46 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-              <Link
-                href="/about"
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+              {/* About Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={handleAboutDropdownOpen}
+                onMouseLeave={handleAboutDropdownClose}
               >
-                About
-              </Link>
+                <Link
+                  href="/about"
+                  className="flex items-center space-x-1 text-sm font-medium text-foreground/80 hover:text-primary transition-colors focus:outline-none"
+                  onClick={() => setIsAboutDropdownOpen(false)}
+                >
+                  <span>About</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isAboutDropdownOpen ? 'rotate-180' : ''}`} />
+                </Link>
+
+                {isAboutDropdownOpen && (
+                  <div
+                    className={`absolute left-0 mt-2 w-48 bg-popover text-popover-foreground rounded-lg shadow-xl py-2 border border-border transition-all duration-300 ${isAboutDropdownVisible
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 -translate-y-2'
+                      }`}
+                  >
+                    <Link
+                      href="/about"
+                      className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
+                      onClick={() => setIsAboutDropdownOpen(false)}
+                    >
+                      About Us
+                    </Link>
+                    <Link
+                      href="/history"
+                      className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
+                      onClick={() => setIsAboutDropdownOpen(false)}
+                    >
+                      Our History
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <Link
                 href="/courses"
                 className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
@@ -324,6 +388,13 @@ export default function Navbar() {
                   Courses
                 </Link>
                 <Link
+                  href="/history"
+                  className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  History
+                </Link>
+                <Link
                   href="/events"
                   className="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-accent hover:text-primary"
                   onClick={() => setIsDropdownOpen(false)}
@@ -390,6 +461,13 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
+            </Link>
+            <Link
+              href="/history"
+              className="block px-3 py-2 text-base font-medium text-foreground/80 hover:text-primary hover:bg-accent rounded-md pl-6"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Our History
             </Link>
             <Link
               href="/courses"

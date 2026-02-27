@@ -1,6 +1,22 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import CoursesClient from '@/components/courses/CoursesClient';
 import Footer from '@/components/layout/Footer';
+
+export const metadata: Metadata = {
+  title: 'Courses',
+  description: 'Browse robotics courses for all ages and skill levels. From beginner programs to advanced competition prep.',
+  openGraph: {
+    title: 'Courses | PiRA',
+    description: 'Browse robotics courses for all ages and skill levels. From beginner programs to advanced competition prep.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Courses | PiRA',
+    description: 'Browse robotics courses for all ages and skill levels. From beginner programs to advanced competition prep.',
+  }
+};
 
 export const revalidate = 3600; // Revalidate every hour
 

@@ -44,6 +44,7 @@ export default async function AdminLayout({
                   src="/images/logo.png"
                   alt="PiRA Logo"
                   fill
+                  sizes="192px"
                   className="object-contain object-left"
                   priority
                 />
@@ -108,35 +109,11 @@ export default async function AdminLayout({
 
 
               <Link
-                href="/admin/invoices"
+                href="/admin/finance"
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground/80 hover:bg-accent hover:text-primary transition-colors"
               >
                 <DollarSign className="w-5 h-5" />
-                <span>Invoices</span>
-              </Link>
-
-              <Link
-                href="/admin/finance/expenses"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground/80 hover:bg-accent hover:text-primary transition-colors"
-              >
-                <FileText className="w-5 h-5" />
-                <span>Expenses</span>
-              </Link>
-
-              <Link
-                href="/admin/finance/inventory"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground/80 hover:bg-accent hover:text-primary transition-colors"
-              >
-                <Boxes className="w-5 h-5" />
-                <span>Inventory</span>
-              </Link>
-
-              <Link
-                href="/admin/finance/payroll"
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground/80 hover:bg-accent hover:text-primary transition-colors"
-              >
-                <Users className="w-5 h-5" />
-                <span>Payroll</span>
+                <span>Finance Dashboard</span>
               </Link>
 
               {/* PROJECTS */}
@@ -171,6 +148,14 @@ export default async function AdminLayout({
               >
                 <Users className="w-5 h-5" />
                 <span>Users</span>
+              </Link>
+
+              <Link
+                href="/admin/contacts"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground/80 hover:bg-accent hover:text-primary transition-colors"
+              >
+                <FileText className="w-5 h-5" />
+                <span>Contacts & Leads</span>
               </Link>
 
               <Link

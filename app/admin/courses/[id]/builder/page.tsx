@@ -356,6 +356,14 @@ export default function CourseBuilderPage({ params }: { params: { id: string } }
                                                                                                 <Button
                                                                                                     variant="ghost"
                                                                                                     size="sm"
+                                                                                                    onClick={() => router.push(`/admin/courses/${params.id}/modules/${module.id}/lessons/${lesson.id}/content`)}
+                                                                                                    title="Edit Content"
+                                                                                                >
+                                                                                                    <FileText className="w-4 h-4 text-sky-600" />
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                    variant="ghost"
+                                                                                                    size="sm"
                                                                                                     onClick={() => handleEditLesson(lesson, module.id)}
                                                                                                 >
                                                                                                     <Edit2 className="w-4 h-4" />

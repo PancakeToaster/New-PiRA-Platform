@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createInvoiceSchema } from '@/lib/validations/finance';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
   const userIsAdmin = await isAdmin();
 
@@ -11,8 +12,14 @@ export async function GET() {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const parentId = searchParams.get('parentId');
+
+    const whereClause = parentId ? { parentId } : {};
+
     const [invoices, totalRevenue, unpaidAmount] = await Promise.all([
       prisma.invoice.findMany({
+        where: whereClause,
         orderBy: { createdAt: 'desc' },
         include: {
           parent: {
@@ -29,14 +36,16 @@ export async function GET() {
           items: true,
         },
       }),
-      prisma.invoice.aggregate({
+      // Only aggregate stats if fetching all invoices (no filter), mostly for dashboard accuracy
+      // Can also aggregate for user if needed, but current dashboard expects global stats
+      !parentId ? prisma.invoice.aggregate({
         where: { status: 'paid' },
         _sum: { total: true },
-      }),
-      prisma.invoice.aggregate({
+      }) : Promise.resolve({ _sum: { total: 0 } }),
+      !parentId ? prisma.invoice.aggregate({
         where: { status: { not: 'paid' } },
         _sum: { total: true },
-      }),
+      }) : Promise.resolve({ _sum: { total: 0 } }),
     ]);
 
     const pendingCount = invoices.filter(inv => inv.status === 'unpaid').length;
@@ -66,14 +75,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { parentId, items, dueDate, notes, tax = 0 } = body;
+    const parsed = createInvoiceSchema.safeParse(body);
 
-    if (!parentId || !items || items.length === 0 || !dueDate) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Parent, items, and due date are required' },
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
         { status: 400 }
       );
     }
+
+    const { parentId, items, dueDate, notes, tax = 0 } = parsed.data;
 
     // Generate invoice number
     const lastInvoice = await prisma.invoice.findFirst({
@@ -102,7 +113,7 @@ export async function POST(request: NextRequest) {
         total,
         notes,
         items: {
-          create: items.map((item: { description: string; quantity: number; unitPrice: number; studentId?: string; courseId?: string }) => ({
+          create: items.map((item: { description: string; quantity: number; unitPrice: number; studentId?: string | null; courseId?: string | null }) => ({
             description: item.description,
             quantity: item.quantity,
             unitPrice: item.unitPrice,

@@ -20,6 +20,9 @@ interface BlogPost {
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -34,23 +37,44 @@ export default function AdminBlogPage() {
     content: '',
     coverImage: '',
     isDraft: true,
+    authorId: '',
+    categoryId: '',
+    tags: [] as string[],
   });
 
   useEffect(() => {
-    async function fetchPosts() {
+    async function fetchData() {
       try {
-        const response = await fetch('/api/admin/blog');
-        if (response.ok) {
-          const data = await response.json();
+        const [postsRes, catsRes, tagsRes, usersRes] = await Promise.all([
+          fetch('/api/admin/blog'),
+          fetch('/api/admin/blog/categories'),
+          fetch('/api/admin/blog/tags'),
+          fetch('/api/admin/users') // Assuming this endpoint exists to fetch authors
+        ]);
+
+        if (postsRes.ok) {
+          const data = await postsRes.json();
           setPosts(data.posts);
         }
+        if (catsRes.ok) {
+          const data = await catsRes.json();
+          setCategories(data.categories);
+        }
+        if (tagsRes.ok) {
+          const data = await tagsRes.json();
+          setTags(data.tags);
+        }
+        if (usersRes.ok) {
+          const data = await usersRes.json();
+          setUsers(data.users);
+        }
       } catch (error) {
-        console.error('Failed to fetch blog posts:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchPosts();
+    fetchData();
   }, []);
 
   const filteredPosts = posts.filter(post => {
@@ -98,7 +122,7 @@ export default function AdminBlogPage() {
         const { post } = await response.json();
         setPosts([post, ...posts]);
         setIsCreateModalOpen(false);
-        setCreateForm({ title: '', slug: '', excerpt: '', content: '', coverImage: '', isDraft: true });
+        setCreateForm({ title: '', slug: '', excerpt: '', content: '', coverImage: '', isDraft: true, authorId: '', categoryId: '', tags: [] });
         setUploadedMedia([]);
       } else {
         const data = await response.json();
@@ -291,8 +315,8 @@ export default function AdminBlogPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${post.isDraft
-                              ? 'bg-muted text-muted-foreground'
-                              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            ? 'bg-muted text-muted-foreground'
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                             }`}
                         >
                           {post.isDraft ? 'Draft' : 'Published'}
@@ -358,6 +382,75 @@ export default function AdminBlogPage() {
               placeholder="Post title"
               required
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="categoryId" className="block text-sm font-medium text-foreground mb-1">
+                Category
+              </label>
+              <select
+                id="categoryId"
+                value={createForm.categoryId}
+                onChange={(e) => setCreateForm({ ...createForm, categoryId: e.target.value })}
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="authorId" className="block text-sm font-medium text-foreground mb-1">
+                Author
+              </label>
+              <select
+                id="authorId"
+                value={createForm.authorId}
+                onChange={(e) => setCreateForm({ ...createForm, authorId: e.target.value })}
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+              >
+                <option value="">Default (Current User)</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>{user.firstName} {user.lastName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Tags
+            </label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {createForm.tags.map(tagId => {
+                const tag = tags.find(t => t.id === tagId);
+                return tag ? (
+                  <span key={tag.id} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary">
+                    {tag.name}
+                    <button type="button" onClick={() => setCreateForm(prev => ({ ...prev, tags: prev.tags.filter(id => id !== tagId) }))} className="ml-1 text-primary hover:text-primary/80">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ) : null;
+              })}
+            </div>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value && !createForm.tags.includes(e.target.value)) {
+                  setCreateForm(prev => ({ ...prev, tags: [...prev.tags, e.target.value] }));
+                }
+              }}
+              className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+            >
+              <option value="">Add a tag...</option>
+              {tags.filter(t => !createForm.tags.includes(t.id)).map((tag) => (
+                <option key={tag.id} value={tag.id}>{tag.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>

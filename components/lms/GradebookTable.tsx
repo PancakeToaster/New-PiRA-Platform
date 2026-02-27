@@ -88,19 +88,19 @@ export default function GradebookTable({ courseId, students, assignments, grades
 
             <div className="overflow-x-auto border rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-muted/50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider sticky left-0 bg-muted/50 z-10">
                                 Student
                             </th>
                             {assignments.map((assignment) => (
                                 <th
                                     key={assignment.id}
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
                                 >
                                     <div className="flex flex-col">
                                         <span>{assignment.title}</span>
-                                        <span className="text-gray-400 font-normal">
+                                        <span className="text-muted-foreground font-normal">
                                             ({assignment.maxPoints} pts)
                                         </span>
                                     </div>
@@ -108,10 +108,10 @@ export default function GradebookTable({ courseId, students, assignments, grades
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-background divide-y divide-border">
                         {students.map((student) => (
                             <tr key={student.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-white z-10">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground sticky left-0 bg-background z-10">
                                     {student.name}
                                 </td>
                                 {assignments.map((assignment) => {
@@ -119,7 +119,7 @@ export default function GradebookTable({ courseId, students, assignments, grades
                                     return (
                                         <td
                                             key={assignment.id}
-                                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                                            className="px-6 py-4 whitespace-nowrap text-sm text-foreground"
                                         >
                                             {isEditMode ? (
                                                 <input

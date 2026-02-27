@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
+import { createPayrollRunSchema } from '@/lib/validations/finance';
 
 // GET: List Payroll Runs
 export async function GET(req: NextRequest) {
@@ -33,13 +34,22 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
+        const parsed = createPayrollRunSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             startDate,
             endDate,
             paymentDate,
             notes,
             items // Array of user payments
-        } = body;
+        } = parsed.data;
 
         // Calculate total
         const totalAmount = items.reduce((sum: number, item: any) => sum + (parseFloat(item.netPay) || 0), 0);

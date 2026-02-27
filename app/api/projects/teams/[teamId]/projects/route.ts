@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createProjectSchema } from '@/lib/validations/project';
 
 export async function POST(
     request: NextRequest,
@@ -15,14 +16,16 @@ export async function POST(
     try {
         const { teamId } = await params;
         const body = await request.json();
-        const { name, slug, description, color, startDate, endDate, status, priority } = body;
+        const parsed = createProjectSchema.safeParse({ ...body, teamId });
 
-        if (!name || !slug) {
+        if (!parsed.success) {
             return NextResponse.json(
-                { error: 'Name and slug are required' },
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
                 { status: 400 }
             );
         }
+
+        const { name, slug, description, color, startDate, endDate, status, priority } = parsed.data;
 
         // Check permissions
         const userIsAdmin = await isAdmin();

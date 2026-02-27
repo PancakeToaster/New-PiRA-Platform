@@ -88,7 +88,7 @@ export default function RubricGrader({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Rubric Grading</h3>
+        <h3 className="font-semibold text-foreground">Rubric Grading</h3>
         <div className="text-lg font-bold text-sky-600">
           {totalScore} / {maxTotal}
         </div>
@@ -98,12 +98,12 @@ export default function RubricGrader({
         {criteria.map((criterion) => {
           const score = scores.find((s) => s.criterionId === criterion.id);
           return (
-            <div key={criterion.id} className="p-3 bg-gray-50 rounded-lg border">
+            <div key={criterion.id} className="p-3 bg-muted/50 rounded-lg border border-border">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900">{criterion.title}</h4>
+                  <h4 className="text-sm font-medium text-foreground">{criterion.title}</h4>
                   {criterion.description && (
-                    <p className="text-xs text-gray-500 mt-0.5">{criterion.description}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{criterion.description}</p>
                   )}
                 </div>
                 <div className="flex items-center gap-1 ml-3">
@@ -117,7 +117,7 @@ export default function RubricGrader({
                     }
                     className="w-16 rounded-md border border-gray-300 px-2 py-1 text-sm text-center focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   />
-                  <span className="text-xs text-gray-500">/ {criterion.maxPoints}</span>
+                  <span className="text-xs text-muted-foreground">/ {criterion.maxPoints}</span>
                 </div>
               </div>
               <input
@@ -125,7 +125,7 @@ export default function RubricGrader({
                 value={score?.comment ?? ''}
                 onChange={(e) => updateScore(criterion.id, 'comment', e.target.value)}
                 placeholder="Comment (optional)"
-                className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-600 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="w-full rounded-md border border-input px-2 py-1 text-xs text-foreground bg-background focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
           );
@@ -133,7 +133,7 @@ export default function RubricGrader({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Overall Feedback</label>
+        <label className="block text-sm font-medium text-foreground mb-1">Overall Feedback</label>
         <textarea
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}

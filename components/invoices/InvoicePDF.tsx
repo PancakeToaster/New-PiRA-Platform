@@ -98,17 +98,11 @@ const styles = StyleSheet.create({
     colAmount: { width: '15%', textAlign: 'right' },
 
     totalsBlock: {
-        flexDirection: 'row',
         marginTop: 10,
+        marginLeft: 'auto',
+        width: '45%',
         backgroundColor: '#F9F9F9',
         padding: 10,
-    },
-    paymentInfoLeft: {
-        width: '60%',
-        paddingRight: 20,
-    },
-    totalsRight: {
-        width: '40%',
     },
     totalRow: {
         flexDirection: 'row',
@@ -134,23 +128,22 @@ const styles = StyleSheet.create({
     goldText: {
         color: '#D4AF37',
     },
-
-    paymentMethods: {
-        marginTop: 20,
-    },
-    paymentHeader: {
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    bulletPoint: {
-        marginLeft: 10,
-        fontSize: 9,
-        marginBottom: 2,
-    },
-    terms: {
-        marginTop: 20,
+    notesBox: {
+        position: 'absolute',
+        bottom: 70,
+        left: 40,
+        width: '50%',
+        backgroundColor: '#F9F9F9',
+        border: '1px solid #DDD',
+        borderRadius: 4,
+        padding: 10,
         fontSize: 8,
-        color: '#666',
+    },
+    notesTitle: {
+        fontWeight: 'bold',
+        fontSize: 9,
+        marginBottom: 5,
+        color: '#333',
     },
     footerContainer: {
         position: 'absolute',
@@ -246,55 +239,52 @@ export default function InvoicePDF({ invoice, logoSrc = '/images/logo.png' }: In
                     </View>
                     {items.map((item: any) => (
                         <View key={item.id} style={styles.tableRow}>
-                            <Text style={styles.colDesc}>{item.description}</Text>
+                            <View style={styles.colDesc}>
+                                <Text>{item.description}</Text>
+                                {item.student && (
+                                    <Text style={{ fontSize: 8, color: '#666', marginTop: 2 }}>
+                                        Student: {item.student.user.firstName} {item.student.user.lastName}
+                                    </Text>
+                                )}
+                                {!!item.description && item.description.includes('Discount:') && (
+                                    <Text style={{ fontSize: 8, color: '#D4AF37', marginTop: 2 }}>
+                                        {item.description.split('Discount: ')[1]}
+                                    </Text>
+                                )}
+                            </View>
                             <Text style={styles.colQty}>{item.quantity.toFixed(2)}</Text>
                             <Text style={styles.colPrice}>{formatCurrency(item.unitPrice)}</Text>
-                            <Text style={styles.colTax}></Text> {/* Empty tax col per example */}
+                            <Text style={styles.colTax}></Text>
                             <Text style={styles.colAmount}>{formatCurrency(item.total)}</Text>
                         </View>
                     ))}
                 </View>
 
-                {/* Totals & Payment Info */}
+                {/* Totals */}
                 <View style={styles.totalsBlock}>
-                    <View style={styles.paymentInfoLeft}>
-                        <Text style={{ marginBottom: 5 }}>Payment Communication: <Text style={{ fontWeight: 'bold' }}>{invoiceNumber}</Text></Text>
-
-                        <View style={styles.paymentMethods}>
-                            <Text style={styles.paymentHeader}>We accept the following payment methods:</Text>
-                            <Text style={styles.bulletPoint}>• Zelle: barry.py.chuang@gmail.com</Text>
-                            <Text style={styles.bulletPoint}>• Venmo: @Barry-Chuang</Text>
-                            <Text style={styles.bulletPoint}>• Cash/Check: Please make checks payable to PLAYIDEAS INC. and hand it to me.</Text>
-                        </View>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>Untaxed Amount</Text>
+                        <Text>{formatCurrency(subtotal)}</Text>
                     </View>
-
-                    <View style={styles.totalsRight}>
+                    {tax > 0 && (
                         <View style={styles.totalRow}>
-                            <Text style={styles.totalLabel}>Untaxed Amount</Text>
-                            <Text>{formatCurrency(subtotal)}</Text>
+                            <Text style={styles.totalLabel}>Tax</Text>
+                            <Text>{formatCurrency(tax)}</Text>
                         </View>
-                        {tax > 0 && (
-                            <View style={styles.totalRow}>
-                                <Text style={styles.totalLabel}>Tax</Text>
-                                <Text>{formatCurrency(tax)}</Text>
-                            </View>
-                        )}
-                        <View style={styles.grandTotalRow}>
-                            <Text style={[styles.totalLabel, styles.goldText]}>Total</Text>
-                            <Text style={[styles.totalValue, styles.goldText]}>{formatCurrency(total)}</Text>
-                        </View>
+                    )}
+                    <View style={styles.grandTotalRow}>
+                        <Text style={[styles.totalLabel, styles.goldText]}>Total</Text>
+                        <Text style={[styles.totalValue, styles.goldText]}>{formatCurrency(total)}</Text>
                     </View>
                 </View>
 
-                {/* Terms */}
-                <View style={styles.terms}>
-                    <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Terms and Conditions:</Text>
-                    <Text>1. All Prices quoted in US dollars.</Text>
-                    <Text>2. Please make checks payable to : PLAYIDEAS Inc.</Text>
-                    <Text>3. EIN Number: 47-3035987</Text>
-                    <Text>4. Late fee of $100 applied 1 week after invoice due date</Text>
-                    <Text style={{ marginTop: 10, fontStyle: 'italic' }}>*Our system is still in early production, please let us know if there are any bugs or issues*</Text>
-                </View>
+                {/* Notes Box - Left Corner Above Footer */}
+                {invoice.notes && (
+                    <View style={styles.notesBox}>
+                        <Text style={styles.notesTitle}>Payment Information</Text>
+                        <Text>{invoice.notes}</Text>
+                    </View>
+                )}
 
                 {/* Footer */}
                 <View style={styles.footerContainer}>

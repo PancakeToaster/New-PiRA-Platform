@@ -44,9 +44,9 @@ A comprehensive web platform for robotics academy business with 4 layers and 5 u
 
 ## 📘 Documentation
 
-- **[User Guide](USER_GUIDE.md)**: Comprehensive manual for all roles (Admin, Teacher, Student, Parent).
-- **[Deployment Guide](DEPLOYMENT.md)**: Detailed production setup for Docker/Linux.
-- **[Product Spec](PRODUCT_SPEC.md)**: Technical specifications and feature list.
+- **[User Guide](docs/USER_GUIDE.md)**: Comprehensive manual for all roles (Admin, Teacher, Student, Parent).
+- **[Deployment Guide](docs/DEPLOYMENT.md)**: Detailed production setup for Docker/Linux.
+- **[Product Spec](docs/PRODUCT_SPEC.md)**: Technical specifications and feature list.
 
 ## ✅ Project Status: Complete (Phase 19)
 

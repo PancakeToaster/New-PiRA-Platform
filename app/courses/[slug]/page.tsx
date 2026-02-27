@@ -63,12 +63,11 @@ export default async function CoursePage({ params }: Props) {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Enroll Now
-                </Button>
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Contact Us
-                </Button>
+                <Link href="/contact">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Contact to Join
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -144,9 +143,11 @@ export default async function CoursePage({ params }: Props) {
                       {course.hidePrice ? 'Contact Us' : (course.price ? `$${course.price}` : 'Free')}
                     </span>
                   </div>
-                  <Button className="w-full" size="lg">
-                    Enroll Now
-                  </Button>
+                  <Link href="/contact" className="w-full">
+                    <Button className="w-full" size="lg">
+                      Contact to Join
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

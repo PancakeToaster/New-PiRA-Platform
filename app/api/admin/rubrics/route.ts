@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createRubricSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/rubrics - List all rubrics
 export async function GET() {
@@ -45,29 +46,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, description, criteria } = body;
+    const parsed = createRubricSchema.safeParse(body);
 
-    if (!title || typeof title !== 'string' || title.trim().length === 0) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
     }
 
-    if (!Array.isArray(criteria) || criteria.length === 0) {
-      return NextResponse.json({ error: 'At least one criterion is required' }, { status: 400 });
-    }
-
-    // Validate criteria
-    for (const c of criteria) {
-      if (!c.title || typeof c.title !== 'string' || c.title.trim().length === 0) {
-        return NextResponse.json({ error: 'Each criterion must have a title' }, { status: 400 });
-      }
-      const points = Number(c.maxPoints);
-      if (!Number.isFinite(points) || points <= 0 || points > 1000) {
-        return NextResponse.json(
-          { error: `maxPoints must be between 1 and 1000 (got "${c.maxPoints}")` },
-          { status: 400 }
-        );
-      }
-    }
+    const { title, description, criteria } = parsed.data;
 
     const rubric = await prisma.rubric.create({
       data: {
@@ -76,7 +64,7 @@ export async function POST(request: NextRequest) {
         createdById: user.id,
         criteria: {
           create: criteria.map(
-            (c: { title: string; description?: string; maxPoints: number }, index: number) => ({
+            (c: { title: string; description?: string | null; maxPoints: number }, index: number) => ({
               title: c.title.trim(),
               description: c.description || null,
               maxPoints: Number(c.maxPoints),

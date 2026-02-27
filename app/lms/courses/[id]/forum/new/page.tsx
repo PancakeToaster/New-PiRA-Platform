@@ -50,7 +50,7 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold">New Discussion Thread</h1>
-                    <p className="text-gray-600">Start a new conversation</p>
+                    <p className="text-muted-foreground">Start a new conversation</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Title
                             </label>
                             <input
@@ -75,7 +75,7 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Initial Message
                             </label>
                             <textarea
@@ -89,7 +89,7 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                         </div>
 
                         <div className="border-t pt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                            <label className="block text-sm font-medium text-foreground mb-3">
                                 Privacy Settings
                             </label>
                             <div className="space-y-3">
@@ -97,14 +97,14 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                                     type="button"
                                     onClick={() => setIsPublic(false)}
                                     className={`w-full flex items-start gap-3 p-4 border-2 rounded-lg transition-all ${!isPublic
-                                            ? 'border-sky-500 bg-sky-50'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-sky-500 bg-sky-50'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <Lock className={`w-5 h-5 mt-0.5 ${!isPublic ? 'text-sky-600' : 'text-gray-400'}`} />
                                     <div className="text-left flex-1">
-                                        <div className="font-medium text-gray-900">Private (Default)</div>
-                                        <div className="text-sm text-gray-600">
+                                        <div className="font-medium text-foreground">Private (Default)</div>
+                                        <div className="text-sm text-muted-foreground">
                                             Only you and the course instructor can see this thread. You can add specific
                                             participants later.
                                         </div>
@@ -115,14 +115,14 @@ export default function NewForumThreadPage({ params }: { params: { id: string } 
                                     type="button"
                                     onClick={() => setIsPublic(true)}
                                     className={`w-full flex items-start gap-3 p-4 border-2 rounded-lg transition-all ${isPublic
-                                            ? 'border-green-500 bg-green-50'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-green-500 bg-green-50'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <Globe className={`w-5 h-5 mt-0.5 ${isPublic ? 'text-green-600' : 'text-gray-400'}`} />
                                     <div className="text-left flex-1">
-                                        <div className="font-medium text-gray-900">Public</div>
-                                        <div className="text-sm text-gray-600">
+                                        <div className="font-medium text-foreground">Public</div>
+                                        <div className="text-sm text-muted-foreground">
                                             All students and instructors in this course can see and participate in this
                                             thread.
                                         </div>

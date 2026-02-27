@@ -25,6 +25,17 @@ export default async function AdminInventoryPage() {
         }
     });
 
+    const activeCheckouts = await prisma.inventoryCheckout.findMany({
+        where: { status: 'active' },
+        orderBy: { checkoutDate: 'desc' },
+        include: {
+            item: { select: { name: true } },
+            team: { select: { name: true, slug: true } },
+            user: { select: { firstName: true, lastName: true } }
+        },
+        take: 10
+    });
+
     const hotCommodities = await prisma.inventoryItem.findMany({
         orderBy: { expenses: { _count: 'desc' } },
         take: 5,
@@ -203,6 +214,58 @@ export default async function AdminInventoryPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Active Checkouts Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Active Checkouts</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                    <TableHead className="px-6 py-3">Item</TableHead>
+                                    <TableHead className="px-6 py-3">Team</TableHead>
+                                    <TableHead className="px-6 py-3">Checked Out By</TableHead>
+                                    <TableHead className="px-6 py-3">Checked Out On</TableHead>
+                                    <TableHead className="px-6 py-3">Expected Return</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody className="bg-card divide-y divide-border">
+                                {activeCheckouts.map(checkout => (
+                                    <TableRow key={checkout.id} className="hover:bg-muted/50">
+                                        <TableCell className="px-6 py-4 font-medium">
+                                            {checkout.item.name} <span className="text-muted-foreground text-xs ml-2">x{checkout.quantity}</span>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4">
+                                            <Link href={`/projects/teams/${checkout.team.slug}/inventory`} className="text-sky-600 hover:text-sky-500">
+                                                {checkout.team.name}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 text-muted-foreground">
+                                            {checkout.user.firstName} {checkout.user.lastName}
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 text-muted-foreground">
+                                            {new Date(checkout.checkoutDate).toLocaleDateString()}
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 text-muted-foreground">
+                                            {checkout.expectedReturn ? new Date(checkout.expectedReturn).toLocaleDateString() : '-'}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {activeCheckouts.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                                            No hardware currently checked out.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

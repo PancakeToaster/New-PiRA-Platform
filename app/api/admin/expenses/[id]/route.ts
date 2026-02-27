@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
+import { updateExpenseSchema } from '@/lib/validations/finance';
 
 // GET: Single Expense
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -38,6 +39,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     try {
         const body = await req.json();
+        const parsed = updateExpenseSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             amount,
             date,
@@ -49,12 +59,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             projectId,
             inventoryItemId,
             quarter
-        } = body;
+        } = parsed.data;
 
         const expense = await prisma.expense.update({
             where: { id },
             data: {
-                amount: amount !== undefined ? parseFloat(amount) : undefined,
+                amount,
                 date: date ? new Date(date) : undefined,
                 vendor,
                 description,

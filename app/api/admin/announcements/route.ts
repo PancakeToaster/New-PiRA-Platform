@@ -1,6 +1,7 @@
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { createAnnouncementSchema } from '@/lib/validations/system';
 
 // GET /api/admin/announcements - List all announcements
 export async function GET() {
@@ -46,6 +47,15 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
+        const parsed = createAnnouncementSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
         const {
             title,
             content,
@@ -55,11 +65,7 @@ export async function POST(req: Request) {
             sendToStudents,
             sendToParents,
             sendToTeachers,
-        } = body;
-
-        if (!title || !content || !type) {
-            return new NextResponse('Missing required fields', { status: 400 });
-        }
+        } = parsed.data;
 
         const announcement = await prisma.announcement.create({
             data: {

@@ -14,11 +14,42 @@ interface CompanyInfo {
     contact?: any;
 }
 
+interface HomeContent {
+    stats: {
+        studentsTaught: string;
+        yearsExperience: string;
+        awardsWon: string;
+        programLevels: string;
+    };
+    handsOn: {
+        title: string;
+        description: string;
+    };
+    competition: {
+        title: string;
+        description: string;
+    };
+    programs: {
+        title: string;
+        description: string;
+    };
+    events: {
+        title: string;
+        description: string;
+    };
+    cta: {
+        title: string;
+        description: string;
+        buttonText: string;
+    };
+}
+
 interface HomeClientProps {
     initialCourses: Course[];
     initialActivities: Activity[];
     initialTestimonials: Testimonial[];
     companyInfo: CompanyInfo;
+    homeContent?: HomeContent; // Optional to prevent breaking if not passed immediately
     footer: React.ReactNode;
 }
 
@@ -27,9 +58,41 @@ export default function HomeClient({
     initialActivities,
     initialTestimonials,
     companyInfo,
+    homeContent,
     footer
 }: HomeClientProps) {
-    // ... (rest of the component logic remains same until return)
+
+    // Default values if homeContent is missing (fallback)
+    const content = homeContent || {
+        stats: {
+            studentsTaught: "5,000+",
+            yearsExperience: "15+",
+            awardsWon: "50+",
+            programLevels: "3"
+        },
+        handsOn: {
+            title: "Hands-On Learning",
+            description: "Real-world projects and competitions that develop critical thinking and problem-solving skills."
+        },
+        competition: {
+            title: "Competing & Winning",
+            description: "Our teams consistently excel in robotics competitions and innovation challenges."
+        },
+        programs: {
+            title: "Featured Programs",
+            description: "Comprehensive robotics education designed for every skill level"
+        },
+        events: {
+            title: "Upcoming Events",
+            description: "Join us for workshops and competitions"
+        },
+        cta: {
+            title: "Ready to Start Your Journey?",
+            description: "Join our community of young innovators and start building the future today",
+            buttonText: "Get Started Today"
+        }
+    };
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [scrollY, setScrollY] = useState(0);
     const [hasLoaded, setHasLoaded] = useState(false);
@@ -203,17 +266,17 @@ export default function HomeClient({
                                 </div>
                             </div>
                             <div>
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">Hands-On Learning</h2>
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">{content.handsOn.title}</h2>
                                 <p className="text-lg lg:text-xl text-muted-foreground mb-8 leading-relaxed">
-                                    Real-world projects and competitions that develop critical thinking and problem-solving skills.
+                                    {content.handsOn.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
-                                        <div className="text-4xl font-bold text-primary">5,000+</div>
+                                        <div className="text-4xl font-bold text-primary">{content.stats.studentsTaught}</div>
                                         <div className="text-muted-foreground text-base lg:text-lg">Students Taught</div>
                                     </div>
                                     <div>
-                                        <div className="text-4xl font-bold text-primary">15+</div>
+                                        <div className="text-4xl font-bold text-primary">{content.stats.yearsExperience}</div>
                                         <div className="text-muted-foreground text-base lg:text-lg">Years Experience</div>
                                     </div>
                                 </div>
@@ -227,17 +290,17 @@ export default function HomeClient({
                     <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                             <div className="order-2 lg:order-1">
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">Competing & Winning</h2>
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-foreground">{content.competition.title}</h2>
                                 <p className="text-lg lg:text-xl text-muted-foreground mb-8 leading-relaxed">
-                                    Our teams consistently excel in robotics competitions and innovation challenges.
+                                    {content.competition.description}
                                 </p>
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
-                                        <div className="text-4xl font-bold text-primary">50+</div>
-                                        <div className="text-muted-foreground text-base lg:text-lg">Competitions Won</div>
+                                        <div className="text-4xl font-bold text-primary">{content.stats.awardsWon}</div>
+                                        <div className="text-muted-foreground text-base lg:text-lg">Awards Won</div>
                                     </div>
                                     <div>
-                                        <div className="text-4xl font-bold text-primary">3</div>
+                                        <div className="text-4xl font-bold text-primary">{content.stats.programLevels}</div>
                                         <div className="text-muted-foreground text-base lg:text-lg">Program Levels</div>
                                     </div>
                                 </div>
@@ -258,9 +321,9 @@ export default function HomeClient({
                 <section className="relative h-screen snap-end snap-always flex items-center justify-center z-10">
                     <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                         <div className="text-center mb-10">
-                            <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">Featured Programs</h2>
+                            <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">{content.programs.title}</h2>
                             <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
-                                Comprehensive robotics education designed for every skill level
+                                {content.programs.description}
                             </p>
                         </div>
 
@@ -312,8 +375,8 @@ export default function HomeClient({
                     <section className="relative h-screen snap-end snap-always flex items-center justify-center z-10">
                         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
                             <div className="text-center mb-10">
-                                <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">Upcoming Events</h2>
-                                <p className="text-lg lg:text-xl text-muted-foreground">Join us for workshops and competitions</p>
+                                <h2 className="text-4xl lg:text-5xl font-bold mb-4 text-foreground">{content.events.title}</h2>
+                                <p className="text-lg lg:text-xl text-muted-foreground">{content.events.description}</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -366,16 +429,16 @@ export default function HomeClient({
                     {/* Content */}
                     <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 drop-shadow-lg">
-                            Ready to Start Your Journey?
+                            {content.cta.title}
                         </h2>
                         <p className="text-lg lg:text-xl mb-10 text-sky-100 drop-shadow-md">
-                            Join our community of young innovators and start building the future today
+                            {content.cta.description}
                         </p>
                         <Link
                             href="/contact"
                             className="inline-flex items-center justify-center px-10 py-5 bg-card text-primary font-bold text-lg rounded-lg hover:bg-card/90 transition-all shadow-2xl"
                         >
-                            Get Started Today
+                            {content.cta.buttonText}
                             <ArrowRight className="ml-3 w-6 h-6" />
                         </Link>
                     </div>

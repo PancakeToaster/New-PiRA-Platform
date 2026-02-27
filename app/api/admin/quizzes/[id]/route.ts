@@ -95,6 +95,8 @@ export async function PUT(
                 shuffleQuestions,
                 shuffleAnswers,
                 showResults,
+                showCorrectAnswers: body.showCorrectAnswers !== undefined ? body.showCorrectAnswers : undefined,
+                gradeCategory: body.gradeCategory !== undefined ? body.gradeCategory : undefined,
                 isPublished,
             },
         });

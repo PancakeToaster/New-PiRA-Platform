@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
-import { Search, UserPlus, Loader2, DollarSign, Users as UsersIcon, GraduationCap, AlertCircle, Edit2 } from 'lucide-react';
+import { Search, UserPlus, Loader2, DollarSign, Users as UsersIcon, GraduationCap, AlertCircle, Edit2, BarChart3, ChevronDown, ChevronUp, Save } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
@@ -23,6 +23,7 @@ interface User {
   studentProfile?: {
     id: string;
     performanceDiscount: number;
+    referralSource?: string | null;
     referredBy?: { user: { firstName: string; lastName: string } };
     referrals: { id: string }[];
     parents: { parent: { user: { firstName: string; lastName: string } } }[];
@@ -69,6 +70,14 @@ export default function AdminUsersPage() {
   // Bulk Actions
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkSubmitting, setIsBulkSubmitting] = useState(false);
+
+  // Performance Discount Edit
+  const [editingDiscountId, setEditingDiscountId] = useState<string | null>(null);
+  const [discountValue, setDiscountValue] = useState<number>(0);
+  const [savingDiscount, setSavingDiscount] = useState(false);
+
+  // Referral Analytics
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -208,6 +217,55 @@ export default function AdminUsersPage() {
       setIsBulkSubmitting(false);
     }
   };
+
+  const handleSaveDiscount = async (userId: string) => {
+    setSavingDiscount(true);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/discount`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ performanceDiscount: discountValue }),
+      });
+      if (res.ok) {
+        setUsers(users.map(u =>
+          u.id === userId && u.studentProfile
+            ? { ...u, studentProfile: { ...u.studentProfile, performanceDiscount: discountValue } }
+            : u
+        ));
+        setEditingDiscountId(null);
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to update discount');
+      }
+    } catch {
+      alert('Failed to update discount');
+    } finally {
+      setSavingDiscount(false);
+    }
+  };
+
+  // Referral source label map
+  const sourceLabels: Record<string, string> = {
+    friend: 'Friend or Family',
+    student: 'Current/Former Student',
+    social_media: 'Social Media',
+    search: 'Google/Search Engine',
+    school: 'School/Teacher',
+    event: 'Event/Competition',
+    other: 'Other',
+  };
+
+  // Compute referral analytics from loaded users
+  const studentUsers = users.filter(u => u.studentProfile);
+  const sourceBreakdown = studentUsers.reduce<Record<string, number>>((acc, u) => {
+    const src = u.studentProfile?.referralSource || 'unknown';
+    acc[src] = (acc[src] || 0) + 1;
+    return acc;
+  }, {});
+  const topReferrers = studentUsers
+    .filter(u => (u.studentProfile?.referrals.length || 0) > 0)
+    .sort((a, b) => (b.studentProfile?.referrals.length || 0) - (a.studentProfile?.referrals.length || 0))
+    .slice(0, 5);
 
   if (loading) {
     return (
@@ -369,6 +427,56 @@ export default function AdminUsersPage() {
 
           {/* --- STUDENTS TAB --- */}
           {activeTab === 'students' && (
+            <>
+            {/* Referral Analytics */}
+            <div className="border-b border-border">
+              <button
+                onClick={() => setShowAnalytics(!showAnalytics)}
+                className="w-full flex items-center justify-between px-6 py-3 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" />
+                  Referral Analytics
+                </div>
+                {showAnalytics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {showAnalytics && (
+                <div className="px-6 pb-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Source Breakdown */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">How Students Found Us</h4>
+                    <div className="space-y-1.5">
+                      {Object.entries(sourceBreakdown)
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([source, count]) => (
+                          <div key={source} className="flex items-center justify-between text-sm">
+                            <span className="text-foreground">{sourceLabels[source] || (source === 'unknown' ? 'Not specified' : source)}</span>
+                            <span className="text-muted-foreground font-medium">{count}</span>
+                          </div>
+                        ))}
+                      {Object.keys(sourceBreakdown).length === 0 && (
+                        <p className="text-sm text-muted-foreground">No referral data yet</p>
+                      )}
+                    </div>
+                  </div>
+                  {/* Top Referrers */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">Top Referrers</h4>
+                    <div className="space-y-1.5">
+                      {topReferrers.map((u) => (
+                        <div key={u.id} className="flex items-center justify-between text-sm">
+                          <span className="text-foreground">{u.firstName} {u.lastName}</span>
+                          <span className="text-primary font-medium">{u.studentProfile?.referrals.length} referrals</span>
+                        </div>
+                      ))}
+                      {topReferrers.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No referrals yet</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-muted/50">
                 <tr>
@@ -438,13 +546,53 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-green-600">
-                          {/* Calculate total discount: 5% per referral (cap 20%) + Performance */}
-                          {Math.min((user.studentProfile?.referrals.length || 0) * 5, 20) + (user.studentProfile?.performanceDiscount || 0)}%
-                        </span>
-                        {/* TODO: Add Edit Dialog for Performance Discount */}
-                      </div>
+                      {editingDiscountId === user.id ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={discountValue}
+                            onChange={(e) => setDiscountValue(Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))}
+                            className="w-16 px-2 py-1 text-sm border border-input rounded bg-background text-foreground"
+                          />
+                          <span className="text-xs text-muted-foreground">%</span>
+                          <button
+                            onClick={() => handleSaveDiscount(user.id)}
+                            disabled={savingDiscount}
+                            className="p-1 text-green-600 hover:bg-green-50 rounded disabled:opacity-50"
+                            title="Save"
+                          >
+                            <Save className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setEditingDiscountId(null)}
+                            className="p-1 text-muted-foreground hover:bg-muted rounded"
+                            title="Cancel"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-green-600">
+                            {Math.min((user.studentProfile?.referrals.length || 0) * 5, 20) + (user.studentProfile?.performanceDiscount || 0)}%
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({Math.min((user.studentProfile?.referrals.length || 0) * 5, 20)}% ref + {user.studentProfile?.performanceDiscount || 0}% perf)
+                          </span>
+                          <button
+                            onClick={() => {
+                              setEditingDiscountId(user.id);
+                              setDiscountValue(user.studentProfile?.performanceDiscount || 0);
+                            }}
+                            className="p-1 text-muted-foreground hover:text-primary hover:bg-muted rounded"
+                            title="Edit performance discount"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link href={`/admin/users/${user.id}`}>
@@ -455,6 +603,7 @@ export default function AdminUsersPage() {
                 ))}
               </tbody>
             </table>
+            </>
           )}
 
           {/* --- PARENTS TAB --- */}

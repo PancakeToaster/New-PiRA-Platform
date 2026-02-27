@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createCourseSchema } from '@/lib/validations/lms';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -51,14 +52,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isHidden, hidePrice, isDevelopment } = body;
+    const parsed = createCourseSchema.safeParse(body);
 
-    if (!name || !slug || !description) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Name, slug, and description are required' },
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
         { status: 400 }
       );
     }
+
+    const { name, slug, description, level, duration, ageRange, price, topics, image, isActive, isHidden, hidePrice, isDevelopment } = parsed.data;
 
     // Check if slug already exists
     const existingCourse = await prisma.course.findUnique({
@@ -87,7 +90,7 @@ export async function POST(request: NextRequest) {
         level,
         duration,
         ageRange,
-        price: price ? parseFloat(price) : null,
+        price,
         topics: topics || [],
         image,
         isActive: isActive ?? true,

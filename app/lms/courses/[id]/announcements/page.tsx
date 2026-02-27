@@ -54,13 +54,13 @@ export default async function CourseAnnouncementsPage({
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold">{course.name} - Announcements</h1>
-                    <p className="text-gray-600">Course updates and notifications</p>
+                    <p className="text-muted-foreground">Course updates and notifications</p>
                 </div>
             </div>
 
             {announcements.length === 0 ? (
                 <Card>
-                    <CardContent className="p-8 text-center text-gray-600">
+                    <CardContent className="p-8 text-center text-muted-foreground">
                         No announcements yet.
                     </CardContent>
                 </Card>
@@ -70,7 +70,7 @@ export default async function CourseAnnouncementsPage({
                         <Card key={announcement.id}>
                             <CardHeader>
                                 <CardTitle>{announcement.title}</CardTitle>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-muted-foreground">
                                     By {announcement.author.firstName} {announcement.author.lastName} •{' '}
                                     {new Date(announcement.createdAt).toLocaleDateString()}
                                 </p>

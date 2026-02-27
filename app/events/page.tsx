@@ -1,6 +1,16 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import PublicEventsClient from '@/components/events/PublicEventsClient';
 import Footer from '@/components/layout/Footer';
+
+export const metadata: Metadata = {
+  title: 'Events',
+  description: 'Upcoming workshops, competitions, and community events at PiRA. Join us for hands-on robotics experiences.',
+  openGraph: {
+    title: 'Events',
+    description: 'Upcoming workshops, competitions, and community events at PiRA.',
+  },
+};
 
 export const revalidate = 0; // Ensure fresh data on every request
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { updateBlogSchema } from '@/lib/validations/blog';
 
 export async function GET(
   request: NextRequest,
@@ -17,6 +18,17 @@ export async function GET(
   try {
     const post = await prisma.blog.findUnique({
       where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          }
+        },
+        category: true,
+        tags: true,
+      }
     });
 
     if (!post) {
@@ -44,7 +56,17 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, slug, excerpt, content, coverImage, isDraft, builderData, editorType } = body;
+    const parsed = updateBlogSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { title, excerpt, content, coverImage, isDraft, authorId, categoryId, tagIds: tags } = parsed.data;
+    const { slug, builderData, editorType } = body;
 
     // Check if slug is taken by another post
     if (slug) {
@@ -89,7 +111,18 @@ export async function PUT(
         editorType,
         isDraft,
         publishedAt,
+        authorId: authorId || undefined, // undefined avoids changing if not provided
+        categoryId: categoryId || null,
+        tags: tags ? {
+          set: [], // Clear existing relations
+          connect: tags.map((tagId: string) => ({ id: tagId }))
+        } : undefined,
       },
+      include: {
+        author: { select: { id: true, firstName: true, lastName: true } },
+        category: true,
+        tags: true,
+      }
     });
 
     return NextResponse.json({ post });

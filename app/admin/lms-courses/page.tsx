@@ -235,6 +235,12 @@ export default function AdminLMSCoursesPage() {
                                                 Content
                                             </Button>
                                         </Link>
+                                        <Link href={`/admin/lms-courses/${course.id}/enrollments`}>
+                                            <Button variant="outline" size="sm">
+                                                <Users className="w-4 h-4 mr-2" />
+                                                Enrollments
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </CardContent>

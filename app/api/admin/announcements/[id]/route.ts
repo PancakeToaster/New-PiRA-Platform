@@ -1,6 +1,7 @@
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { updateAnnouncementSchema } from '@/lib/validations/system';
 
 // DELETE /api/admin/announcements/[id]
 export async function DELETE(
@@ -40,7 +41,17 @@ export async function PATCH(
         }
 
         const { id } = await params;
-        const { isActive } = await req.json();
+        const body = await req.json();
+        const parsed = updateAnnouncementSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
+        }
+
+        const { isActive } = parsed.data;
 
         const announcement = await prisma.announcement.update({
             where: { id },

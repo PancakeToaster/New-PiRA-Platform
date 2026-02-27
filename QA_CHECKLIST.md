@@ -49,7 +49,9 @@ Verify these key flows before official release:
   - [ ] Reply to a Thread.
   - [ ] Verify Private vs Public thread visibility.
 - [ ] **Grades**: Teacher can edit grades; Student can view own grades.
-- [ ] **Wiki**: Create and nest pages. Drag and drop pages to reorder/nest.
+- [ ] **Rubrics**: Create a grading rubric and use it to score an assignment submission.
+- [ ] **Portfolio**: Create a portfolio item. Verify it appears on the public student profile route (`/portfolio/[id]`).
+- [ ] **Wiki**: Create and nest pages. Drag and drop pages to reorder/nest. 
 
 ## 6. Security & Permissions
 - [ ] **Member Isolation**: Verify regular members cannot access Admin settings.
@@ -61,3 +63,46 @@ Verify these key flows before official release:
 - [ ] **Empty States**: Verify Team/Project lists look good when empty.
 - [ ] **Search**: value search filters in lists (Teams, Projects).
 - [ ] **Mobile View**: Resize window. Verify Sidebar toggles and layout stacks correctly.
+
+## 8. System Verification & Recent Updates (New)
+- [ ] **Branding Update (PiRA)**
+  - [ ] Verify "Robotics Academy" text replaced with "PiRA" or Logo in:
+    - [ ] Login Page
+    - [ ] Admin Sidebar
+    - [ ] Navbar
+    - [ ] Document Titles (Browser Tab)
+  - [ ] Verify Logo loads correctly in all headers.
+- [ ] **Login Page Redesign**
+  - [ ] Verify "Login 3" style (Centered Card, Muted Background).
+  - [ ] Verify "Back to Home" button functions.
+  - [ ] Test "Forgot Password" link.
+- [ ] **Invoice System**
+  - [ ] Generate a PDF Invoice.
+  - [ ] **Verify Formatting**: Matches reference `J000053.pdf`.
+    - [ ] Logo present in header.
+    - [ ] Slogan in gold/yellow.
+    - [ ] Totals section formatting.
+  - [ ] Test Email Sending with PDF attachment.
+- [ ] **Dark Mode Polish**
+  - [ ] Verify Wiki code blocks and text readability.
+  - [ ] Verify Project Gantt chart colors.
+  - [ ] Verify Student Invoice Modal badges.
+  
+## 9. API Hardening (Zod Validation)
+- [ ] **Data Integrity**: Submit forms with intentionally malformed data (e.g., negative prices, string instead of number, missing required fields) across these modules:
+  - [ ] **Finance**: Invoices, Expenses, Payroll Runs
+  - [ ] **LMS**: Courses, Assignments, Rubrics
+  - [ ] **Users**: Role assignments, Blog posts, Knowledge Base nodes
+  - [ ] Verify the API rejects these with a 400 Bad Request and clean error message, not a Prisma 500 error.
+
+## 10. SEO & Meta Tags
+- [ ] **Static Pages**: Inspect `<head>` of Home (`/`), About (`/about`), and Courses (`/courses`). Verify `og:title`, `og:description`, `og:type` and `twitter:card` exist.
+- [ ] **Dynamic Pages**: Inspect `<head>` of a Portfolio page (`/portfolio/[studentId]`) and a Wiki page (`/wiki/[id]`). Verify the tags are populated with dynamic content (student name, wiki title).
+
+## 11. Dashboards & Analytics
+- [ ] **GA4 Analytics**: Visit `/admin/analytics`. Verify the mock Google Analytics components (Live Visitors, Trends, Devices) render correctly within the layout.
+- [ ] **Finance Dashboard**: Visit `/admin/finance`. Verify the 6-month Cash Flow bar chart and KPI widgets render without crashing.
+
+## 12. Troubleshooting
+- [ ] **Script Loading Errors**: If you see `Loading failed for the <script>...`, it means `npm run build` was run while `npm run dev` was active. **Restart the development server** to fix this.
+

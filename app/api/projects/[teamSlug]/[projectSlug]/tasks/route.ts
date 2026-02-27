@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
 import { logActivity } from '@/lib/logging';
+import { createTaskSchema } from '@/lib/validations/project';
 
 export async function GET(
   request: NextRequest,
@@ -155,22 +156,27 @@ export async function POST(
     }
 
     const body = await request.json();
+    const parsed = createTaskSchema.safeParse({ ...body, projectId: project.id });
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
     const {
       title,
       description,
-      status = 'todo',
-      priority = 'medium',
-      taskType = 'task',
+      status,
+      priority,
+      taskType,
       dueDate,
       startDate,
       estimatedHours,
       assigneeIds,
       parentId,
-    } = body;
-
-    if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
-    }
+    } = parsed.data;
 
     // Get the max kanban order for the status
     const maxOrderTask = await prisma.task.findFirst({

@@ -56,13 +56,13 @@ export default async function CourseAssignmentsPage({
                 </Link>
                 <div>
                     <h1 className="text-3xl font-bold">{course.name} - Assignments</h1>
-                    <p className="text-gray-600">Course assignments and submissions</p>
+                    <p className="text-muted-foreground">Course assignments and submissions</p>
                 </div>
             </div>
 
             {course.assignments.length === 0 ? (
                 <Card>
-                    <CardContent className="p-8 text-center text-gray-600">
+                    <CardContent className="p-8 text-center text-muted-foreground">
                         No assignments available yet.
                     </CardContent>
                 </Card>
@@ -81,13 +81,13 @@ export default async function CourseAssignmentsPage({
                                                 <ClipboardList className="w-5 h-5 text-orange-600" />
                                                 {assignment.title}
                                             </CardTitle>
-                                            <p className="text-sm text-gray-600 mt-2">
+                                            <p className="text-sm text-muted-foreground mt-2">
                                                 Due: {new Date(assignment.dueDate).toLocaleDateString()}{' '}
                                                 {isPastDue && (
-                                                    <span className="text-red-600 font-medium">(Past Due)</span>
+                                                    <span className="text-red-600 dark:text-red-400 font-medium">(Past Due)</span>
                                                 )}
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 Points: {assignment.maxPoints}
                                             </p>
                                         </div>
@@ -95,10 +95,10 @@ export default async function CourseAssignmentsPage({
                                             <div className="text-right">
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-sm ${submission.status === 'graded'
-                                                        ? 'bg-green-100 text-green-800'
+                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                                         : submission.status === 'submitted'
-                                                            ? 'bg-blue-100 text-blue-800'
-                                                            : 'bg-gray-100 text-gray-800'
+                                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                                            : 'bg-muted text-muted-foreground'
                                                         }`}
                                                 >
                                                     {submission.status}
@@ -113,7 +113,7 @@ export default async function CourseAssignmentsPage({
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-gray-700">{assignment.description}</p>
+                                    <p className="text-gray-700 dark:text-gray-300">{assignment.description}</p>
                                     <div className="mt-4">
                                         <Link href={`/lms/assignments/${assignment.id}`}>
                                             <Button size="sm">

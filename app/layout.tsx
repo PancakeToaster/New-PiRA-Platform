@@ -8,14 +8,35 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
+  const siteName = settings.siteName || 'PiRA - Premier Robotics Academy';
+  const description = settings.siteDescription || 'PiRA: The premier robotics education platform offering hands-on learning experiences for students of all ages.';
 
   return {
-    title: settings.siteName || 'PiRA - Premier Robotics Academy',
-    description: settings.siteDescription || 'PiRA: The premier robotics education platform offering hands-on learning experiences for students of all ages.',
+    metadataBase: new URL(SITE_URL),
+    title: {
+      template: `%s | ${siteName}`,
+      default: siteName,
+    },
+    description,
     icons: {
       icon: '/favicon.ico',
+    },
+    openGraph: {
+      type: 'website',
+      siteName,
+      locale: 'en_US',
+      description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }

@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit2, Eye, LayoutTemplate, Workflow } from 'lucide-react';
+import { Edit2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import WikiTitleEditor from '@/components/wiki/WikiTitleEditor';
 import WikiContentClient from '@/components/wiki/WikiContentClient';
 import WikiPageControls from '@/components/wiki/WikiPageControls';
-import MindmapView from '@/components/wiki/visualizations/MindmapView';
 import { Calendar, Tag, User as UserIcon, Eye as EyeIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,7 +20,6 @@ interface WikiPageContainerProps {
 
 export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, canComment, currentUserId }: WikiPageContainerProps) {
     const [isEditing, setIsEditing] = useState(false);
-    const [activeTab, setActiveTab] = useState<'content' | 'mindmap'>('content');
 
     return (
         <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden flex flex-col min-h-[calc(100vh-100px)]">
@@ -54,30 +52,6 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
                     </div>
 
                     <div className="ml-auto flex gap-2 items-center">
-                        {/* View Toggles */}
-                        <div className="flex bg-muted rounded-lg p-1 mr-2">
-                            <button
-                                onClick={() => setActiveTab('content')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'content'
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                <LayoutTemplate className="w-4 h-4" />
-                                Content
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('mindmap')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${activeTab === 'mindmap'
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                <Workflow className="w-4 h-4" />
-                                Mindmap
-                            </button>
-                        </div>
-
                         {!node.isPublished && (
                             <span className="px-3 py-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-full text-xs font-medium">
                                 📝 Draft
@@ -131,23 +105,18 @@ export default function WikiPageContainer({ node, isAdmin, isTeacherOrMentor, ca
 
             {/* Content */}
             <div className="px-8 py-8 flex-1 relative">
-                {activeTab === 'content' && (
-                    <WikiContentClient
-                        nodeId={node.id}
-                        content={node.content}
-                        nodeType={node.nodeType}
-                        isAdmin={isEditing} // Only allow editing if in Edit Mode
-                        isTeacherOrMentor={isTeacherOrMentor}
-                        canComment={canComment}
-                        graphData={node.graphData}
-                        mindmapData={node.mindmapData}
-                        canvasData={node.canvasData}
-                        currentUserId={currentUserId}
-                    />
-                )}
-                {activeTab === 'mindmap' && (
-                    <MindmapView currentId={node.id} />
-                )}
+                <WikiContentClient
+                    nodeId={node.id}
+                    content={node.content}
+                    nodeType={node.nodeType}
+                    isAdmin={isEditing} // Only allow editing if in Edit Mode
+                    isTeacherOrMentor={isTeacherOrMentor}
+                    canComment={canComment}
+                    graphData={node.graphData}
+                    mindmapData={node.mindmapData}
+                    canvasData={node.canvasData}
+                    currentUserId={currentUserId}
+                />
             </div>
         </div>
     );

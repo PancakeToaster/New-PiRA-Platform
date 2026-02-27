@@ -134,9 +134,11 @@ export default async function PayrollListPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="px-6 py-4 text-right">
-                                            <Button variant="ghost" disabled title="Details view coming soon">
-                                                <ArrowRight className="w-5 h-5 text-muted-foreground/50" />
-                                            </Button>
+                                            <Link href={`/admin/finance/payroll/${run.id}`}>
+                                                <Button variant="ghost">
+                                                    <ArrowRight className="w-5 h-5 text-muted-foreground" />
+                                                </Button>
+                                            </Link>
                                         </TableCell>
                                     </TableRow>
                                 ))}

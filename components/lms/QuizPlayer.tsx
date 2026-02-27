@@ -124,7 +124,7 @@ export default function QuizPlayer({ quizId, courseId }: QuizPlayerProps) {
                 // Redirect to results page (or show inline)
                 // For now, simple alert or redirect back to course ??
                 // Actually, let's redirect to a results view if possible, or back to course
-                router.push(`/student/courses/${courseId}`);
+                router.push(`/student/quizzes/${quizId}/result/${result.attempt.id}`);
             }
         } catch (error) {
             console.error("Submission failed:", error);

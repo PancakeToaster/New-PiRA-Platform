@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { createBlogSchema } from '@/lib/validations/blog';
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -13,6 +14,17 @@ export async function GET() {
   try {
     const posts = await prisma.blog.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          }
+        },
+        category: true,
+        tags: true,
+      }
     });
 
     return NextResponse.json({ posts });
@@ -32,11 +44,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, slug, excerpt, content, coverImage, isDraft } = body;
+    const parsed = createBlogSchema.safeParse(body);
 
-    if (!title || !slug || !content) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Title, slug, and content are required' },
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { title, excerpt, content, coverImage, isDraft, authorId, categoryId, tagIds: tags } = parsed.data;
+    const { slug } = body;
+
+    if (!slug) {
+      return NextResponse.json(
+        { error: 'Slug is required' },
         { status: 400 }
       );
     }
@@ -62,7 +84,17 @@ export async function POST(request: NextRequest) {
         coverImage,
         isDraft: isDraft ?? true,
         publishedAt: isDraft ? null : new Date(),
+        authorId: authorId || currentUser.id,
+        categoryId: categoryId || null,
+        tags: {
+          connect: tags?.map((tagId: string) => ({ id: tagId })) || [],
+        },
       },
+      include: {
+        author: { select: { id: true, firstName: true, lastName: true } },
+        category: true,
+        tags: true,
+      }
     });
 
     return NextResponse.json({ post }, { status: 201 });

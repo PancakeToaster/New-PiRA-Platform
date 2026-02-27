@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { createLMSCourseSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/lms-courses - Get all LMS courses
 export async function GET() {
@@ -46,11 +47,17 @@ export async function POST(req: Request) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
-        const { name, code, description, instructorId } = await req.json();
+        const body = await req.json();
+        const parsed = createLMSCourseSchema.safeParse(body);
 
-        if (!name || !code) {
-            return new NextResponse('Name and code are required', { status: 400 });
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+                { status: 400 }
+            );
         }
+
+        const { name, code, description, instructorId } = parsed.data;
 
         // Check if code already exists
         const existing = await prisma.lMSCourse.findUnique({

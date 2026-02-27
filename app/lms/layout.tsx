@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import LMSAppShell from '@/components/lms/LMSAppShell';
+import { getStudentCourseProgress } from '@/lib/progress';
 
 export default async function LMSLayout({
   children,
@@ -28,8 +29,9 @@ export default async function LMSLayout({
   let courses: any[] = [];
 
   if (isStudent && user.profiles?.student) {
+    const studentId = user.profiles.student;
     const enrollments = await prisma.courseEnrollment.findMany({
-      where: { studentId: user.profiles.student },
+      where: { studentId },
       include: {
         lmsCourse: {
           select: {
@@ -40,7 +42,13 @@ export default async function LMSLayout({
         },
       },
     });
-    courses = enrollments.map((e) => e.lmsCourse);
+    courses = await Promise.all(enrollments.map(async (e) => {
+      const progress = await getStudentCourseProgress(studentId, e.lmsCourse.id);
+      return {
+        ...e.lmsCourse,
+        progress
+      };
+    }));
   } else if (isTeacher) {
     courses = await prisma.lMSCourse.findMany({
       where: { instructorId: user.id },

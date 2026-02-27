@@ -89,7 +89,7 @@ export default async function CourseForumPage({
                     </Link>
                     <div>
                         <h1 className="text-3xl font-bold">{course.name} - Forum</h1>
-                        <p className="text-gray-600">Course discussions and Q&A</p>
+                        <p className="text-muted-foreground">Course discussions and Q&A</p>
                     </div>
                 </div>
                 <Link href={`/lms/courses/${id}/forum/new`}>
@@ -102,8 +102,8 @@ export default async function CourseForumPage({
 
             {threads.length === 0 ? (
                 <Card>
-                    <CardContent className="p-8 text-center text-gray-600">
-                        <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                        <MessageSquare className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
                         <p>No forum threads yet.</p>
                         <p className="mt-2 text-sm">Start a discussion by creating a new thread.</p>
                     </CardContent>
@@ -118,12 +118,12 @@ export default async function CourseForumPage({
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
                                                 {thread.isPinned && (
-                                                    <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
+                                                    <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs font-medium rounded">
                                                         Pinned
                                                     </span>
                                                 )}
                                                 {thread.isLocked && (
-                                                    <span className="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-medium rounded">
+                                                    <span className="px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 text-xs font-medium rounded">
                                                         Locked
                                                     </span>
                                                 )}
@@ -133,14 +133,14 @@ export default async function CourseForumPage({
                                                     </span>
                                                 ) : (
                                                     <span title="Private thread">
-                                                        <Lock className="w-4 h-4 text-gray-600" />
+                                                        <Lock className="w-4 h-4 text-muted-foreground" />
                                                     </span>
                                                 )}
                                             </div>
-                                            <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                                            <h3 className="font-semibold text-lg text-foreground mb-1">
                                                 {thread.title}
                                             </h3>
-                                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                 <span>
                                                     By {thread.creator.firstName} {thread.creator.lastName}
                                                 </span>
@@ -159,7 +159,7 @@ export default async function CourseForumPage({
                                                 <span>{new Date(thread.updatedAt).toLocaleDateString()}</span>
                                             </div>
                                         </div>
-                                        <MessageSquare className="w-5 h-5 text-gray-400" />
+                                        <MessageSquare className="w-5 h-5 text-muted-foreground" />
                                     </div>
                                 </CardContent>
                             </Card>

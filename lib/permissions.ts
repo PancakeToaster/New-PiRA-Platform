@@ -12,6 +12,53 @@ import type { Permission } from './permissions-client';
 import { TEST_ROLE_CONFIGS } from './test-roles';
 export { TEST_ROLE_CONFIGS };
 
+/**
+ * Role-based defaults for wiki (knowledge base) permissions.
+ * These apply automatically based on user role — no per-user DB grants needed.
+ *
+ * Permissions:
+ *   Admin    → all knowledge actions
+ *   Teacher  → create, edit, comment, suggest
+ *   Student  → suggest only (view is handled by query-level isPublished filter)
+ *   Parent   → no write access (view-only)
+ */
+const WIKI_ROLE_PERMISSIONS: Record<string, string[]> = {
+  Admin: [
+    'knowledge:read',
+    'knowledge:create',
+    'knowledge:edit',
+    'knowledge:delete',
+    'knowledge:publish',
+    'knowledge:comment',
+    'knowledge:suggest',
+    'knowledge:review_suggestion',
+    'knowledge:manage_folder',
+  ],
+  Teacher: [
+    'knowledge:read',
+    'knowledge:create',
+    'knowledge:edit',
+    'knowledge:comment',
+    'knowledge:suggest',
+  ],
+  Student: [
+    'knowledge:read',
+    'knowledge:suggest',
+  ],
+  Parent: [
+    'knowledge:read',
+  ],
+};
+
+/**
+ * Check if a user's roles grant them a wiki permission via the role-based defaults.
+ */
+function hasWikiRolePermission(roles: string[] | undefined, resource: string, action: string): boolean {
+  if (!roles) return false;
+  const key = `${resource}:${action}`;
+  return roles.some((role) => WIKI_ROLE_PERMISSIONS[role]?.includes(key));
+}
+
 // Get test mode info from cookies
 async function getTestModeInfo(): Promise<{ isTestMode: boolean; testRole: string | null; originalUserId: string | null }> {
   try {
@@ -65,7 +112,12 @@ export async function hasPermission(resource: string, action: string): Promise<b
     return true;
   }
 
-  // Check if user has specific permission
+  // Check role-based defaults first (covers wiki and future resource types)
+  if (hasWikiRolePermission(user.roles, resource, action)) {
+    return true;
+  }
+
+  // Fall back to explicit per-user DB permission grants
   return user.permissions?.some(
     (p) => p.resource === resource && p.action === action
   ) ?? false;
@@ -83,7 +135,12 @@ export async function hasAnyPermission(permissions: Permission[]): Promise<boole
     return true;
   }
 
-  // Check if user has any of the specified permissions
+  // Check role-based defaults
+  if (permissions.some((perm) => hasWikiRolePermission(user.roles, perm.resource, perm.action))) {
+    return true;
+  }
+
+  // Fall back to explicit per-user DB permission grants
   return permissions.some((perm) =>
     user.permissions?.some(
       (p) => p.resource === perm.resource && p.action === perm.action
@@ -103,12 +160,14 @@ export async function hasAllPermissions(permissions: Permission[]): Promise<bool
     return true;
   }
 
-  // Check if user has all specified permissions
-  return permissions.every((perm) =>
-    user.permissions?.some(
-      (p) => p.resource === perm.resource && p.action === perm.action
-    )
-  ) ?? false;
+  // Check if user has all specified permissions (role-based or explicit grants)
+  return permissions.every(
+    (perm) =>
+      hasWikiRolePermission(user.roles, perm.resource, perm.action) ||
+      (user.permissions?.some(
+        (p) => p.resource === perm.resource && p.action === perm.action
+      ) ?? false)
+  );
 }
 
 export async function hasRole(roleName: string): Promise<boolean> {
@@ -161,6 +220,36 @@ export async function requireAuth(): Promise<
   if (!user) {
     return {
       error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+  return { user };
+}
+
+/**
+ * Require a specific wiki permission for an API route.
+ * Returns the current user if they have the permission, otherwise returns a 401/403 response.
+ *
+ * Usage:
+ *   const result = await requireWikiPermission('edit');
+ *   if ('error' in result) return result.error;
+ *   const { user } = result;
+ */
+export async function requireWikiPermission(
+  action: string
+): Promise<
+  | { user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>> }
+  | { error: Response }
+> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+  const allowed = await hasPermission('knowledge', action);
+  if (!allowed) {
+    return {
+      error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }),
     };
   }
   return { user };

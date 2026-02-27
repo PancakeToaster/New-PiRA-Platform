@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/permissions';
+import { moveTaskSchema } from '@/lib/validations/project';
 
 export async function PUT(
   request: NextRequest,
@@ -57,7 +58,16 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, kanbanOrder } = body;
+    const parsed = moveTaskSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message || 'Invalid input data', details: parsed.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { status, kanbanOrder } = parsed.data;
 
     const oldStatus = task.status;
 

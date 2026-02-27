@@ -135,14 +135,14 @@ export default async function ForumThreadPage({
                                         Public
                                     </span>
                                 ) : (
-                                    <span className="flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-800 text-xs font-medium rounded">
+                                    <span className="flex items-center gap-1 px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">
                                         <Lock className="w-3 h-3" />
                                         Private
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-2xl font-bold text-gray-900 mb-2">{thread.title}</h1>
-                            <div className="text-sm text-gray-600">
+                            <h1 className="text-2xl font-bold text-foreground mb-2">{thread.title}</h1>
+                            <div className="text-sm text-muted-foreground">
                                 Started by {thread.creator.firstName} {thread.creator.lastName} on{' '}
                                 {new Date(thread.createdAt).toLocaleDateString()}
                             </div>
@@ -150,8 +150,8 @@ export default async function ForumThreadPage({
                     </div>
 
                     {!thread.isPublic && thread.participants.length > 0 && (
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center gap-2 text-sm text-gray-700">
+                        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Users className="w-4 h-4" />
                                 <span className="font-medium">Participants:</span>
                                 <span>
@@ -175,8 +175,8 @@ export default async function ForumThreadPage({
 
             {thread.isLocked && (
                 <Card>
-                    <CardContent className="p-6 text-center text-gray-600">
-                        <Lock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <CardContent className="p-6 text-center text-muted-foreground">
+                        <Lock className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                         <p>This thread is locked. No new replies can be added.</p>
                     </CardContent>
                 </Card>
