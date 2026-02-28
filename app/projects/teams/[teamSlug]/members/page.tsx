@@ -213,7 +213,7 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                             Back
                         </Button>
                     </Link>
-                    <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Team Members</h1>
                 </div>
                 {canAdd && (
                     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -240,15 +240,15 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                                             {availableUsers.map(user => (
                                                 <div
                                                     key={user.id}
-                                                    className={`p-2 cursor-pointer hover:bg-gray-50 flex justify-between items-center ${selectedUserId === user.id ? 'bg-sky-50' : ''
+                                                    className={`p-2 cursor-pointer hover:bg-muted flex justify-between items-center ${selectedUserId === user.id ? 'bg-sky-50 dark:bg-sky-900/30' : ''
                                                         }`}
                                                     onClick={() => setSelectedUserId(user.id)}
                                                 >
                                                     <div>
-                                                        <p className="font-medium text-sm">{user.firstName} {user.lastName}</p>
-                                                        <p className="text-xs text-gray-500">{user.email}</p>
+                                                        <p className="font-medium text-sm text-foreground">{user.firstName} {user.lastName}</p>
+                                                        <p className="text-xs text-muted-foreground">{user.email}</p>
                                                     </div>
-                                                    {selectedUserId === user.id && <Check className="w-4 h-4 text-sky-600" />}
+                                                    {selectedUserId === user.id && <Check className="w-4 h-4 text-sky-600 dark:text-sky-400" />}
                                                 </div>
                                             ))}
                                         </div>
@@ -284,7 +284,7 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                     <Card key={member.id} className="overflow-hidden">
                         <CardContent className="p-0">
                             <div className="p-6 flex items-center space-x-4">
-                                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-lg font-bold">
+                                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-lg font-bold">
                                     {member.user.avatar ? (
                                         <img src={member.user.avatar} alt="" className="w-full h-full rounded-full object-cover" />
                                     ) : (
@@ -292,15 +292,15 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-gray-900 truncate">
+                                    <p className="font-medium text-foreground truncate">
                                         {member.user.firstName} {member.user.lastName}
                                     </p>
-                                    <p className="text-sm text-gray-500 truncate">{member.user.email}</p>
+                                    <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
                                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1
-                    ${member.role === 'owner' ? 'bg-purple-100 text-purple-800' :
-                                            member.role === 'captain' ? 'bg-blue-100 text-blue-800' :
-                                                member.role === 'mentor' ? 'bg-green-100 text-green-800' :
-                                                    'bg-gray-100 text-gray-800'}`}>
+                    ${member.role === 'owner' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-400' :
+                                            member.role === 'captain' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400' :
+                                                member.role === 'mentor' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' :
+                                                    'bg-muted text-foreground'}`}>
                                         {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                                     </span>
                                 </div>
@@ -308,7 +308,7 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="ghost" size="icon">
-                                                <MoreVertical className="w-4 h-4 text-gray-500" />
+                                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
@@ -321,7 +321,7 @@ export default function TeamMembersPage({ params }: { params: { teamSlug: string
                                             <DropdownMenuItem onClick={() => handleUpdateRole(member.user.id, 'captain')}>
                                                 Set as Captain
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem className="text-red-600" onClick={() => handleRemoveMember(member.user.id)}>
+                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleRemoveMember(member.user.id)}>
                                                 Remove from Team
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>

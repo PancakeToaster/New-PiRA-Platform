@@ -8,7 +8,7 @@ export async function GET() {
     try {
         const user = await getCurrentUser();
 
-        if (!user || !user.roles?.includes('Admin')) {
+        if (!user || (!user.roles?.includes('Admin') && !user.roles?.includes('Teacher'))) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     try {
         const user = await getCurrentUser();
 
-        if (!user || !user.roles?.includes('Admin')) {
+        if (!user || (!user.roles?.includes('Admin') && !user.roles?.includes('Teacher'))) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 

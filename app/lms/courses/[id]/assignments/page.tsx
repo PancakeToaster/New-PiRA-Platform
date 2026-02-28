@@ -115,7 +115,10 @@ export default async function CourseAssignmentsPage({
                                 <CardContent>
                                     <p className="text-gray-700 dark:text-gray-300">{assignment.description}</p>
                                     <div className="mt-4">
-                                        <Link href={`/lms/assignments/${assignment.id}`}>
+                                        <Link href={isStudent
+                                            ? `/student/assignments/${assignment.id}`
+                                            : `/admin/courses/${course.id}/assignments/${assignment.id}/submissions`
+                                        }>
                                             <Button size="sm">
                                                 {isStudent ? 'View Assignment' : 'Manage Assignment'}
                                             </Button>

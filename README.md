@@ -71,6 +71,13 @@ The platform is fully built and feature-complete as of **January 2026**.
 
 ## Prerequisites
 
+### Recommended System Specifications (Production)
+- **CPU**: 2+ Cores
+- **RAM**: 4GB+ (2GB minimum, though builds may require swap space)
+- **Storage**: 20GB+ SSD (allow space for Postgres data and user uploads)
+- **OS**: Ubuntu 22.04 LTS or 24.04 LTS (recommended for scripts)
+
+### Software Requirements
 - Node.js 18+ (for development)
 - Docker and Docker Compose (for deployment)
 - PostgreSQL 16 (if running without Docker)

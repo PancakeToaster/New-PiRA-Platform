@@ -1,4 +1,4 @@
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasRole } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { createAnnouncementSchema } from '@/lib/validations/system';
@@ -7,8 +7,9 @@ import { createAnnouncementSchema } from '@/lib/validations/system';
 export async function GET() {
     try {
         const isUserAdmin = await isAdmin();
+        const userIsTeacher = await hasRole('Teacher');
 
-        if (!isUserAdmin) {
+        if (!isUserAdmin && !userIsTeacher) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
         const user = await getCurrentUser();
         const isUserAdmin = await isAdmin();
 
-        if (!user || !isUserAdmin) {
+        if (!user || (!user.roles?.includes('Admin') && !user.roles?.includes('Teacher'))) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 

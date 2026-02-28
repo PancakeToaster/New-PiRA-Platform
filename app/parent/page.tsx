@@ -155,7 +155,8 @@ export default async function ParentDashboard() {
       date: e.startTime,
       type: e.eventType === 'competition' ? 'competition' : 'event' as const,
       description: e.eventType,
-      formattedDate: format(e.startTime, 'MMM d, h:mm a')
+      formattedDate: format(e.startTime, 'MMM d, h:mm a'),
+      href: '/parent/calendar'
     })),
     ...invoices.map(i => ({
       id: i.id,
@@ -164,7 +165,8 @@ export default async function ParentDashboard() {
       type: 'invoice' as const,
       description: `$${i.total.toFixed(2)}`,
       formattedDate: `Due ${format(i.dueDate, 'MMM d')}`,
-      isOverdue: i.status === 'overdue' || (i.dueDate < now)
+      isOverdue: i.status === 'overdue' || (i.dueDate < now),
+      href: `/parent/invoices/${i.id}`
     })),
     ...assignments.map(a => ({
       id: a.id,
@@ -172,7 +174,8 @@ export default async function ParentDashboard() {
       date: a.dueDate,
       type: 'assignment' as const,
       description: 'Assignment Due',
-      formattedDate: `Due ${format(a.dueDate, 'MMM d, h:mm a')}`
+      formattedDate: `Due ${format(a.dueDate, 'MMM d, h:mm a')}`,
+      href: '/parent/students'
     }))
   ].sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 7); // Show top 7 items

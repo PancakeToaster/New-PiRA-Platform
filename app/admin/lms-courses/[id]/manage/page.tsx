@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Label } from '@/components/ui/Label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { ArrowLeft, Save, Loader2, Users, Trash2 } from 'lucide-react';
+import TiptapEditor from '@/components/editor/TiptapEditor';
 
 interface LMSCourse {
     id: string;
@@ -214,12 +215,9 @@ export default function ManageLMSCoursePage() {
                             <Label htmlFor="description" className="mb-2 block">
                                 Description
                             </Label>
-                            <textarea
-                                id="description"
-                                value={formData.description}
-                                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                rows={4}
-                                className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                            <TiptapEditor
+                                content={formData.description}
+                                onChange={(content: string) => setFormData(prev => ({ ...prev, description: content }))}
                                 placeholder="Describe what students will learn in this course..."
                             />
                         </div>

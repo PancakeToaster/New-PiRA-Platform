@@ -73,8 +73,8 @@ export default function TeamsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Teams</h1>
-          <p className="mt-1 text-gray-500">
+          <h1 className="text-3xl font-bold text-foreground">My Teams</h1>
+          <p className="mt-1 text-muted-foreground">
             Manage your teams and collaborate on projects
           </p>
         </div>

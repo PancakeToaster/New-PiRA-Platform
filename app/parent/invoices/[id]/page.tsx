@@ -57,8 +57,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center gap-4">
-                <Link href="/parent/invoices" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <Link href="/parent/invoices" className="p-2 hover:bg-muted rounded-full transition-colors">
+                    <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </Link>
                 <h1 className="text-2xl font-bold">Invoice Details</h1>
             </div>
@@ -66,8 +66,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between border-b pb-6">
                     <div>
-                        <CardTitle className="text-3xl font-bold text-gray-900">{invoice.invoiceNumber}</CardTitle>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <CardTitle className="text-3xl font-bold text-foreground">{invoice.invoiceNumber}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">
                             Issued: {formatDate(invoice.createdAt)}
                         </p>
                     </div>
@@ -87,8 +87,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
                     {/* Bill To & Dates Grid */}
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Bill To</h3>
-                            <div className="text-gray-900 font-medium">
+                            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Bill To</h3>
+                            <div className="text-foreground font-medium">
                                 <p>{invoice.parent.user.firstName} {invoice.parent.user.lastName}</p>
                                 <p>{invoice.parent.user.email}</p>
                                 {invoice.parent.phone && <p>{invoice.parent.phone}</p>}
@@ -96,17 +96,17 @@ export default async function InvoiceDetailPage({ params }: Props) {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <div className="flex justify-between border-b border-gray-100 pb-2">
-                                <span className="text-gray-500">Invoice Date</span>
+                            <div className="flex justify-between border-b border-border pb-2">
+                                <span className="text-muted-foreground">Invoice Date</span>
                                 <span className="font-medium">{formatDate(invoice.createdAt)}</span>
                             </div>
-                            <div className="flex justify-between border-b border-gray-100 pb-2">
-                                <span className="text-gray-500">Due Date</span>
+                            <div className="flex justify-between border-b border-border pb-2">
+                                <span className="text-muted-foreground">Due Date</span>
                                 <span className="font-medium">{formatDate(invoice.dueDate)}</span>
                             </div>
                             {invoice.paidDate && (
-                                <div className="flex justify-between border-b border-gray-100 pb-2">
-                                    <span className="text-gray-500">Paid Date</span>
+                                <div className="flex justify-between border-b border-border pb-2">
+                                    <span className="text-muted-foreground">Paid Date</span>
                                     <span className="font-medium text-green-600">{formatDate(invoice.paidDate)}</span>
                                 </div>
                             )}
@@ -114,9 +114,9 @@ export default async function InvoiceDetailPage({ params }: Props) {
                     </div>
 
                     {/* Line Items */}
-                    <div className="border rounded-lg overflow-hidden">
+                    <div className="border border-border rounded-lg overflow-hidden">
                         <table className="w-full text-left">
-                            <thead className="bg-gray-50 text-gray-500 text-sm">
+                            <thead className="bg-muted/50 text-muted-foreground text-sm">
                                 <tr>
                                     <th className="px-6 py-3 font-medium">Description</th>
                                     <th className="px-6 py-3 font-medium text-right">Qty</th>
@@ -124,7 +124,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
                                     <th className="px-6 py-3 font-medium text-right">Total</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-border">
                                 {invoice.items.map((item) => (
                                     <tr key={item.id} className="text-sm">
                                         <td className="px-6 py-4">{item.description}</td>
@@ -140,17 +140,17 @@ export default async function InvoiceDetailPage({ params }: Props) {
                     {/* Totals */}
                     <div className="flex justify-end">
                         <div className="w-full md:w-1/3 space-y-3">
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-muted-foreground">
                                 <span>Subtotal</span>
                                 <span>{formatCurrency(invoice.subtotal)}</span>
                             </div>
                             {invoice.tax > 0 && (
-                                <div className="flex justify-between text-gray-600">
+                                <div className="flex justify-between text-muted-foreground">
                                     <span>Tax</span>
                                     <span>{formatCurrency(invoice.tax)}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
+                            <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3">
                                 <span>Total</span>
                                 <span>{formatCurrency(invoice.total)}</span>
                             </div>
@@ -159,18 +159,18 @@ export default async function InvoiceDetailPage({ params }: Props) {
 
                     {/* Notes */}
                     {invoice.notes && (
-                        <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-600">
-                            <strong>Notes:</strong> {invoice.notes}
+                        <div className="bg-muted p-4 rounded-lg text-sm text-muted-foreground">
+                            <strong className="text-foreground">Notes:</strong> {invoice.notes}
                         </div>
                     )}
 
                     {/* Payment Info */}
-                    <div className="mt-8 pt-8 border-t border-gray-100">
-                        <h4 className="font-semibold mb-4">Payment Methods</h4>
-                        <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
-                            <li><strong className="text-indigo-600">Zelle:</strong> barry.py.chuang@gmail.com</li>
-                            <li><strong className="text-sky-500">Venmo:</strong> @Barry-Chuang</li>
-                            <li><strong>Cash/Check:</strong> Please make checks payable to PLAYIDEAS INC.</li>
+                    <div className="mt-8 pt-8 border-t border-border">
+                        <h4 className="font-semibold mb-4 text-foreground">Payment Methods</h4>
+                        <ul className="text-sm text-muted-foreground space-y-2 list-disc pl-5">
+                            <li><strong className="text-indigo-600 dark:text-indigo-400">Zelle:</strong> barry.py.chuang@gmail.com</li>
+                            <li><strong className="text-sky-500 dark:text-sky-400">Venmo:</strong> @Barry-Chuang</li>
+                            <li><strong className="text-foreground">Cash/Check:</strong> Please make checks payable to PLAYIDEAS INC.</li>
                         </ul>
                     </div>
                 </CardContent>

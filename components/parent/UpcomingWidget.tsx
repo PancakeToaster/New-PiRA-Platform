@@ -13,6 +13,7 @@ export interface UpcomingItem {
     description?: string;
     formattedDate: string;
     isOverdue?: boolean;
+    href?: string;
 }
 
 interface UpcomingWidgetProps {
@@ -59,38 +60,49 @@ export default function UpcomingWidget({ items }: UpcomingWidgetProps) {
                 </Card>
             ) : (
                 <div className="space-y-3">
-                    {items.map((item) => (
-                        <div
-                            key={`${item.type}-${item.id}`}
-                            className={`relative p-4 rounded-r-lg border-l-4 shadow-sm bg-card hover:shadow-md transition-shadow ${getColorClass(item.type)}`}
-                        >
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1 min-w-0 pr-4">
-                                    {item.type === 'invoice' && item.isOverdue && (
-                                        <div className="flex items-center text-xs font-bold text-rose-600 mb-1">
-                                            <AlertCircle className="w-3 h-3 mr-1" />
-                                            OVERDUE
-                                        </div>
-                                    )}
-                                    <h4 className="text-sm font-bold text-foreground truncate">
-                                        {item.title}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                                        {item.description || item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                                    </p>
-                                </div>
-
-                                <div className="flex flex-col items-end text-right shrink-0">
-                                    <div className="flex items-center text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded-md shadow-sm">
-                                        {item.formattedDate}
+                    {items.map((item) => {
+                        const content = (
+                            <div
+                                className={`relative p-4 rounded-r-lg border-l-4 shadow-sm bg-card hover:shadow-md transition-shadow ${getColorClass(item.type)}`}
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div className="flex-1 min-w-0 pr-4">
+                                        {item.type === 'invoice' && item.isOverdue && (
+                                            <div className="flex items-center text-xs font-bold text-rose-600 mb-1">
+                                                <AlertCircle className="w-3 h-3 mr-1" />
+                                                OVERDUE
+                                            </div>
+                                        )}
+                                        <h4 className="text-sm font-bold text-foreground truncate">
+                                            {item.title}
+                                        </h4>
+                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                            {item.description || item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                                        </p>
                                     </div>
-                                    <div className="mt-2">
-                                        {getIcon(item.type)}
+
+                                    <div className="flex flex-col items-end text-right shrink-0">
+                                        <div className="flex items-center text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded-md shadow-sm">
+                                            {item.formattedDate}
+                                        </div>
+                                        <div className="mt-2 text-muted-foreground group-hover:text-primary transition-colors">
+                                            {getIcon(item.type)}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+
+                        if (item.href) {
+                            return (
+                                <Link key={`${item.type}-${item.id}`} href={item.href} className="block group">
+                                    {content}
+                                </Link>
+                            );
+                        }
+
+                        return <div key={`${item.type}-${item.id}`} className="group">{content}</div>;
+                    })}
                 </div>
             )}
 

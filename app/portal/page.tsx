@@ -27,7 +27,11 @@ export default async function PortalPage() {
     const hasRole = (allowedRoles: string[]) => {
         if (allowedRoles.includes('*')) return true;
         // @ts-ignore - Handle test mode override if present in session or just rely on roles array
-        return userRoles.some(role => allowedRoles.includes(role));
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        return userRoles.some((role: any) => {
+            const roleName = typeof role === 'string' ? role : (role.role?.name || role.name);
+            return allowedRoles.includes(roleName);
+        });
     };
 
     const apps = [
@@ -38,7 +42,7 @@ export default async function PortalPage() {
             icon: GraduationCap,
             color: 'text-purple-600',
             bg: 'bg-purple-50',
-            allowedRoles: ['Student', 'Teacher', 'Admin']
+            allowedRoles: ['Student', 'Teacher', 'Parent', 'Admin']
         },
         {
             name: 'Project Management',
@@ -47,7 +51,7 @@ export default async function PortalPage() {
             icon: FolderKanban,
             color: 'text-sky-600',
             bg: 'bg-sky-50',
-            allowedRoles: ['Mentor', 'Team Captain', 'Team Member', 'Admin']
+            allowedRoles: ['Student', 'Mentor', 'Team Captain', 'Team Member', 'Admin', 'VEX HIGHSCHOOL A']
         },
         {
             name: 'Knowledge Base',

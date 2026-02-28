@@ -4,16 +4,19 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Home, FileText, Users, Menu, X, LogOut, Calendar, UserCircle, BookOpen } from 'lucide-react';
+import {
+    Calendar,
+    Menu,
+    X,
+    LogOut,
+} from 'lucide-react';
 import AppSwitcher from '@/components/layout/AppSwitcher';
 
-export default function ParentAppShell({
+export default function CalendarAppShell({
     children,
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     user,
 }: {
     children: React.ReactNode;
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     user?: any;
 }) {
     const { data: session } = useSession();
@@ -21,11 +24,7 @@ export default function ParentAppShell({
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const navigation = [
-        { name: 'Dashboard', href: '/parent', icon: Home },
-        { name: 'Invoices', href: '/parent/invoices', icon: FileText },
-        { name: 'My Students', href: '/parent/students', icon: Users },
         { name: 'Calendar', href: '/calendar', icon: Calendar },
-        { name: 'Wiki', href: '/wiki', icon: BookOpen },
     ];
 
     return (
@@ -39,7 +38,7 @@ export default function ParentAppShell({
                     >
                         {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
-                    <span className="font-semibold text-foreground">Parent Portal</span>
+                    <span className="font-semibold text-foreground">Calendar</span>
                     <div className="w-6" />
                 </div>
             </div>
@@ -52,14 +51,14 @@ export default function ParentAppShell({
                 <div className="flex flex-col h-full">
                     {/* Logo/Title */}
                     <div className="flex items-center h-16 px-4 border-b border-border">
-                        <Link href="/parent" className="flex items-center space-x-2">
-                            <UserCircle className="w-8 h-8 text-primary" />
-                            <span className="text-xl font-bold text-foreground">Parent Portal</span>
+                        <Link href="/calendar" className="flex items-center space-x-2">
+                            <Calendar className="w-8 h-8 text-primary" />
+                            <span className="text-xl font-bold text-foreground">Calendar</span>
                         </Link>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 px-2 py-2 space-y-1 overflow-y-auto">
+                    <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
                         {navigation.map((item) => {
                             const isActive = pathname === item.href;
                             return (
@@ -80,29 +79,29 @@ export default function ParentAppShell({
 
                     {/* User Info */}
                     {session?.user && (
-                        <div className="p-4 border-t border-border">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <span className="text-sm font-medium text-primary">
-                                        {session.user.name?.charAt(0).toUpperCase()}
-                                    </span>
+                        <div className="p-4 border-t border-border mt-auto">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3 max-w-[calc(100%-4rem)]">
+                                    <div className="w-8 h-8 rounded-full bg-primary/20 flex shrink-0 items-center justify-center">
+                                        <span className="text-sm font-medium text-primary">
+                                            {session.user.name?.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-foreground truncate">
+                                            {session.user.name?.split(' ')[0]}
+                                        </p>
+                                        <p className="text-sm font-medium text-foreground/80 truncate">
+                                            {session.user.name?.split(' ').slice(1).join(' ')}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-foreground truncate">
-                                        {session.user.name?.split(' ')[0]}
-                                    </p>
-                                    <p className="text-sm font-medium text-foreground/80 truncate">
-                                        {session.user.name?.split(' ').slice(1).join(' ')}
-                                    </p>
+                                <div className="flex items-center space-x-2 shrink-0">
+                                    <AppSwitcher user={user} />
+                                    <Link href="/api/auth/signout" className="text-muted-foreground hover:text-foreground">
+                                        <LogOut className="w-5 h-5" />
+                                    </Link>
                                 </div>
-                                <AppSwitcher user={user} />
-                                <Link
-                                    href="/api/auth/signout"
-                                    className="text-muted-foreground hover:text-foreground"
-                                    title="Sign out"
-                                >
-                                    <LogOut className="w-5 h-5" />
-                                </Link>
                             </div>
                         </div>
                     )}
@@ -110,8 +109,8 @@ export default function ParentAppShell({
             </aside>
 
             {/* Main content */}
-            <main className="lg:pl-64 pt-14 lg:pt-0">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="lg:pl-72 pt-14 lg:pt-0">
+                <div className="max-w-7xl mx-auto py-8">
                     {children}
                 </div>
             </main>

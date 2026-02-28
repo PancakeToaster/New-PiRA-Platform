@@ -1,4 +1,4 @@
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasRole } from '@/lib/permissions';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { updateAnnouncementSchema } from '@/lib/validations/system';
@@ -10,8 +10,9 @@ export async function DELETE(
 ) {
     try {
         const isUserAdmin = await isAdmin();
+        const userIsTeacher = await hasRole('Teacher');
 
-        if (!isUserAdmin) {
+        if (!isUserAdmin && !userIsTeacher) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
@@ -35,8 +36,9 @@ export async function PATCH(
 ) {
     try {
         const isUserAdmin = await isAdmin();
+        const userIsTeacher = await hasRole('Teacher');
 
-        if (!isUserAdmin) {
+        if (!isUserAdmin && !userIsTeacher) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 

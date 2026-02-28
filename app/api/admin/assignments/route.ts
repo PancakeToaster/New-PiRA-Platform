@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasRole } from '@/lib/permissions';
 import { createAssignmentSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/assignments - Fetch all assignments
 export async function GET(request: NextRequest) {
     const currentUser = await getCurrentUser();
     const userIsAdmin = await isAdmin();
+    const userIsTeacher = await hasRole('Teacher');
 
-    if (!currentUser || !userIsAdmin) {
+    if (!currentUser || (!userIsAdmin && !userIsTeacher)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -66,8 +67,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser();
     const userIsAdmin = await isAdmin();
+    const userIsTeacher = await hasRole('Teacher');
 
-    if (!currentUser || !userIsAdmin) {
+    if (!currentUser || (!userIsAdmin && !userIsTeacher)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

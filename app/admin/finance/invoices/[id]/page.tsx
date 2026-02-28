@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { ChevronLeft, Edit, Trash2, Printer, Mail, Loader2, Undo, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronLeft, Edit, Trash2, Printer, Mail, Loader2, Undo, CheckCircle, XCircle, FileText } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import InvoiceDownloadButton from '@/components/invoices/InvoiceDownloadButton';
 import SendInvoiceEmailButton from '@/components/invoices/SendInvoiceEmailButton';
@@ -119,6 +119,33 @@ export default function InvoiceDetailsPage() {
         }
     };
 
+    const handleRegeneratePdf = async () => {
+        setActionLoading(true);
+        try {
+            const res = await fetch(`/api/admin/invoices/${params.id}/pdf`, {
+                method: 'POST'
+            });
+
+            if (res.ok) {
+                alert('PDF regenerated successfully');
+                // Re-fetch invoice to get new PDF URL
+                const fetchRes = await fetch(`/api/admin/invoices/${params.id}`);
+                if (fetchRes.ok) {
+                    const data = await fetchRes.json();
+                    setInvoice(data.invoice);
+                }
+                router.refresh();
+            } else {
+                alert('Failed to regenerate PDF');
+            }
+        } catch (error) {
+            console.error('Error regenerating PDF:', error);
+            alert('Error regenerating PDF');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -163,6 +190,15 @@ export default function InvoiceDetailsPage() {
                         invoiceId={invoice.id}
                         parentEmail={invoice.parent.user.email}
                     />
+
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRegeneratePdf}
+                        disabled={actionLoading}
+                    >
+                        <FileText className="w-4 h-4 mr-2" /> Regenerate PDF
+                    </Button>
 
                     <Link href={`/admin/finance/invoices/${invoice.id}/edit`}>
                         <Button variant="outline" size="sm">

@@ -47,6 +47,15 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const userPermissions = activeUser?.permissions || [];
 
+    const hasRole = (allowedRoles: string[]) => {
+        if (allowedRoles.includes('*')) return true;
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        return userRoles.some((role: any) => {
+            const roleName = typeof role === 'string' ? role : (role.role?.name || role.name);
+            return allowedRoles.includes(roleName);
+        });
+    };
+
     const hasPermission = (resource: string, action: string) => {
         if (userRoles.includes('Admin')) return true;
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -63,20 +72,20 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             isVisible: () => true
         },
         {
-            name: 'Projects',
-            href: '/projects',
-            icon: FolderKanban,
-            color: 'text-sky-600',
-            bg: 'bg-sky-100',
-            isVisible: () => hasPermission('projects', 'view')
-        },
-        {
             name: 'LMS',
             href: '/lms',
             icon: GraduationCap,
             color: 'text-purple-600',
             bg: 'bg-purple-100',
-            isVisible: () => hasPermission('lms', 'view')
+            isVisible: () => hasPermission('lms', 'view') || hasRole(['Student', 'Teacher', 'Parent', 'Admin'])
+        },
+        {
+            name: 'Projects',
+            href: '/projects',
+            icon: FolderKanban,
+            color: 'text-sky-600',
+            bg: 'bg-sky-100',
+            isVisible: () => hasPermission('projects', 'view') || hasRole(['Student', 'Mentor', 'Team Captain', 'Team Member', 'Admin', 'VEX HIGHSCHOOL A'])
         },
         {
             name: 'Wiki',
@@ -84,7 +93,7 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             icon: BookOpen,
             color: 'text-green-600',
             bg: 'bg-green-100',
-            isVisible: () => hasPermission('knowledge', 'view')
+            isVisible: () => hasPermission('knowledge', 'view') || hasRole(['*'])
         },
         {
             name: 'Calendar',
@@ -92,7 +101,7 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             icon: Calendar,
             color: 'text-orange-600',
             bg: 'bg-orange-100',
-            isVisible: () => hasPermission('calendar', 'view')
+            isVisible: () => hasPermission('calendar', 'view') || hasRole(['*'])
         },
         {
             name: 'Parent Portal',
@@ -100,7 +109,7 @@ export default function AppSwitcher({ user }: AppSwitcherProps = {}) {
             icon: UserCircle,
             color: 'text-pink-600',
             bg: 'bg-pink-100',
-            isVisible: () => hasPermission('parent_portal', 'view')
+            isVisible: () => hasPermission('parent_portal', 'view') || hasRole(['Student', 'Parent', 'Admin'])
         },
         {
             name: 'Admin',

@@ -1,35 +1,29 @@
 'use client';
 
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import InvoicePDF from './InvoicePDF'; // Assuming same directory
 import { FileText } from 'lucide-react';
-import { Button } from '@/components/ui/Button'; // Assuming you have a UI Button component
+import { Button } from '@/components/ui/Button';
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export default function InvoiceDownloadButton({ invoice, className }: { invoice: any, className?: string }) {
-    // Check if we are checking for SSR issues. @react-pdf/renderer sometimes needs dynamic import or client-only check
-    // content inside PDFDownloadLink is the document
+    if (!invoice?.pdfUrl) {
+        return (
+            <div className={className}>
+                <Button size="sm" variant="outline" disabled className="gap-2">
+                    <FileText className="w-4 h-4" />
+                    No PDF
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className={className}>
-            <PDFDownloadLink
-                document={<InvoicePDF invoice={invoice} />}
-                fileName={`Invoice_${invoice.invoiceNumber}.pdf`}
-                className="inline-flex"
-            >
-                {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-                {({ blob, url, loading, error }: any) => (
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={loading}
-                        className="gap-2"
-                    >
-                        <FileText className="w-4 h-4" />
-                        {loading ? 'Generating...' : 'Download PDF'}
-                    </Button>
-                )}
-            </PDFDownloadLink>
+            <a href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="sm" variant="outline" className="gap-2" type="button">
+                    <FileText className="w-4 h-4" />
+                    Download PDF
+                </Button>
+            </a>
         </div>
     );
 }

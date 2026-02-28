@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, isAdmin } from '@/lib/permissions';
 import { createInvoiceSchema } from '@/lib/validations/finance';
+import { generateAndSaveInvoicePdf } from '@/lib/invoice-pdf';
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -146,7 +147,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ invoice }, { status: 201 });
+    const pdfUrl = await generateAndSaveInvoicePdf(invoice.id);
+    const updatedInvoice = { ...invoice, pdfUrl };
+
+    return NextResponse.json({ invoice: updatedInvoice }, { status: 201 });
   } catch (error) {
     console.error('Failed to create invoice:', error);
     return NextResponse.json({ error: 'Failed to create invoice' }, { status: 500 });

@@ -14,9 +14,12 @@ export default async function ProjectsLayout({
   }
 
   // Ensure user has appropriate role for Projects
-  // "teams" implies Team Member role, along with Mentor and Team Captain.
-  const allowedRoles = ['Mentor', 'Team Captain', 'Team Member', 'Admin'];
-  const hasAccess = user.roles.some((role: string) => allowedRoles.includes(role));
+  const allowedRoles = ['Student', 'Mentor', 'Team Captain', 'Team Member', 'Admin', 'VEX HIGHSCHOOL A'];
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const hasAccess = user.roles.some((role: any) => {
+    const roleName = typeof role === 'string' ? role : (role.role?.name || role.name);
+    return allowedRoles.includes(roleName);
+  });
 
   if (!hasAccess) {
     redirect('/');

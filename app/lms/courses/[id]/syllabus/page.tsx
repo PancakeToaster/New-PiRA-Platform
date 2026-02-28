@@ -63,7 +63,14 @@ export default async function CourseSyllabusPage({
                 <CardContent className="p-6 space-y-6">
                     <div>
                         <h2 className="text-xl font-semibold mb-2">Course Description</h2>
-                        <p className="text-muted-foreground">{course.description}</p>
+                        {course.description ? (
+                            <div
+                                className="text-muted-foreground prose prose-sm sm:prose max-w-none dark:prose-invert"
+                                dangerouslySetInnerHTML={{ __html: course.description }}
+                            />
+                        ) : (
+                            <p className="text-muted-foreground italic">No description provided.</p>
+                        )}
                     </div>
 
                     {course.instructor && (

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser, isAdmin } from '@/lib/permissions';
+import { getCurrentUser, isAdmin, hasRole } from '@/lib/permissions';
 import { updateAssignmentSchema } from '@/lib/validations/lms';
 
 // GET /api/admin/assignments/[id] - Fetch single assignment with submissions

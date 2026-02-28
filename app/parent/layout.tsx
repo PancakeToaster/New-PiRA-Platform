@@ -13,8 +13,8 @@ export default async function ParentLayout({
     redirect('/login');
   }
 
-  // Ensure user has 'Parent' role
-  const allowedRoles = ['Parent'];
+  // Ensure user has 'Parent', 'Student', or 'Admin' role
+  const allowedRoles = ['Parent', 'Student', 'Admin'];
   const hasAccess = user.roles.some((role: string) => allowedRoles.includes(role));
 
   if (!hasAccess) {
