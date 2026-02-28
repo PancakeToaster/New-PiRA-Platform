@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/Table';
+} from '@/components/ui/table';
 import { Plus, Download, FileText, Search, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 

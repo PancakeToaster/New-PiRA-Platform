@@ -12,7 +12,7 @@ set -e # Exit immediately if a command exits with a non-zero status
 # --- Configuration Variables ---
 APP_NAME="pira-platform"
 APP_DIR="/opt/$APP_NAME"
-GIT_REPO="https://github.com/YOUR_USERNAME/New-PiRA-Platform.git" # <-- CHANGE THIS to your repo URL
+GIT_REPO="https://github.com/PancakeToaster/New-PiRA-Platform.git" # <-- CHANGE THIS to your repo URL
 DB_NAME="pira_db"
 DB_USER="pira_user"
 # Generate a secure random password for the database
@@ -86,7 +86,7 @@ EOF
 
 # 8. Install dependencies and build
 echo "[8/10] Installing NPM dependencies and building..."
-npm install
+npm install --legacy-peer-deps
 npx prisma generate
 npx prisma db push --accept-data-loss # Or use migrate deploy if you prefer migrations mode
 npm run build
