@@ -202,6 +202,7 @@ async function main() {
       password: hashedPassword,
       firstName: 'Admin',
       lastName: 'User',
+      isApproved: true,
     },
   });
 
